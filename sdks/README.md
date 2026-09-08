@@ -29,7 +29,7 @@ README layout for every package: **[README.STANDARD.md](./README.STANDARD.md)**.
 | **Node.js / TypeScript** | Available | [`@autlantic/payments-recurring`](https://www.npmjs.com/package/@autlantic/payments-recurring) **0.3.12** | Server only |
 | **Python** | Available | [`autlantic-billing`](./python) · [PyPI](https://pypi.org/project/autlantic-billing/) **0.1.0** | Server only |
 | **Go** | Available | [`sdks/go`](./go) tag `sdks/go/v0.1.0` | Server only |
-| **PHP** | Available (Composer) | [`autlantic/billing`](./php) · [billing-php](https://github.com/Autlantic/billing-php) · Packagist pending | Server only |
+| **PHP** | Available on Packagist | [`autlantic/billing`](./php) · [Packagist](https://packagist.org/packages/autlantic/billing) · [billing-php](https://github.com/Autlantic/billing-php) | Server only |
 | **Java** | Available on Maven Central | [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1** | Server only |
 | **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** | Server only |
 | **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](./ios) tag `sdks/ios/v0.1.0` | **None** |

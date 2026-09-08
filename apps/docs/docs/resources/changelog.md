@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- PHP: [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.0** on Packagist (GitHub auto-update enabled) · [PHP docs](/api/php)
+- Public status: **[status.autlantic.com](https://status.autlantic.com)** live (API, portal, docs probes; `/api/status` and `/healthz`) · [Status](/resources/status)
+- Merchant portal: optional **Google OIDC** sign-in (`AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`) with Google Identity-compliant button
+- Docs: [SOC 2 readiness](/guide/soc2-readiness) outline (not a certification claim)
 - Android: [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** on Maven Central · [Android docs](/api/android)
 - Java: [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1** on Maven Central · [Java docs](/api/java)
 - Enterprise readiness (Phases 1–6, brief): hosted API key rotation, audit log, and durable webhook retries; API versioning, rate limits, and idempotency docs; merchant test clock; reconciliation CSV exports and customer self-serve portal on hosting; [Trust center](/guide/trust), [Status](/resources/status), and [DPA outline template](/resources/dpa-template) (pending counsel, not legal advice). No SOC 2 claim.
@@ -11,7 +15,6 @@
 - SDK READMEs and API docs aligned to shared Autlantic branding standard (`sdks/README.STANDARD.md`)
 - Guide: [Device smoke test](/guide/device-smoke) (Test-key phone / simulator walkthrough)
 - Flutter / RN / .NET: registry publish steps in `sdks/PUBLISHING.md`
-- PHP: mirror [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php) `v0.1.0` for Packagist/VCS install · [PHP docs](/api/php)
 - Java: `com.autlantic:billing` **0.1.0** under `sdks/java` · [Java docs](/api/java)
 - Example: `examples/mobile-checkout/java` (port 3059), `examples/mobile-checkout/dotnet` (port 3060)
 
