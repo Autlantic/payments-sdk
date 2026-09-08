@@ -2,15 +2,22 @@
 
 Official mobile SDK. Opens hosted Autlantic checkout URLs via Chrome Custom Tabs. **No API keys.**
 
+Coordinates (after Maven Central publish): `com.autlantic:checkout:0.1.0`
+
+```kotlin
+implementation("com.autlantic:checkout:0.1.0")
+```
+
+Until Central is live, include the local module from this repo (`sdks/android/autlantic-checkout`).
+
 ```kotlin
 import com.autlantic.checkout.AutlanticCheckout
 
-// checkoutUrl comes from your backend (never call Billing /v1 with a secret from the app)
 AutlanticCheckout.present(context, checkoutUrl)
 ```
 
-Handle `successUrl` / `cancelUrl` deep links in your app, then poll **your** API for access after the webhook.
+## Publish (maintainers)
 
-Module: `sdks/android/autlantic-checkout`. Publish to Maven when ready.
+See [`../PUBLISHING.md`](../PUBLISHING.md). Tag `sdks/android/v0.1.0` after Maven Central namespace + GitHub secrets are set.
 
-Docs: [Mobile apps](https://docs.autlantic.com/guide/mobile)
+Docs: [Android Checkout](https://docs.autlantic.com/api/android) · [Mobile apps](https://docs.autlantic.com/guide/mobile)

@@ -2,30 +2,27 @@
 
 Official **mobile** Checkout presenter. Opens hosted Autlantic checkout URLs via Chrome Custom Tabs. **No API keys** in the app.
 
-Source: [`sdks/android`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/android). **Maven Central** publish is pending (`com.autlantic` namespace verification). Until then, include the module from Git / as a composite build.
+Source: [`sdks/android`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/android).
 
-## Install (until Maven Central)
+**Maven Central:** publish pipeline is ready (`com.autlantic:checkout`). First release lands after the `com.autlantic` namespace is verified and GitHub Actions secrets are set (see [`sdks/PUBLISHING.md`](https://github.com/Autlantic/payments-sdk/blob/main/sdks/PUBLISHING.md)).
 
-**Option A. Local module**
+## Install
 
-1. Clone [payments-sdk](https://github.com/Autlantic/payments-sdk)
-2. In `settings.gradle.kts`:
+**After Maven Central release:**
+
+```kotlin
+implementation("com.autlantic:checkout:0.1.0")
+```
+
+**Until then (local module):**
 
 ```kotlin
 include(":autlantic-checkout")
 project(":autlantic-checkout").projectDir =
   file("/path/to/payments-sdk/sdks/android/autlantic-checkout")
-```
 
-3. Dependency:
-
-```kotlin
 implementation(project(":autlantic-checkout"))
 ```
-
-**Option B.** Copy the `autlantic-checkout` module into your app repo.
-
-After Maven Central ships, coordinates will be `com.autlantic:checkout:<version>`.
 
 ## API
 

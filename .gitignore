@@ -14,5 +14,7 @@ coverage
 *.tgz
 sdks/python/.venv/
 sdks/python/.pytest_cache/
+sdks/android/.gradle/
+sdks/android/**/build/
 **/__pycache__/
 *.pyc
