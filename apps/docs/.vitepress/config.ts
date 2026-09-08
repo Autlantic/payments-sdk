@@ -60,6 +60,7 @@ export default withMermaid(
             { text: "Sandbox & testing", link: "/guide/sandbox" },
             { text: "Webhooks", link: "/guide/webhooks" },
             { text: "Local webhooks", link: "/guide/local-webhooks" },
+            { text: "Reconciliation", link: "/guide/reconciliation" },
             { text: "Security", link: "/guide/security" },
             { text: "Trust center", link: "/guide/trust" },
             { text: "FAQ", link: "/guide/faq" },
