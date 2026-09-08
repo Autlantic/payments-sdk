@@ -128,6 +128,18 @@ Consumers:
 implementation("com.autlantic:checkout:0.1.0")
 ```
 
+## Consumer apps (after publish)
+
+Libraries ship from **`main` + tags** only. Hosted Autlantic apps deploy from **`production`** (and smoke on **`staging`**).
+
+A registry publish is **not** live until pins are promoted:
+
+1. Bump pin on app `main` (platform and/or [billing-hosting](https://github.com/Autlantic/billing-hosting)).
+2. Promote `main` → `staging` → `production` (fast-forward or cherry-pick). See each app’s `DEPLOY.md`.
+3. Only then call the bump shipped.
+
+Do not add a `production` branch to this SDK repo.
+
 ## Suggested finish line
 
 1. You: confirm `com.autlantic` **Verified** + add Maven/GPG secrets; submit **billing-php** on Packagist; add `BILLING_PHP_TOKEN`
