@@ -8,11 +8,20 @@
       name="description"
       content="Live operational status for Autlantic Billing API, merchant portal, and docs."
     />
-    <link rel="icon" href="https://docs.autlantic.com/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="icon"
+      href="https://portal.autlantic.com/brand/autlantic-icon-32-dark.png"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="icon"
+      href="https://portal.autlantic.com/brand/autlantic-icon-32-light.png"
+      media="(prefers-color-scheme: dark)"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -61,6 +70,7 @@
         margin: 0;
         min-height: 100vh;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        /* Match portal/platform: Inter body + Instrument Sans display */
         color: var(--color-ink);
         background: var(--color-surface);
         -webkit-font-smoothing: antialiased;
@@ -143,9 +153,10 @@
       }
 
       .brand img {
-        height: 2.25rem;
-        width: auto;
         display: block;
+        height: 2.25rem;
+        width: 105px;
+        transform: translateZ(0);
       }
 
       .brand .mark-dark {
@@ -265,8 +276,8 @@
 
       h1 {
         margin: 0;
-        font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 600;
+        font-family: "Instrument Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+        font-weight: 700;
         font-size: clamp(2.4rem, 5vw, 3.4rem);
         letter-spacing: -0.03em;
         line-height: 1.05;
@@ -339,9 +350,9 @@
       }
 
       .overall-state {
-        font-family: "Instrument Serif", Georgia, serif;
+        font-family: "Instrument Sans", Inter, ui-sans-serif, system-ui, sans-serif;
         font-size: clamp(1.5rem, 3vw, 1.85rem);
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: -0.02em;
         color: var(--color-ink);
         transition: color 0.35s ease, opacity 0.25s ease;
@@ -646,16 +657,18 @@
           <a class="brand" href="https://autlantic.com" aria-label="Autlantic">
             <img
               class="mark-light"
-              src="https://portal.autlantic.com/brand/autlantic-wordmark.svg"
+              src="https://portal.autlantic.com/brand/autlantic-wordmark-nav-header-light.png"
+              srcset="https://portal.autlantic.com/brand/autlantic-wordmark-nav-header-light.png 3x"
               alt=""
-              width="140"
+              width="105"
               height="36"
             />
             <img
               class="mark-dark"
-              src="https://portal.autlantic.com/brand/autlantic-wordmark-light.svg"
+              src="https://portal.autlantic.com/brand/autlantic-wordmark-nav-header-dark.png"
+              srcset="https://portal.autlantic.com/brand/autlantic-wordmark-nav-header-dark.png 3x"
               alt=""
-              width="140"
+              width="105"
               height="36"
             />
           </a>
