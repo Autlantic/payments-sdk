@@ -78,6 +78,7 @@ export default withMermaid(
             { text: "Billing Terms (portal)", link: "https://portal.autlantic.com/terms" },
             { text: "Non-custodial", link: "https://autlantic.com/non-custodial" },
             { text: "Security (product)", link: "https://autlantic.com/security" },
+            { text: "DPA outline (template)", link: "/resources/dpa-template" },
           ],
         },
         {
@@ -103,6 +104,7 @@ export default withMermaid(
           items: [
             { text: "Changelog", link: "/resources/changelog" },
             { text: "Status", link: "/resources/status" },
+            { text: "DPA outline (template)", link: "/resources/dpa-template" },
             { text: "Deploy on Railway", link: "/resources/deploy-railway" },
             { text: "Postman collection", link: "/resources/postman" },
           ],

@@ -4,7 +4,7 @@
 
 **Parties (placeholders):** Autlantic Limited (UK) as processor / service provider; Merchant as controller / customer.
 
-Contact for a negotiated DPA: support@autlantic.com
+Contact for a negotiated DPA: [support@autlantic.com](mailto:support@autlantic.com)
 
 ---
 
@@ -34,11 +34,11 @@ Process only as needed to provide the service, comply with law, and as documente
 
 ## 5. Security
 
-Technical and organizational measures appropriate to the service (access control, secrets handling, transport encryption, webhook signing). Integrator obligations remain as documented in the Security guide and SECURITY.md.
+Technical and organizational measures appropriate to the service (access control, secrets handling, transport encryption, webhook signing). Integrator obligations remain as documented in the [Security guide](/guide/security) and repository `SECURITY.md`.
 
 ## 6. Subprocessors
 
-Use of infrastructure subprocessors (for example hosting) as disclosed on the Trust center. Notice / objection mechanics to be agreed in the final DPA.
+Use of infrastructure subprocessors (for example hosting) as disclosed on the [Trust center](/guide/trust). Notice / objection mechanics to be agreed in the final DPA.
 
 ## 7. International transfers
 
@@ -54,8 +54,8 @@ Reasonable assistance with data subject requests, security incidents, and audits
 
 ## 10. Liability and precedence
 
-Commercial Terms, Privacy Policy, and the signed DPA control. This markdown file has no contractual effect.
+Commercial Terms, Privacy Policy, and the signed DPA control. This page has no contractual effect.
 
 ---
 
-To request a counsel-reviewed DPA, email support@autlantic.com with your legal entity name and jurisdiction.
+To request a counsel-reviewed DPA, email [support@autlantic.com](mailto:support@autlantic.com) with your legal entity name and jurisdiction.
