@@ -36,9 +36,33 @@ git push origin sdks/php/v0.1.1
 # workflow syncs billing-php + tag v0.1.1
 ```
 
-## Java (Maven Central later)
+## Java (Maven Central)
 
-Library lives in `sdks/java` (`com.autlantic:billing`). Same `com.autlantic` namespace as Android Checkout — publish after namespace Verified + GPG/Maven secrets (see Android section). Until then, use Gradle `includeBuild` / project dependency (see example `examples/mobile-checkout/java`).
+Gradle + CI are wired under `sdks/java` and `.github/workflows/publish-java.yml` (same Maven/GPG secrets as Android). Do **not** tag until secrets + `com.autlantic` namespace are ready.
+
+Library: `com.autlantic:billing`. Until Central, use Gradle `includeBuild` / project dependency (see example `examples/mobile-checkout/java`).
+
+### Local publish (when secrets exist)
+
+```bash
+cd sdks/java
+export ORG_GRADLE_PROJECT_mavenCentralUsername=...
+export ORG_GRADLE_PROJECT_mavenCentralPassword=...
+export ORG_GRADLE_PROJECT_signingInMemoryKey="$(cat secret.asc)"
+export ORG_GRADLE_PROJECT_signingInMemoryKeyId=...
+export ORG_GRADLE_PROJECT_signingInMemoryKeyPassword=...
+./gradlew publishAndReleaseToMavenCentral --no-daemon
+```
+
+### Publish via tag (after secrets + verified namespace)
+
+```bash
+# bump VERSION_NAME in sdks/java/gradle.properties (+ Version.java) if needed
+git tag -a sdks/java/v0.1.0 -m "com.autlantic:billing 0.1.0"
+git push origin sdks/java/v0.1.0
+```
+
+Actions runs `./gradlew publishAndReleaseToMavenCentral`. Consumers: `implementation("com.autlantic:billing:0.1.0")`.
 
 ## .NET (NuGet)
 
@@ -142,9 +166,18 @@ Libraries still **publish packages** from **`main` + tags**. Hosted Autlantic ap
 
 Do not point Railway at `main`.
 
-## Suggested finish line
+## Phase 0 checklist (ops)
 
-1. You: confirm `com.autlantic` **Verified** + add Maven/GPG secrets; submit **billing-php** on Packagist; add `BILLING_PHP_TOKEN`
-2. Agent: tag Android + Java Maven releases; confirm Central sync
-3. Agent: update docs to “Available on Maven Central” / Packagist
-4. Done: NuGet (`Autlantic.Billing`), pub.dev (`autlantic_checkout`), npm (`@autlantic/checkout`) **0.1.0**
+| Item | Status |
+|------|--------|
+| Packagist submit | **You:** [Submit package](https://packagist.org/packages/submit) → `https://github.com/Autlantic/billing-php` → enable GitHub sync |
+| `BILLING_PHP_TOKEN` | **You:** PAT with `contents:write` on `billing-php` (for mirror sync on `sdks/php/v*` tags) |
+| Maven Central namespace | **You:** verify **`com.autlantic`** on [central.sonatype.com](https://central.sonatype.com/) |
+| Maven/GPG GitHub secrets | **Still required:** `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `GPG_SIGNING_KEY`, `GPG_SIGNING_KEY_ID`, `GPG_SIGNING_PASSWORD` (shared by Android + Java) |
+| Android workflow | Ready: `.github/workflows/publish-android.yml` on `sdks/android/v*` |
+| Java workflow | **Added:** `.github/workflows/publish-java.yml` on `sdks/java/v*` |
+| Tag / publish Android or Java | **Do not** until secrets + namespace Verified |
+
+After secrets: tag Android + Java; confirm Central sync; update docs to “Available on Maven Central” / Packagist.
+
+Already published: NuGet (`Autlantic.Billing`), pub.dev (`autlantic_checkout`), npm (`@autlantic/checkout`) **0.1.0**.

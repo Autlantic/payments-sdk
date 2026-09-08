@@ -69,7 +69,16 @@ Test events are delivered only to Test endpoints. Live events only to Live endpo
 
 ## Delivery in the portal
 
-Under **Webhooks**, each endpoint shows recent deliveries. Failed attempts are highlighted; use **Retry now** to redeliver. Automatic retries still run in the background. Keep Test and Live endpoints separate so secrets match the API key in that deploy.
+Under **Webhooks**, each endpoint shows recent deliveries. Failed attempts are highlighted; use **Retry now** to redeliver. The billing worker also runs **durable automatic retries** for failed deliveries (backoff in the background). Keep Test and Live endpoints separate so secrets match the API key in that deploy.
+
+## API key rotation and audit
+
+In the merchant portal:
+
+- **API keys → Rotate** issues a new secret and retires the old key. Update `AUTLANTIC_BILLING_API_KEY` in your deploy, then revoke or wait out any overlap you need.
+- **Audit** lists recent portal actions (key create/rotate/revoke, webhook endpoint changes, manual delivery retries) so operators can see who changed what.
+
+Webhook signing secrets are per endpoint; rotating an API key does not change webhook secrets. Rotate endpoint secrets from the Webhooks page when needed, then update `AUTLANTIC_BILLING_WEBHOOK_SECRET`.
 
 ## Env
 
