@@ -23,15 +23,12 @@ Checkout presenter only (`@autlantic/checkout`). Your backend creates the sessio
 
 ## Install
 
-Until npm:
-
 ```bash
-npm install github:Autlantic/payments-sdk#sdks/react-native/v0.1.0
-# or: npm install /path/to/payments-sdk/sdks/react-native
+npm install @autlantic/checkout
 cd ios && pod install
 ```
 
-When published: `npm install @autlantic/checkout`. Autolinking picks up Android + the CocoaPods podspec. Requires a custom native build (not Expo Go).
+Autolinking picks up Android + the CocoaPods podspec. Requires a custom native build (not Expo Go). From source (monorepo / git): `npm install /path/to/payments-sdk/sdks/react-native` or `npm install github:Autlantic/payments-sdk#sdks/react-native/v0.1.0`.
 
 ## Quick start
 

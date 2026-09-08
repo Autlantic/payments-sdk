@@ -2,16 +2,15 @@
 
 ## Unreleased
 
+- .NET: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** on NuGet · [.NET docs](/api/dotnet)
+- Flutter: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** on pub.dev · [Flutter docs](/api/flutter)
+- React Native: [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** on npm · [React Native docs](/api/react-native)
 - SDK READMEs and API docs aligned to shared Autlantic branding standard (`sdks/README.STANDARD.md`)
 - Guide: [Device smoke test](/guide/device-smoke) (Test-key phone / simulator walkthrough)
-- Flutter / RN: pub.dev + npm publish metadata and maintainer steps in `sdks/PUBLISHING.md`
+- Flutter / RN / .NET: registry publish steps in `sdks/PUBLISHING.md`
 - PHP: mirror [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php) `v0.1.0` for Packagist/VCS install · [PHP docs](/api/php)
 - Java: `com.autlantic:billing` **0.1.0** under `sdks/java` · [Java docs](/api/java)
-- Example: `examples/mobile-checkout/java` (port 3059)
-- .NET: `Autlantic.Billing` **0.1.0** under `sdks/dotnet` · [.NET docs](/api/dotnet)
-- Example: `examples/mobile-checkout/dotnet` (port 3060)
-- Flutter: `autlantic_checkout` **0.1.0** under `sdks/flutter` · [Flutter docs](/api/flutter)
-- React Native: `@autlantic/checkout` **0.1.0** under `sdks/react-native` · [React Native docs](/api/react-native)
+- Example: `examples/mobile-checkout/java` (port 3059), `examples/mobile-checkout/dotnet` (port 3060)
 
 ## 0.3.12 - Multi-language and mobile SDKs
 

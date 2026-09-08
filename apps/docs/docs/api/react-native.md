@@ -15,7 +15,6 @@ Source: [`sdks/react-native`](https://github.com/Autlantic/payments-sdk/tree/mai
 
 ```bash
 npm install @autlantic/checkout
-# until npm: npm install /path/to/payments-sdk/sdks/react-native
 cd ios && pod install
 ```
 

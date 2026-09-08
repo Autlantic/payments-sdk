@@ -31,11 +31,11 @@ README layout for every package: **[README.STANDARD.md](./README.STANDARD.md)**.
 | **Go** | Available | [`sdks/go`](./go) tag `sdks/go/v0.1.0` | Server only |
 | **PHP** | Available (Composer) | [`autlantic/billing`](./php) · [billing-php](https://github.com/Autlantic/billing-php) · Packagist pending | Server only |
 | **Java** | Available (source) | [`sdks/java`](./java) (`com.autlantic:billing`; Maven Central later) | Server only |
-| **.NET** | Available (source) | [`sdks/dotnet`](./dotnet) (`Autlantic.Billing`; NuGet later) | Server only |
+| **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** | Server only |
 | **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](./ios) tag `sdks/ios/v0.1.0` | **None** |
 | **Android (Kotlin)** | Source available | [`sdks/android`](./android) (Maven Central pending) | **None** |
-| **Flutter** | Available (alpha/source) | [`autlantic_checkout`](./flutter) **0.1.0** | **None** |
-| **React Native** | Available (alpha/source) | [`@autlantic/checkout`](./react-native) **0.1.0** | **None** |
+| **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
+| **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
 
 ## Who installs what
 

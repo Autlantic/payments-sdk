@@ -5,15 +5,15 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 
 **USDC on Base** · secrets server-only.
 
-Source: [`sdks/dotnet`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/dotnet). Tag `sdks/dotnet/v0.1.0` when publishing. NuGet package id: `Autlantic.Billing`.
+Source: [`sdks/dotnet`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/dotnet). Package: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** on NuGet.
 
-Until NuGet is published, use a project reference:
+## Install
 
-```xml
-<ItemGroup>
-  <ProjectReference Include="/path/to/payments-sdk/sdks/dotnet/src/Autlantic.Billing/Autlantic.Billing.csproj" />
-</ItemGroup>
+```bash
+dotnet add package Autlantic.Billing --version 0.1.0
 ```
+
+Requires **.NET 8+**.
 
 ## Quick start
 

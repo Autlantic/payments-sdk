@@ -40,57 +40,47 @@ git push origin sdks/php/v0.1.1
 
 Library lives in `sdks/java` (`com.autlantic:billing`). Same `com.autlantic` namespace as Android Checkout — publish after namespace Verified + GPG/Maven secrets (see Android section). Until then, use Gradle `includeBuild` / project dependency (see example `examples/mobile-checkout/java`).
 
-## .NET (NuGet later)
+## .NET (NuGet)
 
-Library lives in `sdks/dotnet` (`Autlantic.Billing` **0.1.0**, `net8.0`). Until nuget.org publish:
+Package: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** published (`sdks/dotnet`, `net8.0`).
 
 ```bash
-cd sdks/dotnet && dotnet pack -c Release
-# or ProjectReference from examples/mobile-checkout/dotnet
+cd sdks/dotnet
+dotnet pack src/Autlantic.Billing/Autlantic.Billing.csproj -c Release -o ./nupkg
+dotnet nuget push ./nupkg/Autlantic.Billing.*.nupkg \
+  --api-key "$NUGET_API_KEY" \
+  --source https://api.nuget.org/v3/index.json
 ```
 
-Suggested publish flow: bump `Version` in `Autlantic.Billing.csproj` + `Version.SdkVersion`, tag `sdks/dotnet/v*`, push package with `dotnet nuget push` (API key / GitHub Actions secret later).
+Republish: bump `Version` in `Autlantic.Billing.csproj`, pack, push. Optional later: GitHub Actions + trusted publishing / `NUGET_API_KEY` secret + tag `sdks/dotnet/v*`.
+
+Install: `dotnet add package Autlantic.Billing --version 0.1.0`.
 
 ## Flutter (pub.dev)
 
-Package: `autlantic_checkout` in `sdks/flutter` (tag `sdks/flutter/v0.1.0`).
+Package: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** published (`sdks/flutter`).
 
 ```bash
 cd sdks/flutter
 flutter pub publish --dry-run
-# when ready (logged into pub.dev as Autlantic publisher):
-flutter pub publish
+flutter pub publish   # bump version in pubspec.yaml first for republish
 ```
 
-Until published, path/git dependency:
+Optional: transfer package to verified publisher `autlantic.com` on pub.dev Admin.
 
-```yaml
-dependencies:
-  autlantic_checkout:
-    git:
-      url: https://github.com/Autlantic/payments-sdk.git
-      path: sdks/flutter
-      ref: sdks/flutter/v0.1.0
-```
+Install: `autlantic_checkout: ^0.1.0`.
 
 ## React Native (npm)
 
-Package: `@autlantic/checkout` in `sdks/react-native` (tag `sdks/react-native/v0.1.0`).
+Package: [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** published (`sdks/react-native`, tag `sdks/react-native/v0.1.0`).
 
 ```bash
 cd sdks/react-native
 npm run typescript
-npm publish --access public   # requires npm org @autlantic
+npm publish --access public   # requires npm org @autlantic; bump version first for republish
 ```
 
-Until published:
-
-```bash
-npm install github:Autlantic/payments-sdk#sdks/react-native/v0.1.0
-# or path: npm install ../payments-sdk/sdks/react-native
-```
-
-Metro may need `watchFolders` / `nodeModulesPaths` for monorepo path installs.
+Install: `npm install @autlantic/checkout`. From source: `npm install github:Autlantic/payments-sdk#sdks/react-native/v0.1.0` or path install. Metro may need `watchFolders` / `nodeModulesPaths` for monorepo path installs.
 
 ## Android (Maven Central)
 
@@ -140,6 +130,7 @@ implementation("com.autlantic:checkout:0.1.0")
 
 ## Suggested finish line
 
-1. You: confirm `com.autlantic` **Verified** + add Maven/GPG secrets; submit **billing-php** on Packagist; add `BILLING_PHP_TOKEN`; publish Flutter (pub.dev) / RN (npm) / .NET (NuGet) when ready
+1. You: confirm `com.autlantic` **Verified** + add Maven/GPG secrets; submit **billing-php** on Packagist; add `BILLING_PHP_TOKEN`
 2. Agent: tag Android + Java Maven releases; confirm Central sync
-3. Agent: update docs to “Available on Maven Central” / Packagist / pub.dev / npm
+3. Agent: update docs to “Available on Maven Central” / Packagist
+4. Done: NuGet (`Autlantic.Billing`), pub.dev (`autlantic_checkout`), npm (`@autlantic/checkout`) **0.1.0**

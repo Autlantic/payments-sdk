@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://www.nuget.org/packages/Autlantic.Billing"><img src="https://img.shields.io/nuget/v/Autlantic.Billing?style=flat-square&color=5672cd" alt="NuGet" /></a>
   <a href="https://docs.autlantic.com/api/dotnet"><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
   <a href="https://github.com/Autlantic/payments-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
   <a href="https://autlantic.com"><img src="https://img.shields.io/badge/product-autlantic.com-111827?style=flat-square" alt="Autlantic" /></a>
@@ -23,23 +24,11 @@ Same Billing API as Node — create subscriptions, one-time payments, and sharea
 
 ## Install
 
-**Package:** `Autlantic.Billing` **0.1.0** (NuGet when published).
-
-Until NuGet is published, reference the project from this repo:
-
-```xml
-<ItemGroup>
-  <ProjectReference Include="..\..\sdks\dotnet\src\Autlantic.Billing\Autlantic.Billing.csproj" />
-</ItemGroup>
-```
-
-Or pack locally:
-
 ```bash
-cd sdks/dotnet && dotnet pack -c Release
+dotnet add package Autlantic.Billing --version 0.1.0
 ```
 
-Requires **.NET 8+**.
+Requires **.NET 8+**. Package: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0**.
 
 ## Quick start
 

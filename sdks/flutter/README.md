@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://pub.dev/packages/autlantic_checkout"><img src="https://img.shields.io/pub/v/autlantic_checkout?style=flat-square&color=5672cd" alt="pub.dev" /></a>
   <a href="https://docs.autlantic.com/api/flutter"><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
   <a href="https://github.com/Autlantic/payments-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
   <a href="https://autlantic.com"><img src="https://img.shields.io/badge/product-autlantic.com-111827?style=flat-square" alt="Autlantic" /></a>
@@ -23,18 +24,16 @@ Checkout presenter only (`autlantic_checkout`). Your backend creates the session
 
 ## Install
 
-Until pub.dev:
-
 ```yaml
 dependencies:
-  autlantic_checkout:
-    git:
-      url: https://github.com/Autlantic/payments-sdk.git
-      path: sdks/flutter
-      ref: sdks/flutter/v0.1.0
+  autlantic_checkout: ^0.1.0
 ```
 
-Or a local path to `sdks/flutter`.
+```bash
+flutter pub get
+```
+
+Package: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0**.
 
 ## Quick start
 

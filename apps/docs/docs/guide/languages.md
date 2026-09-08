@@ -12,11 +12,11 @@ Autlantic Billing is **one hosted API**. Official SDKs are thin clients around t
 | **Go** | Available | [`github.com/Autlantic/payments-sdk/sdks/go`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/go) tag `sdks/go/v0.1.0` | Server only |
 | **PHP** | Available (Composer) | [`autlantic/billing`](https://github.com/Autlantic/billing-php) · Packagist pending submit | Server only |
 | **Java** | Available (source) | [`sdks/java`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/java) (`com.autlantic:billing`; Maven Central with Android namespace) | Server only |
-| **.NET** | Available (source) | [`sdks/dotnet`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/dotnet) (`Autlantic.Billing`; NuGet later) | Server only |
+| **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** | Server only |
 | **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/ios) tag `sdks/ios/v0.1.0` | **None** |
 | **Android (Kotlin)** | Source available | [`sdks/android`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/android) (Maven Central pending namespace) | **None** |
-| **Flutter** | Available (alpha/source) | [`autlantic_checkout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/flutter) **0.1.0** | **None** |
-| **React Native** | Available (alpha/source) | [`@autlantic/checkout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/react-native) **0.1.0** | **None** |
+| **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
+| **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
 
 ## Who installs what
 

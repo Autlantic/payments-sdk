@@ -17,8 +17,13 @@
     <RepositoryUrl>https://github.com/Autlantic/payments-sdk</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>autlantic;billing;payments;usdc;webhooks</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>
