@@ -1,13 +1,15 @@
 # Changelog
 
-## Unreleased / 0.3.12 - Multi-language and mobile SDK contract
+## 0.3.12 - Multi-language and mobile SDKs
 
-- `@autlantic/payments-recurring` **0.3.12**: export `AUTLANTIC_API_VERSION` (`2026-01-01`); send `Autlantic-Version` on hosted requests; `successUrl` / `cancelUrl` on create subscription, payment, and payment link
-- Docs: [Languages and SDKs](/guide/languages), [Mobile apps](/guide/mobile), [API versioning](/guide/api-versioning), [Python](/api/python), [Go](/api/go)
-- OpenAPI: public checkout routes aligned with live billing-api; `Autlantic-Version` parameter; Error `requestId`
-- Alpha server SDKs: `sdks/python`, `sdks/go` (webhook verify, retries, hosted `/v1`)
-- Mobile Checkout scaffolds: `sdks/ios`, `sdks/android`
-- Example merchant backend: `examples/mobile-checkout` (`pnpm example:mobile`)
+- `@autlantic/payments-recurring` **0.3.12** on npm: `AUTLANTIC_API_VERSION` (`2026-01-01`), `Autlantic-Version` header, `successUrl` / `cancelUrl` on create subscription, payment, and payment link
+- Hosted API live pin: `Autlantic-Version: 2026-01-01` on `billing.autlantic.com`
+- Python: [`autlantic-billing`](https://pypi.org/project/autlantic-billing/) **0.1.0** on PyPI
+- Go: module tag `sdks/go/v0.1.0`
+- iOS Checkout (SPM): tag `sdks/ios/v0.1.0` · [iOS docs](/api/ios)
+- Android Checkout: source in `sdks/android` · [Android docs](/api/android) (Maven Central pending)
+- Docs: [Languages](/guide/languages), [Mobile](/guide/mobile), [API versioning](/guide/api-versioning), [Python](/api/python), [Go](/api/go)
+- Example: `examples/mobile-checkout` (`pnpm example:mobile`)
 
 ## 0.3.11 - Fix npm dependency pins
 

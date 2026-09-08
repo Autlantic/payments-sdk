@@ -4,27 +4,27 @@ layout: home
 hero:
   name: Autlantic Billing
   text: USDC on Base
-  tagline: TypeScript SDK and hosted API for USDC subscriptions, one-time payments, and shareable payment links. Non-custodial settlement to your EVM wallet. Test and Live keys.
+  tagline: TypeScript, Python, and Go server SDKs plus iOS/Android Checkout. Hosted API for USDC subscriptions, one-time payments, and payment links. Non-custodial settlement to your EVM wallet.
   actions:
     - theme: brand
       text: Get started
       link: /guide/getting-started
     - theme: alt
-      text: npm package
-      link: https://www.npmjs.com/package/@autlantic/payments-recurring
+      text: Languages
+      link: /guide/languages
     - theme: alt
       text: Autlantic product
       link: https://autlantic.com
 
 features:
-  - title: npm SDK
-    details: "@autlantic/payments-recurring: subscriptions, one-time payments, payment links, refunds, and webhooks. TypeScript, Node 20+."
+  - title: Server SDKs
+    details: "Node (npm), Python (PyPI), and Go. Subscriptions, payment links, webhooks. Same hosted Billing API."
+  - title: Mobile Checkout
+    details: "iOS (SPM) and Android present hosted checkoutUrl. No API keys in the app."
+  - title: Hosted API
+    details: "REST with API key for any stack. OpenAPI, Autlantic-Version pin, Test and Live keys."
   - title: Payment links
     details: "Fixed-amount shareable URL and QR. Payer opens hosted checkout; USDC settles to your wallet."
-  - title: Hosted API
-    details: "REST with API key when you do not want Node in your stack. Same billing engine as the SDK."
-  - title: Test and Live
-    details: "abk_test_ keys on Base Sepolia, abk_live_ keys on Base mainnet. Same Test / Live split as the merchant portal."
 ---
 
 ## Ways to integrate

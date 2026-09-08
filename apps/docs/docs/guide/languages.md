@@ -7,11 +7,11 @@ Autlantic Billing is **one hosted API**. Official SDKs are thin clients around t
 | Surface | Status | Package / artifact | Secrets |
 |---------|--------|--------------------|---------|
 | **Hosted HTTP API** | Available | [OpenAPI](/api/openapi) · `https://billing.autlantic.com` | Server API key |
-| **Node.js / TypeScript** | Available (reference) | [`@autlantic/payments-recurring`](https://www.npmjs.com/package/@autlantic/payments-recurring) | Server only |
-| **Python** | Alpha (in repo) | `sdks/python` → `autlantic-billing` (PyPI when published) | Server only |
-| **Go** | Alpha (in repo) | `sdks/go` (`github.com/Autlantic/payments-sdk/sdks/go`) | Server only |
-| **iOS (Swift)** | Alpha (in repo) | `sdks/ios` (`AutlanticCheckout` SPM) | **None** (opens `checkoutUrl`) |
-| **Android (Kotlin)** | Alpha (in repo) | `sdks/android` (`com.autlantic.checkout`) | **None** (opens `checkoutUrl`) |
+| **Node.js / TypeScript** | Available | [`@autlantic/payments-recurring`](https://www.npmjs.com/package/@autlantic/payments-recurring) **0.3.12** | Server only |
+| **Python** | Available | [`autlantic-billing`](https://pypi.org/project/autlantic-billing/) **0.1.0** on PyPI | Server only |
+| **Go** | Available | [`github.com/Autlantic/payments-sdk/sdks/go`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/go) tag `sdks/go/v0.1.0` | Server only |
+| **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/ios) tag `sdks/ios/v0.1.0` | **None** |
+| **Android (Kotlin)** | Source available | [`sdks/android`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/android) (Maven Central pending namespace) | **None** |
 | **PHP / Java / .NET** | Later | Official server clients | Server only |
 | **Flutter / React Native** | Later | Wrappers over native Checkout | **None** |
 
@@ -25,9 +25,16 @@ Merchant mobile   →  iOS / Android Checkout SDK  →  opens hosted checkoutUrl
 - **Server SDKs** create subscriptions, payments, and payment links; verify webhooks; unlock access.
 - **Mobile SDKs** only present the hosted checkout URL and handle return deep links. They never accept `abk_*` keys or webhook secrets.
 
-## Non-Node backends today
+## Docs by platform
 
-Until Python/Go packages publish, use the [Hosted HTTP API](/api/http) with your language’s HTTP client and the [OpenAPI](/api/openapi) spec. Webhook verification must match the [Webhooks](/guide/webhooks) signature rules.
+| Platform | Guide |
+|----------|--------|
+| Node | [Node.js SDK](/api/nodejs) |
+| Python | [Python SDK](/api/python) |
+| Go | [Go SDK](/api/go) |
+| iOS | [iOS Checkout](/api/ios) · [Mobile apps](/guide/mobile) |
+| Android | [Android Checkout](/api/android) · [Mobile apps](/guide/mobile) |
+| Any language | [Hosted HTTP API](/api/http) · [OpenAPI](/api/openapi) |
 
 ## Related
 

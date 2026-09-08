@@ -29,7 +29,7 @@ export default withMermaid(
       nav: [
         { text: "Guide", link: "/guide/getting-started", activeMatch: "/guide/" },
         { text: "API", link: "/api/nodejs", activeMatch: "/api/" },
-        { text: "npm", link: NPM_BILLING },
+        { text: "Languages", link: "/guide/languages" },
         { text: "GitHub", link: GITHUB },
         { text: "Product", link: PRODUCT },
       ],
@@ -80,6 +80,8 @@ export default withMermaid(
             { text: "Node.js SDK", link: "/api/nodejs" },
             { text: "Python SDK", link: "/api/python" },
             { text: "Go SDK", link: "/api/go" },
+            { text: "iOS Checkout", link: "/api/ios" },
+            { text: "Android Checkout", link: "/api/android" },
             { text: "TypeScript types", link: "/api/types" },
             { text: "Hosted HTTP API", link: "/api/http" },
             { text: "OpenAPI", link: "/api/openapi" },
