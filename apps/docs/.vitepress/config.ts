@@ -4,7 +4,6 @@ import { defineConfig } from "vitepress";
 import { withMermaid } from "vitepress-plugin-mermaid";
 import { DOCS_FOOTER_COPYRIGHT, DOCS_FOOTER_MESSAGE } from "./company-legal";
 
-const NPM_BILLING = "https://www.npmjs.com/package/@autlantic/payments-recurring";
 const PRODUCT = "https://autlantic.com";
 const GITHUB = "https://github.com/autlantic/payments-sdk";
 const docsRoot = path.dirname(fileURLToPath(import.meta.url));
