@@ -2,7 +2,7 @@
 
 This page is for **maintaining** [docs.autlantic.com](https://docs.autlantic.com) (Autlantic operators). Integrators do not need to deploy the docs site.
 
-The site is a static VitePress build served with `serve`. Branch rules: **[DEPLOY.md](/resources/deploy-railway)** is mirrored in repo root [`DEPLOY.md`](https://github.com/Autlantic/payments-sdk/blob/main/DEPLOY.md) — Railway watches **`production`**, not `main`.
+The site is a static VitePress build served with `serve`. Branch rules: repo root [`DEPLOY.md`](https://github.com/Autlantic/payments-sdk/blob/main/DEPLOY.md) — Railway watches **`production`**, not `main`.
 
 ## 1. Railway service settings
 
