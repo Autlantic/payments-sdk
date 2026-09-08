@@ -5,6 +5,8 @@
 - PHP: mirror [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php) `v0.1.0` for Packagist/VCS install · [PHP docs](/api/php)
 - Java: `com.autlantic:billing` **0.1.0** under `sdks/java` · [Java docs](/api/java)
 - Example: `examples/mobile-checkout/java` (port 3059)
+- .NET: `Autlantic.Billing` **0.1.0** under `sdks/dotnet` · [.NET docs](/api/dotnet)
+- Example: `examples/mobile-checkout/dotnet` (port 3060)
 
 ## 0.3.12 - Multi-language and mobile SDKs
 

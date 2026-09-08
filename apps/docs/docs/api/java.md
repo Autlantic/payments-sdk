@@ -77,6 +77,7 @@ Sample merchant backend: [`examples/mobile-checkout/java`](https://github.com/Au
 ## Related
 
 - [PHP SDK](/api/php)
+- [.NET SDK](/api/dotnet)
 - [Python SDK](/api/python)
 - [Go SDK](/api/go)
 - [Node.js SDK](/api/nodejs)

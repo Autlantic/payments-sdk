@@ -7,7 +7,7 @@ Do not put `abk_test_*` / `abk_live_*` or webhook secrets in the mobile binary.
 ## Flow
 
 1. App asks **your** backend for a checkout session (subscription, one-time payment, or payment link).
-2. Backend calls Billing `POST /v1/*` ([Node](/api/nodejs) / [Python](/api/python) / [Go](/api/go) / [PHP](/api/php) / [Java](/api/java) / HTTP) and returns `checkoutUrl` (or payment link `url`) plus deep-link return URLs.
+2. Backend calls Billing `POST /v1/*` ([Node](/api/nodejs) / [Python](/api/python) / [Go](/api/go) / [PHP](/api/php) / [Java](/api/java) / [.NET](/api/dotnet) / HTTP) and returns `checkoutUrl` (or payment link `url`) plus deep-link return URLs.
 3. App opens that URL with the Autlantic Checkout SDK.
 4. Customer completes wallet UX on **hosted checkout** (WalletConnect on mobile).
 5. Checkout returns to your `successUrl` or `cancelUrl` (app deep link).
@@ -63,7 +63,7 @@ Openable apps (point at the sample backend):
 - iOS: [`ios-sample/CheckoutSample.xcodeproj`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/ios-sample)
 - Android: [`android-sample`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/android-sample) (`./gradlew :app:assembleDebug`)
 
-Alternate hosted backends: [Python](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/python) (3056), [Go](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/go) (3057), [PHP](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/php) (3058), [Java](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/java) (3059).
+Alternate hosted backends: [Python](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/python) (3056), [Go](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/go) (3057), [PHP](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/php) (3058), [Java](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/java) (3059), [.NET](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/dotnet) (3060).
 
 ## What the mobile app must never do
 

@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Autlantic.Billing</RootNamespace>
+    <AssemblyName>Autlantic.Billing</AssemblyName>
+    <PackageId>Autlantic.Billing</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Autlantic Limited</Authors>
+    <Company>Autlantic Limited</Company>
+    <Description>Official Autlantic Billing server SDK (hosted API + webhook verify)</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://docs.autlantic.com/api/dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Autlantic/payments-sdk</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>autlantic;billing;payments;usdc;webhooks</PackageTags>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+</Project>

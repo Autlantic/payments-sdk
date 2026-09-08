@@ -40,6 +40,17 @@ git push origin sdks/php/v0.1.1
 
 Library lives in `sdks/java` (`com.autlantic:billing`). Same `com.autlantic` namespace as Android Checkout — publish after namespace Verified + GPG/Maven secrets (see Android section). Until then, use Gradle `includeBuild` / project dependency (see example `examples/mobile-checkout/java`).
 
+## .NET (NuGet later)
+
+Library lives in `sdks/dotnet` (`Autlantic.Billing` **0.1.0**, `net8.0`). Until nuget.org publish:
+
+```bash
+cd sdks/dotnet && dotnet pack -c Release
+# or ProjectReference from examples/mobile-checkout/dotnet
+```
+
+Suggested publish flow: bump `Version` in `Autlantic.Billing.csproj` + `Version.SdkVersion`, tag `sdks/dotnet/v*`, push package with `dotnet nuget push` (API key / GitHub Actions secret later).
+
 ## Android (Maven Central)
 
 Gradle + CI are wired under `sdks/android` and `.github/workflows/publish-android.yml`.

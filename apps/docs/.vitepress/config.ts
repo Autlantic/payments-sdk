@@ -81,6 +81,7 @@ export default withMermaid(
             { text: "Go SDK", link: "/api/go" },
             { text: "PHP SDK", link: "/api/php" },
             { text: "Java SDK", link: "/api/java" },
+            { text: ".NET SDK", link: "/api/dotnet" },
             { text: "iOS Checkout", link: "/api/ios" },
             { text: "Android Checkout", link: "/api/android" },
             { text: "TypeScript types", link: "/api/types" },
