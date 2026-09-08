@@ -24,6 +24,16 @@ Server SDKs send `Autlantic-Version` on every hosted request and pin to a versio
 - Breaking changes require a **new dated version** and a deprecation window announced in the [changelog](/resources/changelog).
 - OpenAPI at [docs.autlantic.com/openapi.yaml](https://docs.autlantic.com/openapi.yaml) describes the current default version.
 
+## Deprecation policy
+
+When a dated API version is retired:
+
+1. **Notice.** Autlantic announces deprecation in the [changelog](/resources/changelog) with at least **90 days** before the version stops being accepted.
+2. **Migration.** Merchants and SDKs should pin (or upgrade) to a supported `Autlantic-Version` before the end of the window.
+3. **Unsupported requests.** After removal, sending a retired or unknown `Autlantic-Version` returns **HTTP 400** with a stable error body (for example `code: unsupported_api_version` when present). The request is not processed under a silent fallback version.
+
+During the notice window, both the retiring version and newer supported versions continue to work unless the changelog states otherwise.
+
 ## Related headers
 
 | Header | Role |
@@ -38,6 +48,8 @@ When contacting support, include `request_id`, merchant id, Test or Live, and `A
 
 ## Related
 
+- [Rate limits](/guide/rate-limits)
+- [Idempotency](/guide/idempotency)
 - [Hosted HTTP API](/api/http)
 - [OpenAPI](/api/openapi)
 - [Debugging](/guide/debugging)

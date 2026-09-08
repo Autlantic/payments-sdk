@@ -1,0 +1,28 @@
+# Lint the public OpenAPI spec on PRs and pushes to main.
+name: OpenAPI lint
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/docs/public/openapi.yaml"
+      - ".github/workflows/openapi-lint.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/docs/public/openapi.yaml"
+      - ".github/workflows/openapi-lint.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Lint OpenAPI
+        run: npx --yes @redocly/cli@1 lint apps/docs/public/openapi.yaml

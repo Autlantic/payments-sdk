@@ -780,8 +780,7 @@ components:
         name:
           type: string
         description:
-          type: string
-          nullable: true
+          type: [string, "null"]
         active:
           type: boolean
         prices:
@@ -837,15 +836,12 @@ components:
         amountUsdc:
           type: number
         failureCode:
-          type: string
-          nullable: true
+          type: [string, "null"]
         failureMessage:
-          type: string
-          nullable: true
+          type: [string, "null"]
         paidAt:
-          type: string
+          type: [string, "null"]
           format: date-time
-          nullable: true
 
     Payment:
       type: object
@@ -873,13 +869,11 @@ components:
         amountUsdc:
           type: number
         description:
-          type: string
-          nullable: true
+          type: [string, "null"]
         useCount:
           type: integer
         maxUses:
-          type: integer
-          nullable: true
+          type: [integer, "null"]
 
     CreateSubscriptionRequest:
       type: object
@@ -950,12 +944,10 @@ components:
         description:
           type: string
         maxUses:
-          type: integer
-          nullable: true
+          type: [integer, "null"]
         expiresAt:
-          type: string
+          type: [string, "null"]
           format: date-time
-          nullable: true
         successUrl:
           type: string
           format: uri

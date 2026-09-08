@@ -52,6 +52,8 @@ export default withMermaid(
             { text: "Payment links", link: "/guide/payment-links" },
             { text: "Lifecycle", link: "/guide/lifecycle" },
             { text: "API versioning", link: "/guide/api-versioning" },
+            { text: "Rate limits", link: "/guide/rate-limits" },
+            { text: "Idempotency", link: "/guide/idempotency" },
             { text: "Error codes", link: "/guide/errors" },
             { text: "Debugging", link: "/guide/debugging" },
             { text: "Retries", link: "/guide/retries" },
