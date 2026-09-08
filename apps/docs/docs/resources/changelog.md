@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## Docs - Registries, status, and trust
+
+Package versions unchanged (`payments-recurring@0.3.12`). Documents registry publishes, status, and portal/trust docs since 0.3.12:
 
 - PHP: [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.0** on Packagist (GitHub auto-update enabled) · [PHP docs](/api/php)
 - Public status: **[status.autlantic.com](https://status.autlantic.com)** live (API, portal, docs probes; `/api/status` and `/healthz`) · [Status](/resources/status)
