@@ -1,6 +1,6 @@
 # Hosted HTTP API
 
-Run `pnpm dev:billing-api` (default `:8788`) or deploy `apps/billing-api`.
+Production API: **`https://billing.autlantic.com`**. Use an official SDK or call `/v1` with your merchant API key.
 
 Authenticate with `x-autlantic-api-key` (or `Authorization: Bearer`). Mode follows the key:
 

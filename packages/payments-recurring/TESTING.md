@@ -17,99 +17,35 @@ const { subscription, invoice } = await billing.createSubscription({ ... });
 await billing.activateSubscription(subscription.id);
 ```
 
-## Billing API + worker (shared file store)
+## Hosted Test API
 
-Terminal 1:
-
-```bash
-export AUTLANTIC_BILLING_STORE_PATH=.autlantic/billing-store.json
-pnpm dev:billing-api
-```
-
-Terminal 2:
+Use a portal **Test** key against production hosting:
 
 ```bash
-export AUTLANTIC_BILLING_STORE_PATH=.autlantic/billing-store.json
-pnpm dev:billing-worker
+export AUTLANTIC_BILLING_API_KEY=abk_test_…
+export AUTLANTIC_BILLING_API_URL=https://billing.autlantic.com
 ```
 
-Create a subscription:
-
-```bash
-curl -s -X POST http://localhost:8788/v1/subscriptions \
-  -H "X-Autlantic-Api-Key: abk_test_local" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "merchantRef": "order_api_1",
-    "customerWallet": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
-    "payoutAddressEvm": "0x1111111111111111111111111111111111111111",
-    "amountUsdc": 20,
-    "interval": "month"
-  }'
+```ts
+const billing = AutlanticBilling.fromEnv();
 ```
 
-Open the returned `checkoutUrl` in a browser. Test key: **Pay in test mode** (badge **Test · Base Sepolia**). Live key: **Connect wallet**, then approve and pay on Base mainnet.
+Open returned `checkoutUrl` in a browser. Test key: **Pay in test mode** (badge **Test · Base Sepolia**). Live key: **Connect wallet**, then approve and pay on Base mainnet.
 
-## Failure scenarios
-
-```bash
-curl -s -X POST http://localhost:8788/v1/invoices/INV_ID/charge \
-  -H "X-Autlantic-Api-Key: abk_test_local" \
-  -H "Content-Type: application/json" \
-  -d '{"sandboxMode":"insufficient_balance"}'
-```
-
-Retries follow the default policy: immediate, +1d, +2d, +4d, then `past_due`.
-
-## Autlantic web app (Postgres store)
-
-When `DATABASE_URL` is set, billing defaults to `AUTLANTIC_BILLING_STORE=prisma` automatically.
-
-Terminal 1 (web):
-
-```bash
-export AUTLANTIC_BILLING_API_KEY=abk_test_local
-pnpm dev
-```
-
-Terminal 2 (renewals worker):
-
-```bash
-export AUTLANTIC_BILLING_API_KEY=abk_test_local
-pnpm dev:billing-worker
-```
-
-Or run API + worker together:
-
-```bash
-pnpm dev:billing-all
-```
-
-Creator flow:
-
-1. Settings → Payout wallet → add EVM address + enable USDC auto-renew
-2. Storefront → **Subscribe with USDC (auto-renew)** → connect wallet (browser or WalletConnect)
-3. Test checkout → **Pay in test mode**
-
-WalletConnect (optional): set `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` from [Reown Cloud](https://cloud.reown.com).
-
-Member can cancel auto-renew under Account → Memberships → USDC auto-renew.
-
-E2E smoke (no servers):
+E2E scripts in this monorepo:
 
 ```bash
 pnpm test:e2e:recurring-billing
 pnpm test:e2e:payment-links
 ```
 
-## Smart contract tests (Foundry)
+## Failure scenarios (hosted Test)
 
-```bash
-cd contracts
-forge install foundry-rs/forge-std --no-commit 2>/dev/null || true
-forge test
-```
+Exercise declined / insufficient-balance paths via the hosted Test checkout and portal tools where available. Retries follow the default policy: immediate, +1d, +2d, +4d, then `past_due`.
 
-## Webhook verification
+## Going live
 
-Register a Test webhook endpoint in the merchant portal (URL + signing secret). Events are POSTed with HMAC `x-autlantic-signature`. Verify with `verifyBillingWebhook` / `verifyBillingWebhookDetailed`.
+1. Portal → **Live**: products, live API key, live webhook endpoint.
+2. Production env: `abk_live_…` + Live endpoint `whsec_…`.
+3. Do **not** set `AUTLANTIC_BILLING_SANDBOX` in production.
+4. Confirm hosted checkout shows **Live · Base**.

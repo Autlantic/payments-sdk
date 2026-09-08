@@ -32,4 +32,4 @@ if (activated.charge?.events[0]) {
   console.log("Webhook signature:", signed.signature.slice(0, 16) + "…");
 }
 
-console.log("\nDone. Start billing API: pnpm dev:billing-api");
+console.log("\nDone. Use AutlanticBilling.fromEnv() against https://billing.autlantic.com for hosted Test/Live.");

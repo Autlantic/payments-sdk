@@ -71,9 +71,9 @@ pnpm check:recurring-sdk
 pnpm --filter @autlantic/payments-recurring example
 pnpm test:e2e:recurring-billing
 pnpm test:e2e:payment-links
-pnpm dev:billing-api
-pnpm dev:billing-worker
 ```
+
+Against the **hosted** Test API, set `AUTLANTIC_BILLING_API_KEY=abk_test_…` (portal) and point SDKs at `https://billing.autlantic.com`. In-process sandbox: `AutlanticBilling.sandbox({ … })` (no API required).
 
 More detail: package `TESTING.md` under `packages/payments-recurring`.
 

@@ -1,12 +1,12 @@
 # Deploy and branches
 
-**One rule for Railway:** live services deploy from **`production` only** — never from `main`.
+**One rule for Railway:** live Autlantic Railway services deploy from **`production` only** — never from `main`.
 
-| Repo type | Branches | What ships from where |
-|-----------|----------|------------------------|
-| Apps (`platform`, `billing-hosting`) | `main` → `staging` → `production` | Railway staging/production |
+| Surface | Branches | What ships from where |
+|---------|----------|------------------------|
 | This repo (`payments-sdk`) | `main` + **`production`** | Packages/tags from **`main`**; docs + example-store Railway from **`production`** |
-| Pure mirrors (`billing-php`) | `main` only | No Railway |
+| PHP mirror (`billing-php`) | `main` only | No Railway |
+| Autlantic hosted apps | `main` → `staging` → `production` | Railway staging/production (private app repos) |
 
 ## Branches (this repo)
 
@@ -39,4 +39,4 @@ For each payments-sdk Railway service (`railway.docs.toml`, `railway.example-sto
 
 - [Deploy docs on Railway](./apps/docs/docs/resources/deploy-railway.md)
 - [sdks/PUBLISHING.md](./sdks/PUBLISHING.md)
-- App deploy: [billing-hosting DEPLOY.md](https://github.com/Autlantic/billing-hosting/blob/main/DEPLOY.md) · [platform DEPLOY.md](https://github.com/Autlantic/platform/blob/production/DEPLOY.md)
+- Product docs: [docs.autlantic.com](https://docs.autlantic.com)

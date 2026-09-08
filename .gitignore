@@ -16,5 +16,8 @@ sdks/python/.venv/
 sdks/python/.pytest_cache/
 sdks/android/.gradle/
 sdks/android/**/build/
+sdks/ios/.build/
+**/.build/
+.cursor/
 **/__pycache__/
 *.pyc

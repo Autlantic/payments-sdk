@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://docs.autlantic.com/api/php"><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
-  <a href="https://github.com/Autlantic/payments-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
   <a href="https://autlantic.com"><img src="https://img.shields.io/badge/product-autlantic.com-111827?style=flat-square" alt="Autlantic" /></a>
 </p>
 
@@ -34,7 +34,7 @@ composer config repositories.autlantic vcs https://github.com/Autlantic/billing-
 composer require autlantic/billing:^0.1
 ```
 
-Or path-require from this monorepo (`sdks/php`). Requires **PHP 8.1+**, `ext-curl`, `ext-json`, `ext-hash`.
+For local development from this monorepo, path-require `sdks/php`. Requires **PHP 8.1+**, `ext-curl`, `ext-json`, `ext-hash`.
 
 ## Quick start
 

@@ -130,14 +130,15 @@ implementation("com.autlantic:checkout:0.1.0")
 
 ## Consumer apps (after publish)
 
-**Railway rule:** every live Autlantic Railway service deploys from **`production`**, never `main`. See each repo’s `DEPLOY.md`.
+**Railway rule:** every live Autlantic Railway service deploys from **`production`**, never `main`. See this repo’s [DEPLOY.md](../DEPLOY.md).
 
-Libraries still **publish packages** from **`main` + tags**. Hosted apps and payments-sdk docs promote to `production` before calling a change live.
+Libraries still **publish packages** from **`main` + tags**. Hosted Autlantic apps promote pin bumps to their `production` branch before calling a change live.
 
-1. Bump pin on app `main` (platform and/or [billing-hosting](https://github.com/Autlantic/billing-hosting)).
-2. Promote `main` → `staging` → `production` (fast-forward or cherry-pick).
-3. For docs.autlantic.com changes in this repo: promote `main` → `production` after merging.
-4. Only then call the bump / docs update **shipped**.
+1. Publish this SDK (`main` + tag / registry).
+2. Bump the pin in each Autlantic app that consumes it (private app repos), merge to their `main`.
+3. Promote those apps `main` → `staging` → `production`.
+4. For docs.autlantic.com changes in this repo: promote `main` → `production` after merging.
+5. Only then call the bump / docs update **shipped**.
 
 Do not point Railway at `main`.
 
