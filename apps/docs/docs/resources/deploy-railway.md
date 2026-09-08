@@ -2,11 +2,11 @@
 
 This page is for **maintaining** [docs.autlantic.com](https://docs.autlantic.com) (Autlantic operators). Integrators do not need to deploy the docs site.
 
-The site is a static VitePress build served with `serve`.
+The site is a static VitePress build served with `serve`. Branch rules: **[DEPLOY.md](/resources/deploy-railway)** is mirrored in repo root [`DEPLOY.md`](https://github.com/Autlantic/payments-sdk/blob/main/DEPLOY.md) — Railway watches **`production`**, not `main`.
 
 ## 1. Railway service settings
 
-1. Connect the service to [autlantic/payments-sdk](https://github.com/autlantic/payments-sdk) (`main`)
+1. Connect the service to [autlantic/payments-sdk](https://github.com/autlantic/payments-sdk) branch **`production`**
 2. Service name: `@autlantic/docs` (or any name you prefer)
 3. **Settings → Config file path:** `railway.docs.toml`
 4. Root directory: leave empty (repo root)
@@ -42,4 +42,4 @@ pnpm --filter @autlantic/docs preview
 
 ## Updating content
 
-Edit markdown under `apps/docs/docs/`, then push to the branch Railway watches (typically `main`).
+Edit markdown under `apps/docs/docs/`, merge to `main`, then **promote to `production`** (`git merge --ff-only origin/main` on `production` and push). Railway only redeploys when `production` updates.
