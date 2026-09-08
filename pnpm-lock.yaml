@@ -34,6 +34,8 @@ importers:
         specifier: ^3.5.17
         version: 3.5.40(typescript@5.9.3)
 
+  apps/status: {}
+
   examples/mobile-checkout:
     dependencies:
       '@autlantic/payments-recurring':

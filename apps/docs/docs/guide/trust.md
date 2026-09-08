@@ -18,7 +18,7 @@ Vulnerability disclosure for published packages: email **[support@autlantic.com]
 
 Product security page: [autlantic.com/security](https://autlantic.com/security).
 
-This page does **not** claim SOC 2 or other formal compliance certifications. Ask [support@autlantic.com](mailto:support@autlantic.com) if you need a current statement for procurement.
+This page does **not** claim SOC 2 or other formal compliance certifications. See [SOC 2 readiness](/guide/soc2-readiness) for what exists vs what still needs a CPA engagement. Ask [support@autlantic.com](mailto:support@autlantic.com) if you need a current statement for procurement.
 
 ## Subprocessors
 
@@ -50,4 +50,4 @@ A short outline template for negotiation (starting point only, pending Autlantic
 
 ## Status
 
-Operational status guidance for merchants and operators: [Status](/resources/status).
+Live checks: **[status.autlantic.com](https://status.autlantic.com)**. Operator notes: [Status](/resources/status).

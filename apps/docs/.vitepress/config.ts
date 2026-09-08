@@ -65,6 +65,7 @@ export default withMermaid(
             { text: "Reconciliation", link: "/guide/reconciliation" },
             { text: "Security", link: "/guide/security" },
             { text: "Trust center", link: "/guide/trust" },
+            { text: "SOC 2 readiness", link: "/guide/soc2-readiness" },
             { text: "FAQ", link: "/guide/faq" },
           ],
         },
