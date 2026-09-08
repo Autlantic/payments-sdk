@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Enterprise readiness (Phases 1–6, brief): hosted API key rotation, audit log, and durable webhook retries; API versioning, rate limits, and idempotency docs; merchant test clock; reconciliation CSV exports and customer self-serve portal on hosting; [Trust center](/guide/trust), [Status](/resources/status), and DPA outline template (`/legal/dpa-template.md`, pending counsel, not legal advice). No SOC 2 claim.
 - .NET: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** on NuGet · [.NET docs](/api/dotnet)
 - Flutter: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** on pub.dev · [Flutter docs](/api/flutter)
 - React Native: [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** on npm · [React Native docs](/api/react-native)

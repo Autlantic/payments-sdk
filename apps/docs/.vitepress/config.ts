@@ -61,6 +61,7 @@ export default withMermaid(
             { text: "Webhooks", link: "/guide/webhooks" },
             { text: "Local webhooks", link: "/guide/local-webhooks" },
             { text: "Security", link: "/guide/security" },
+            { text: "Trust center", link: "/guide/trust" },
             { text: "FAQ", link: "/guide/faq" },
           ],
         },
@@ -98,6 +99,7 @@ export default withMermaid(
           text: "Resources",
           items: [
             { text: "Changelog", link: "/resources/changelog" },
+            { text: "Status", link: "/resources/status" },
             { text: "Deploy on Railway", link: "/resources/deploy-railway" },
             { text: "Postman collection", link: "/resources/postman" },
           ],
