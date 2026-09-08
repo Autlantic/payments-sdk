@@ -23,27 +23,19 @@ Same Billing API as Node — create subscriptions, one-time payments, and sharea
 
 ## Install
 
-**Coordinates:** `com.autlantic:billing:0.1.0` (Maven Central when published).
-
-Until Central is linked, use a Gradle composite build against this repo:
-
 ```kotlin
-// settings.gradle.kts
-includeBuild("../path/to/payments-sdk/sdks/java") {
-    dependencySubstitution {
-        substitute(module("com.autlantic:billing")).using(project(":"))
-    }
-}
+implementation("com.autlantic:billing:0.1.1")
 ```
 
-```kotlin
-// build.gradle.kts
-dependencies {
-    implementation("com.autlantic:billing:0.1.0")
-}
+```xml
+<dependency>
+  <groupId>com.autlantic</groupId>
+  <artifactId>billing</artifactId>
+  <version>0.1.1</version>
+</dependency>
 ```
 
-Requires **Java 17+**.
+Package: [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1**. Requires **Java 17+**.
 
 ## Quick start
 

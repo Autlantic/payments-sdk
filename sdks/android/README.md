@@ -23,23 +23,11 @@ Checkout presenter only. Your backend creates the session; this package opens th
 
 ## Install
 
-**After Maven Central** (`com.autlantic:checkout:0.1.0`):
-
 ```kotlin
 implementation("com.autlantic:checkout:0.1.0")
 ```
 
-**Until then (local module):**
-
-```kotlin
-// settings.gradle.kts
-include(":autlantic-checkout")
-project(":autlantic-checkout").projectDir =
-  file("/path/to/payments-sdk/sdks/android/autlantic-checkout")
-
-// build.gradle.kts
-implementation(project(":autlantic-checkout"))
-```
+Package: [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0**.
 
 ## Quick start
 

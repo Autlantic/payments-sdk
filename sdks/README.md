@@ -30,10 +30,10 @@ README layout for every package: **[README.STANDARD.md](./README.STANDARD.md)**.
 | **Python** | Available | [`autlantic-billing`](./python) · [PyPI](https://pypi.org/project/autlantic-billing/) **0.1.0** | Server only |
 | **Go** | Available | [`sdks/go`](./go) tag `sdks/go/v0.1.0` | Server only |
 | **PHP** | Available (Composer) | [`autlantic/billing`](./php) · [billing-php](https://github.com/Autlantic/billing-php) · Packagist pending | Server only |
-| **Java** | Available (source) | [`sdks/java`](./java) (`com.autlantic:billing`; Maven Central later) | Server only |
+| **Java** | Available on Maven Central | [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1** | Server only |
 | **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** | Server only |
 | **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](./ios) tag `sdks/ios/v0.1.0` | **None** |
-| **Android (Kotlin)** | Source available | [`sdks/android`](./android) (Maven Central pending) | **None** |
+| **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** | **None** |
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
 | **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
 

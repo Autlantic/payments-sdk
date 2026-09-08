@@ -5,16 +5,22 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 
 **USDC on Base** · secrets server-only.
 
-Source: [`sdks/java`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/java). Tag `sdks/java/v0.1.0` when publishing. Maven Central (`com.autlantic:billing`) shares the Android namespace gate — use a composite/path dependency until then.
+Source: [`sdks/java`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/java). Package: [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1** on Maven Central.
+
+## Install
 
 ```kotlin
-// settings.gradle.kts
-includeBuild("/path/to/payments-sdk/sdks/java")
-
-// build.gradle.kts
 dependencies {
-  implementation("com.autlantic:billing")
+  implementation("com.autlantic:billing:0.1.1")
 }
+```
+
+```xml
+<dependency>
+  <groupId>com.autlantic</groupId>
+  <artifactId>billing</artifactId>
+  <version>0.1.1</version>
+</dependency>
 ```
 
 ## Quick start
