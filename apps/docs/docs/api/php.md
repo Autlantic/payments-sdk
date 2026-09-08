@@ -9,9 +9,9 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 composer require autlantic/billing
 ```
 
-Mirror repo (Packagist-ready root): [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php) tag `v0.1.0`. Source of truth remains `sdks/php` in payments-sdk.
+Packagist: [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.0**. Mirror: [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php). Source of truth remains `sdks/php` in payments-sdk.
 
-Until Packagist indexes the package:
+VCS fallback (if you cannot use Packagist):
 
 ```bash
 composer config repositories.autlantic vcs https://github.com/Autlantic/billing-php.git
