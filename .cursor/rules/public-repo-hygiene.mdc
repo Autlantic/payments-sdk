@@ -1,0 +1,33 @@
+---
+description: Public repo hygiene — no secrets, private links, or internal ops in published trees
+alwaysApply: true
+---
+
+# Public repository hygiene
+
+This repository is **public**. Treat every commit as world-readable.
+
+## Never commit
+
+- Real secrets: `abk_live_*` / long `abk_test_*`, `whsec_*` (except obvious placeholders like `whsec_test`), private keys, npm/NuGet/PyPI tokens, GPG key material, `.env` files
+- Operator-only Cursor rules that name private apps, Railway wiring, or internal promote paths (keep those in **private** repos only)
+- Local build junk: `**/.build/`, `.venv/`, `vendor/`, `nupkg/` with credentials
+- Machine home paths or personal employer emails in new file contents
+
+## Do not publish in docs / README / DEPLOY
+
+- Links to **private** GitHub repos (e.g. hosting or platform) — say “private Autlantic app repos” or link [docs.autlantic.com](https://docs.autlantic.com) instead
+- Stale monorepo commands that no longer exist here (`pnpm dev:billing-api`, `apps/billing-api`, etc.)
+- Internal hostnames, database URLs, or Railway project IDs
+
+## Allowed placeholders
+
+- `abk_test_local`, `abk_test_x`, `whsec_test`, `whsec_demo_*`, demo EVM addresses used in examples
+
+## Before finishing a change on a public repo
+
+1. Grep the diff for secrets and private GitHub URLs.
+2. Prefer hosted public API (`https://billing.autlantic.com`) over private runbooks.
+3. If guidance is only for Autlantic operators, put it in a **private** repo — not here.
+
+See also root `DEPLOY.md` and `SECURITY.md` when present.

@@ -19,5 +19,7 @@ sdks/android/**/build/
 sdks/ios/.build/
 **/.build/
 .cursor/
+!.cursor/rules/
+!.cursor/rules/public-repo-hygiene.mdc
 **/__pycache__/
 *.pyc
