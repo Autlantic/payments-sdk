@@ -1,0 +1,15 @@
+---
+description: Railway live deploys from production only, never main
+alwaysApply: true
+---
+
+# Railway deploy branch
+
+Live Railway services always deploy from **`production`**, never from **`main`**.
+
+| Repo | Branches | Railway |
+|------|----------|---------|
+| This repo (`payments-sdk`) | `main` + `production` | Docs / example-store from **`production`**. Packages publish from **`main`**. |
+| Apps (`billing-hosting`, Autlantic platform) | `main` → `staging` → `production` | Staging and production Railway from those branches only. Never point Railway at `main`. |
+
+Do not suggest wiring Railway source to `main`, or treating a push to `main` as a live deploy. Promote to `production` (apps: via `staging` first) before expecting Railway to update. See `DEPLOY.md`.
