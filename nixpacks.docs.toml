@@ -1,0 +1,4 @@
+# Docs service only (see railway.docs.toml → nixpacksConfigPath).
+# Without an explicit provider list, Nixpacks detects sdks/dotnet and runs
+# `dotnet restore` at the repo root, which fails (no solution at monorepo root).
+providers = ["node"]
