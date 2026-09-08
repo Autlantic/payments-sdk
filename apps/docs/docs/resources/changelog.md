@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Android: [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** on Maven Central · [Android docs](/api/android)
+- Java: [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1** on Maven Central · [Java docs](/api/java)
 - Enterprise readiness (Phases 1–6, brief): hosted API key rotation, audit log, and durable webhook retries; API versioning, rate limits, and idempotency docs; merchant test clock; reconciliation CSV exports and customer self-serve portal on hosting; [Trust center](/guide/trust), [Status](/resources/status), and [DPA outline template](/resources/dpa-template) (pending counsel, not legal advice). No SOC 2 claim.
 - .NET: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** on NuGet · [.NET docs](/api/dotnet)
 - Flutter: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** on pub.dev · [Flutter docs](/api/flutter)
