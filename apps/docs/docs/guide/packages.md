@@ -9,6 +9,8 @@
 
 Most integrators only install `@autlantic/payments-recurring`. The other packages are available if you need lower-level types or chain helpers.
 
+Official **Python / Go** server clients and **iOS / Android** Checkout SDKs are under [`sdks/`](https://github.com/Autlantic/payments-sdk/tree/main/sdks) in the payments-sdk repo. See [Languages and SDKs](/guide/languages) and [Mobile apps](/guide/mobile).
+
 ## Spec
 
 Internal product/architecture notes live in the monorepo at `docs/recurring-payments-spec.md`.

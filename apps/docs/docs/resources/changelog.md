@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased / 0.3.12 - Multi-language and mobile SDK contract
+
+- `@autlantic/payments-recurring` **0.3.12**: export `AUTLANTIC_API_VERSION` (`2026-01-01`); send `Autlantic-Version` on hosted requests; `successUrl` / `cancelUrl` on create subscription, payment, and payment link
+- Docs: [Languages and SDKs](/guide/languages), [Mobile apps](/guide/mobile), [API versioning](/guide/api-versioning), [Python](/api/python), [Go](/api/go)
+- OpenAPI: public checkout routes aligned with live billing-api; `Autlantic-Version` parameter; Error `requestId`
+- Alpha server SDKs: `sdks/python`, `sdks/go` (webhook verify, retries, hosted `/v1`)
+- Mobile Checkout scaffolds: `sdks/ios`, `sdks/android`
+- Example merchant backend: `examples/mobile-checkout` (`pnpm example:mobile`)
+
 ## 0.3.11 - Fix npm dependency pins
 
 - Republish with resolved semver deps (0.3.10 tarball incorrectly contained `workspace:*`)

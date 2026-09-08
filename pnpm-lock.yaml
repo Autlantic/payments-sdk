@@ -34,6 +34,22 @@ importers:
         specifier: ^3.5.17
         version: 3.5.40(typescript@5.9.3)
 
+  examples/mobile-checkout:
+    dependencies:
+      '@autlantic/payments-recurring':
+        specifier: workspace:*
+        version: link:../../packages/payments-recurring
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.29
+        version: 22.20.1
+      tsx:
+        specifier: ^4.19.4
+        version: 4.23.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
   examples/subscription-store:
     dependencies:
       '@autlantic/chain-evm':

@@ -23,14 +23,26 @@ Import either into Postman, Insomnia, Speakeasy, or your codegen tool. Productio
 | Method | Path | Purpose |
 |--------|------|---------|
 | `GET` | `/checkout/subscribe/:id` | Hosted HTML subscription checkout |
-| `GET` | `/checkout/subscribe/:id.json` | Session JSON |
+| `GET` | `/checkout/subscribe/:id/status` | Fast session status (no Base RPC) |
+| `GET` | `/checkout/subscribe/:id/onchain` | Allowance + vault status (Base RPC) |
+| `GET` | `/checkout/subscribe/:id.json` | Session JSON (same shape as `/status`) |
+| `POST` | `/checkout/subscribe/:id/wallet` | Update customer wallet (incomplete only) |
+| `POST` / `DELETE` | `/checkout/subscribe/:id/coupon` | Apply / remove coupon |
 | `POST` | `/checkout/subscribe/:id/activate` | Activate (test or live with `{ onChainSubscriptionId }`) |
 | `GET` | `/checkout/pay/:id` | Hosted one-time payment checkout |
 | `GET` | `/checkout/pay/:id/status` | Payment session JSON |
+| `GET` | `/checkout/pay/:id.json` | Payment session JSON (alias of `/status`) |
+| `POST` / `DELETE` | `/checkout/pay/:id/coupon` | Apply / remove coupon |
 | `POST` | `/checkout/pay/:id/confirm` | Confirm payment (`{ txHash? }`) |
 | `GET` | `/checkout/link/:id` | Payment link landing (URL / QR target) |
 | `GET` | `/checkout/link/:id/status` | Payment link status JSON |
 | `POST` | `/checkout/link/:id/open` | Mint a one-time payment from the link (`{ customerWallet? }`) |
+
+Mutating public checkout routes require a short-lived checkout action token from the session JSON.
+
+## API version
+
+Send `Autlantic-Version: 2026-01-01` (default when omitted). See [API versioning](/guide/api-versioning).
 
 ## Authenticated (`X-Autlantic-Api-Key`)
 

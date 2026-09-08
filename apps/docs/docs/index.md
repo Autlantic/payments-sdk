@@ -27,12 +27,15 @@ features:
     details: "abk_test_ keys on Base Sepolia, abk_live_ keys on Base mainnet. Same Test / Live split as the merchant portal."
 ---
 
-## Two ways to integrate
+## Ways to integrate
 
 | Mode | Best for |
 |------|----------|
 | **npm SDK** | Node backends, in-process sandbox, full control |
-| **Hosted HTTP API** | Any stack (curl, mobile, PHP), API key only |
+| **Hosted HTTP API** | Any server stack (curl, Python, Go, PHP), API key only |
+| **Mobile Checkout** | iOS / Android apps: open `checkoutUrl`; no API keys in the app ([guide](/guide/mobile)) |
+
+Language matrix: [Languages and SDKs](/guide/languages). API pin: [API versioning](/guide/api-versioning) (`Autlantic-Version: 2026-01-01`).
 
 ```bash
 npm install @autlantic/payments-recurring

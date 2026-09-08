@@ -1,6 +1,7 @@
 export {
   AutlanticBilling,
   AUTLANTIC_BILLING_SDK_VERSION,
+  AUTLANTIC_API_VERSION,
   billingModeFromApiKey,
   sandboxFromApiKeyAndEnv,
 } from "./client";

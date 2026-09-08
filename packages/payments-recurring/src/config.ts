@@ -49,6 +49,10 @@ export type CreateSubscriptionRequest = {
   /** Portal catalog price id. Resolves amount + interval on the API. */
   priceId?: string;
   planId?: string;
+  /** App deep link or https return after successful checkout. */
+  successUrl?: string;
+  /** App deep link or https return if the customer cancels. */
+  cancelUrl?: string;
   metadata?: Record<string, string>;
 };
 
@@ -63,6 +67,10 @@ export type CreatePaymentRequest = {
   amountUsdc?: number;
   /** Portal catalog price id with interval "once". */
   priceId?: string;
+  /** App deep link or https return after successful checkout. */
+  successUrl?: string;
+  /** App deep link or https return if the customer cancels. */
+  cancelUrl?: string;
   metadata?: Record<string, string>;
 };
 
@@ -82,5 +90,11 @@ export type CreatePaymentLinkRequest = {
   maxUses?: number | null;
   /** ISO date string when the link stops accepting opens */
   expiresAt?: string | null;
+  /** App deep link or https return after successful pay. */
+  successUrl?: string;
+  /** App deep link or https return if the customer cancels. */
+  cancelUrl?: string;
+  collectEmail?: boolean;
+  collectName?: boolean;
   metadata?: Record<string, string>;
 };

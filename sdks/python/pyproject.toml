@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "autlantic-billing"
+version = "0.1.0"
+description = "Official Autlantic Billing server SDK for Python (hosted API + webhook verify)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Autlantic Limited", email = "support@autlantic.com" }]
+keywords = ["autlantic", "billing", "usdc", "base", "subscriptions"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://autlantic.com"
+Documentation = "https://docs.autlantic.com/guide/languages"
+Repository = "https://github.com/Autlantic/payments-sdk"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/autlantic_billing"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

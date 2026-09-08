@@ -16,6 +16,10 @@ Rotate API keys and webhook endpoint secrets if leaked.
 - Never put both test and live keys in one production process.
 - Mode for hosted checkout follows the key that created the session, not a runtime toggle in your app.
 
+## Mobile apps
+
+Never put API keys or webhook secrets in an iOS/Android binary. Create checkout sessions on your server and open the returned `checkoutUrl` in the app. See [Mobile apps](/guide/mobile).
+
 ## Webhooks
 
 Always verify `x-autlantic-signature` before trusting the body. Use the raw request bytes and the endpoint secret for that environment.

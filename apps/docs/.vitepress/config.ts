@@ -39,6 +39,7 @@ export default withMermaid(
           items: [
             { text: "Overview", link: "/" },
             { text: "Packages", link: "/guide/packages" },
+            { text: "Languages and SDKs", link: "/guide/languages" },
           ],
         },
         {
@@ -46,9 +47,11 @@ export default withMermaid(
           items: [
             { text: "Getting started", link: "/guide/getting-started" },
             { text: "15-minute integration", link: "/guide/integration" },
+            { text: "Mobile apps", link: "/guide/mobile" },
             { text: "One-time payments", link: "/guide/one-time-payments" },
             { text: "Payment links", link: "/guide/payment-links" },
             { text: "Lifecycle", link: "/guide/lifecycle" },
+            { text: "API versioning", link: "/guide/api-versioning" },
             { text: "Error codes", link: "/guide/errors" },
             { text: "Debugging", link: "/guide/debugging" },
             { text: "Retries", link: "/guide/retries" },
@@ -75,6 +78,8 @@ export default withMermaid(
           text: "API reference",
           items: [
             { text: "Node.js SDK", link: "/api/nodejs" },
+            { text: "Python SDK", link: "/api/python" },
+            { text: "Go SDK", link: "/api/go" },
             { text: "TypeScript types", link: "/api/types" },
             { text: "Hosted HTTP API", link: "/api/http" },
             { text: "OpenAPI", link: "/api/openapi" },

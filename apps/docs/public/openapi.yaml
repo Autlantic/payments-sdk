@@ -1,18 +1,22 @@
 openapi: 3.1.0
 info:
   title: Autlantic Billing API
-  version: 0.3.3
+  version: "2026-01-01"
   summary: USDC subscriptions, one-time payments, and payment links on Base
   description: |
     Hosted Billing API for Autlantic Payments.
 
     - **Test** keys (`abk_test_…`) → Base Sepolia
     - **Live** keys (`abk_live_…`) → Base mainnet
+    - **API version** pin: send `Autlantic-Version: 2026-01-01` (default if omitted)
 
     Production base URL: `https://billing.autlantic.com`
 
     Authenticate with `x-autlantic-api-key` (or `Authorization: Bearer`).
     Pass `Idempotency-Key` on POST requests to safely retry creates.
+
+    Mobile apps must not use secret API keys. Create sessions on your server and
+    open the returned `checkoutUrl` (or payment link `url`) in the app.
   contact:
     name: Autlantic Limited
     url: https://autlantic.com/about
@@ -445,6 +449,30 @@ paths:
         "200":
           description: HTML checkout page
 
+  /checkout/subscribe/{id}/status:
+    get:
+      tags: [Checkout]
+      summary: Subscription checkout status (fast, no Base RPC)
+      operationId: checkoutSubscribeStatus
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        "200":
+          description: Session status JSON
+
+  /checkout/subscribe/{id}/onchain:
+    get:
+      tags: [Checkout]
+      summary: Subscription on-chain status (allowance + vault)
+      operationId: checkoutSubscribeOnchain
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        "200":
+          description: On-chain status JSON
+
   /checkout/subscribe/{id}.json:
     get:
       tags: [Checkout]
@@ -455,7 +483,63 @@ paths:
         - $ref: "#/components/parameters/ResourceId"
       responses:
         "200":
-          description: Session JSON
+          description: Session JSON (same fast shape as /status)
+
+  /checkout/subscribe/{id}/wallet:
+    post:
+      tags: [Checkout]
+      summary: Update customer wallet (incomplete subscription only)
+      operationId: checkoutSubscribeWallet
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerWallet:
+                  type: string
+                actionToken:
+                  type: string
+      responses:
+        "200":
+          description: Updated session
+        "401":
+          description: Missing or expired checkout action token
+
+  /checkout/subscribe/{id}/coupon:
+    post:
+      tags: [Checkout]
+      summary: Apply coupon on subscription checkout
+      operationId: checkoutSubscribeCouponApply
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                actionToken:
+                  type: string
+      responses:
+        "200":
+          description: Coupon applied
+    delete:
+      tags: [Checkout]
+      summary: Remove coupon on subscription checkout
+      operationId: checkoutSubscribeCouponRemove
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        "200":
+          description: Coupon removed
 
   /checkout/subscribe/{id}/activate:
     post:
@@ -472,6 +556,8 @@ paths:
               type: object
               properties:
                 onChainSubscriptionId:
+                  type: string
+                actionToken:
                   type: string
       responses:
         "200":
@@ -501,6 +587,50 @@ paths:
         "200":
           description: Payment status
 
+  /checkout/pay/{id}.json:
+    get:
+      tags: [Checkout]
+      summary: One-time payment session JSON (alias of /status)
+      operationId: checkoutPaySession
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        "200":
+          description: Payment status
+
+  /checkout/pay/{id}/coupon:
+    post:
+      tags: [Checkout]
+      summary: Apply coupon on one-time payment checkout
+      operationId: checkoutPayCouponApply
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                actionToken:
+                  type: string
+      responses:
+        "200":
+          description: Coupon applied
+    delete:
+      tags: [Checkout]
+      summary: Remove coupon on one-time payment checkout
+      operationId: checkoutPayCouponRemove
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        "200":
+          description: Coupon removed
+
   /checkout/pay/{id}/confirm:
     post:
       tags: [Checkout]
@@ -516,6 +646,8 @@ paths:
               type: object
               properties:
                 txHash:
+                  type: string
+                actionToken:
                   type: string
       responses:
         "200":
@@ -565,6 +697,8 @@ paths:
                   type: string
                 name:
                   type: string
+                actionToken:
+                  type: string
       responses:
         "200":
           description: Minted payment + checkout URL
@@ -593,6 +727,17 @@ components:
       schema:
         type: string
       description: Optional. Cached for 24 hours on POST creates.
+    AutlanticVersion:
+      name: Autlantic-Version
+      in: header
+      required: false
+      schema:
+        type: string
+        enum: ["2026-01-01"]
+        default: "2026-01-01"
+      description: |
+        API version pin. Default `2026-01-01` when omitted.
+        Unsupported values return 400.
 
   responses:
     Unauthorized:
@@ -622,6 +767,9 @@ components:
           type: string
         code:
           type: string
+        requestId:
+          type: string
+          description: Server or client request id when available
       required: [error]
 
     Product:
@@ -752,6 +900,12 @@ components:
           type: string
         planId:
           type: string
+        successUrl:
+          type: string
+          description: Return URL after successful checkout (app deep link or https)
+        cancelUrl:
+          type: string
+          description: Return URL if the customer cancels
         metadata:
           type: object
           additionalProperties:
@@ -771,6 +925,12 @@ components:
           type: number
         priceId:
           type: string
+        successUrl:
+          type: string
+          description: Return URL after successful checkout (app deep link or https)
+        cancelUrl:
+          type: string
+          description: Return URL if the customer cancels
         metadata:
           type: object
           additionalProperties:

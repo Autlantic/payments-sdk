@@ -8,6 +8,7 @@
     "check": "pnpm build && pnpm test",
     "example": "pnpm --filter @autlantic/payments-recurring example",
     "example:store": "pnpm --filter @autlantic/example-subscription-store dev",
+    "example:mobile": "pnpm --filter @autlantic/example-mobile-checkout start",
     "test:e2e:recurring-billing": "pnpm --filter @autlantic/payments-recurring exec tsx examples/e2e-recurring-billing.mts",
     "test:e2e:payment-links": "pnpm --filter @autlantic/payments-recurring exec tsx examples/e2e-payment-links.mts",
     "publish:sdk": "pnpm check && pnpm --filter @autlantic/payments-recurring-core --filter @autlantic/chain-evm --filter @autlantic/billing-engine --filter @autlantic/payments-recurring publish",

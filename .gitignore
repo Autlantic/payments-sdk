@@ -12,3 +12,7 @@ coverage
 *.tsbuildinfo
 .autlantic/
 *.tgz
+sdks/python/.venv/
+sdks/python/.pytest_cache/
+**/__pycache__/
+*.pyc

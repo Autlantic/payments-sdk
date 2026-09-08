@@ -2,6 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   AutlanticBilling,
+  AUTLANTIC_API_VERSION,
   AutlanticBillingError,
   assertBillingWebhook,
   billingModeFromApiKey,
@@ -13,6 +14,12 @@ import {
   verifyBillingWebhook,
   verifyBillingWebhookDetailed,
 } from "./index";
+
+describe("AUTLANTIC_API_VERSION", () => {
+  it("pins the hosted contract version", () => {
+    assert.equal(AUTLANTIC_API_VERSION, "2026-01-01");
+  });
+});
 
 describe("billingModeFromApiKey / sandboxFromApiKeyAndEnv", () => {
   it("derives mode and sandbox from the API key", () => {

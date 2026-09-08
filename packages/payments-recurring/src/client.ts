@@ -39,7 +39,10 @@ import {
   type BillingLogger,
 } from "./logger";
 
-export const AUTLANTIC_BILLING_SDK_VERSION = "0.3.7";
+export const AUTLANTIC_BILLING_SDK_VERSION = "0.3.12";
+
+/** Hosted API contract pin (Stripe-style). Sent as `Autlantic-Version`. */
+export const AUTLANTIC_API_VERSION = "2026-01-01";
 
 type ApiEnvelope<T> = T & { error?: string; code?: string; requestId?: string };
 
@@ -153,6 +156,11 @@ export class AutlanticBilling {
           "Sandbox mode requires amountUsdc and interval (priceId is only resolved by the hosted API)",
         );
       }
+      const metadata = {
+        ...(input.metadata ?? {}),
+        ...(input.successUrl?.trim() ? { successUrl: input.successUrl.trim() } : {}),
+        ...(input.cancelUrl?.trim() ? { cancelUrl: input.cancelUrl.trim() } : {}),
+      };
       const result = createSubscription(this.localStore, {
         merchantId: this.config.merchantId,
         merchantRef: input.merchantRef,
@@ -162,7 +170,7 @@ export class AutlanticBilling {
         interval: input.interval,
         chainId: defaultSandboxChainId(),
         planId: input.planId ?? input.priceId,
-        metadata: input.metadata,
+        metadata: Object.keys(metadata).length ? metadata : undefined,
         vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
       });
       this.logger.debug("sandbox.createSubscription", {
@@ -192,6 +200,11 @@ export class AutlanticBilling {
           "Sandbox mode requires amountUsdc (priceId is only resolved by the hosted API)",
         );
       }
+      const metadata = {
+        ...(input.metadata ?? {}),
+        ...(input.successUrl?.trim() ? { successUrl: input.successUrl.trim() } : {}),
+        ...(input.cancelUrl?.trim() ? { cancelUrl: input.cancelUrl.trim() } : {}),
+      };
       const result = createOneTimePayment(this.localStore, {
         merchantId: this.config.merchantId,
         merchantRef: input.merchantRef,
@@ -200,7 +213,7 @@ export class AutlanticBilling {
         amountUsdc: input.amountUsdc,
         chainId: defaultSandboxChainId(),
         priceId: input.priceId,
-        metadata: input.metadata,
+        metadata: Object.keys(metadata).length ? metadata : undefined,
       });
       this.logger.debug("sandbox.createPayment", {
         paymentId: result.payment.id,
@@ -227,6 +240,13 @@ export class AutlanticBilling {
           "Sandbox mode requires amountUsdc (priceId is only resolved by the hosted API)",
         );
       }
+      const metadata = {
+        ...(input.metadata ?? {}),
+        ...(input.successUrl?.trim() ? { successUrl: input.successUrl.trim() } : {}),
+        ...(input.cancelUrl?.trim() ? { cancelUrl: input.cancelUrl.trim() } : {}),
+        ...(input.collectEmail ? { collectEmail: "1" } : {}),
+        ...(input.collectName ? { collectName: "1" } : {}),
+      };
       const paymentLink = createPaymentLink(this.localStore, {
         merchantId: this.config.merchantId,
         merchantRefPrefix: input.merchantRefPrefix?.trim() || "link",
@@ -237,7 +257,7 @@ export class AutlanticBilling {
         description: input.description,
         maxUses: input.maxUses,
         expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
-        metadata: input.metadata,
+        metadata: Object.keys(metadata).length ? metadata : undefined,
       });
       this.logger.debug("sandbox.createPaymentLink", {
         paymentLinkId: paymentLink.id,
@@ -615,6 +635,7 @@ export class AutlanticBilling {
       headers.set("X-Autlantic-Client-Request-Id", requestId);
     }
     headers.set("X-Autlantic-Sdk-Version", AUTLANTIC_BILLING_SDK_VERSION);
+    headers.set("Autlantic-Version", AUTLANTIC_API_VERSION);
     return headers;
   }
 
@@ -667,6 +688,7 @@ export class AutlanticBilling {
             ...(init.headers ?? {}),
             "X-Autlantic-Client-Request-Id": requestId,
             "X-Autlantic-Sdk-Version": AUTLANTIC_BILLING_SDK_VERSION,
+            "Autlantic-Version": AUTLANTIC_API_VERSION,
           })
         : this.headers(init.headers, requestId);
 
