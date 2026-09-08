@@ -65,6 +65,8 @@ Also: `VerifyWebhookDetailed`, `SignWebhookBody` (tests). Header: `x-autlantic-s
 
 `*billing.Error` has `Message`, `Code`, `StatusCode`, `RequestID`, `Body`.
 
+Sample merchant backend: [`examples/mobile-checkout/go`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/go) (port 3057).
+
 ## Related
 
 - [Python SDK](/api/python)

@@ -1,21 +1,35 @@
-# SampleApp
+# iOS Checkout sample
 
-Minimal iOS host for `AutlanticCheckout`.
+Openable Xcode app that talks to [`../`](../) (`pnpm example:mobile`) and presents Autlantic Checkout via the local `sdks/ios` Swift package.
 
-## Setup
+## Run
 
-1. Open Xcode → File → Add Package Dependencies → Add Local → select `../../` (`sdks/ios`).
-2. Or add this folder as an app target that depends on the `AutlanticCheckout` package.
-3. In Info.plist, register URL scheme `myapp` (or change `returnURLScheme` below).
-4. Point `backendURL` at `http://localhost:3055` (simulator) or your Mac LAN IP (device).
-5. Run `pnpm example:mobile` in the payments-sdk repo.
+1. Start the merchant backend:
 
-## Flow
-
-```swift
-// 1. POST backendURL/api/checkout → checkoutUrl
-// 2. AutlanticCheckout.present(url:returnURLScheme:from:)
-// 3. On success deep link, GET /api/access/:merchantRef
+```bash
+cd ../../..   # payments-sdk root
+pnpm example:mobile
 ```
 
-See `CheckoutDemoViewController.swift`.
+2. Open the project:
+
+```bash
+open CheckoutSample.xcodeproj
+```
+
+3. Select an iPhone simulator, set your Team under Signing if needed, then Run.
+
+Simulator uses `http://127.0.0.1:3055`. On a device, change `backendURL` in `CheckoutDemoViewController` to your Mac LAN IP.
+
+## Deep links
+
+`Info.plist` registers URL scheme `myapp` (matches `myapp://billing/success` / cancel from the sample backend).
+
+## Layout
+
+| Path | Role |
+|------|------|
+| `CheckoutSample/` | App sources |
+| `../../../sdks/ios` | Local SPM package `AutlanticCheckout` |
+
+See [Mobile apps](https://docs.autlantic.com/guide/mobile).

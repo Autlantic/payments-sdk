@@ -9,7 +9,8 @@
 - iOS Checkout (SPM): tag `sdks/ios/v0.1.0` · [iOS docs](/api/ios)
 - Android Checkout: source in `sdks/android` · [Android docs](/api/android) (Maven Central pending)
 - Docs: [Languages](/guide/languages), [Mobile](/guide/mobile), [API versioning](/guide/api-versioning), [Python](/api/python), [Go](/api/go)
-- Example: `examples/mobile-checkout` (`pnpm example:mobile`)
+- Example: `examples/mobile-checkout` (`pnpm example:mobile`) with openable iOS/Android apps and Python/Go hosted backends
+- Autlantic platform dogfood pin: `@autlantic/payments-recurring` **0.3.12**
 
 ## 0.3.11 - Fix npm dependency pins
 

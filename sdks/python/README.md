@@ -42,6 +42,5 @@ def handle(raw_body: str, signature: str | None, secret: str):
 
 ## Notes
 
-- Hosted API only. Pins `Autlantic-Version: 2026-01-01`.
-- Not on PyPI until the first publish (`autlantic-billing`).
 - Secrets stay on the server. Mobile apps use Checkout SDKs, not this package.
+- Install: `pip install autlantic-billing` (PyPI) or `pip install -e .` from this folder.

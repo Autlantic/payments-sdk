@@ -56,7 +56,14 @@ pnpm example:mobile
 # POST http://localhost:3055/api/checkout
 ```
 
-Repo: [`examples/mobile-checkout`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout) (includes `ios-sample` and `android-sample` snippets).
+Repo: [`examples/mobile-checkout`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout).
+
+Openable apps (point at the sample backend):
+
+- iOS: [`ios-sample/CheckoutSample.xcodeproj`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/ios-sample)
+- Android: [`android-sample`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/android-sample) (`./gradlew :app:assembleDebug`)
+
+Alternate hosted backends: [Python](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/python) (port 3056), [Go](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/go) (port 3057).
 
 ## What the mobile app must never do
 

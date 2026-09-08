@@ -1,12 +1,34 @@
-# Android sample
+# Android Checkout sample
 
-Minimal Activity that talks to `examples/mobile-checkout` and opens Autlantic Checkout.
+Openable Android app that talks to [`../`](../) (`pnpm example:mobile`) and presents Autlantic Checkout via the local `sdks/android` module (no Maven Central required).
 
-## Setup
+## Run
 
-1. Create an Android app (minSdk 24) and include `sdks/android/autlantic-checkout` as a module dependency.
-2. Add internet permission.
-3. Register deep link / intent filter for `myapp://billing/success` and `myapp://billing/cancel`.
-4. Run `pnpm example:mobile`. Use `10.0.2.2:3055` from the emulator (host loopback).
+1. Start the merchant backend:
 
-See `MainActivity.kt`.
+```bash
+cd ../../..   # payments-sdk root
+pnpm example:mobile
+```
+
+2. Open this folder in Android Studio, or:
+
+```bash
+./gradlew :app:assembleDebug
+./gradlew :app:installDebug   # with emulator/device attached
+```
+
+3. Emulator uses `http://10.0.2.2:3055` (host loopback). On a physical device, set `AUTLANTIC_SAMPLE_BACKEND=http://YOUR_LAN_IP:3055` before install, or edit `backendBase` in `MainActivity`.
+
+## Deep links
+
+Manifest registers `myapp://billing/*` (success / cancel). After return, the app polls `GET /api/access/:merchantRef`.
+
+## Layout
+
+| Path | Role |
+|------|------|
+| `:app` | Sample UI |
+| `:autlantic-checkout` | Local project from `sdks/android/autlantic-checkout` |
+
+See [Mobile apps](https://docs.autlantic.com/guide/mobile).

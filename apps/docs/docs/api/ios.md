@@ -46,7 +46,7 @@ AutlanticCheckout.present(
 2. App calls `present` with the returned `checkoutUrl`.
 3. After return, poll **your** access API. Unlock only after a verified webhook on the server.
 
-Sample: [`examples/mobile-checkout`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout) (`pnpm example:mobile`) and `ios-sample/CheckoutDemoViewController.swift`.
+Sample: [`examples/mobile-checkout`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout) (`pnpm example:mobile`) and openable app [`ios-sample/CheckoutSample.xcodeproj`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/ios-sample).
 
 ## Related
 

@@ -43,7 +43,7 @@ Handle `successUrl` / `cancelUrl` with an app deep link / App Link intent filter
 
 Same as iOS: server creates session → app presents URL → webhook unlocks → app polls your API.
 
-Sample: [`examples/mobile-checkout`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout) and `android-sample/MainActivity.kt`. Emulator host loopback: `http://10.0.2.2:3055`.
+Sample: openable app [`examples/mobile-checkout/android-sample`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/android-sample) (`./gradlew :app:assembleDebug`). Emulator host loopback: `http://10.0.2.2:3055`.
 
 ## Related
 

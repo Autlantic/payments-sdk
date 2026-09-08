@@ -36,8 +36,16 @@ Default return scheme: `myapp://billing/success` (override with `MOBILE_RETURN_S
 
 | Path | Notes |
 |------|--------|
-| [`ios-sample/`](./ios-sample) | `CheckoutDemoViewController.swift` + AutlanticCheckout |
-| [`android-sample/`](./android-sample) | `MainActivity.kt` + Custom Tabs presenter |
+| [`ios-sample/`](./ios-sample) | Open `CheckoutSample.xcodeproj` (local SPM `sdks/ios`) |
+| [`android-sample/`](./android-sample) | Open in Android Studio or `./gradlew :app:assembleDebug` (local `sdks/android`) |
+
+## Alternate backends (hosted)
+
+| Path | Port | SDK |
+|------|------|-----|
+| Node (this folder) | 3055 | `@autlantic/payments-recurring` (sandbox or hosted) |
+| [`python/`](./python) | 3056 | `autlantic-billing` |
+| [`go/`](./go) | 3057 | Go module |
 
 ## Tests
 

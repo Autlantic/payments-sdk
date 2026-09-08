@@ -75,6 +75,8 @@ Header: `x-autlantic-signature`. Same rules as [Webhooks](/guide/webhooks).
 
 `AutlanticBillingError` exposes `message`, `code`, `status_code`, `request_id`, and `body`.
 
+Sample merchant backend: [`examples/mobile-checkout/python`](https://github.com/Autlantic/payments-sdk/tree/main/examples/mobile-checkout/python) (port 3056).
+
 ## Related
 
 - [Go SDK](/api/go)

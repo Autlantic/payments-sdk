@@ -1,9 +1,9 @@
 package com.autlantic.checkout.sample
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.autlantic.checkout.AutlanticCheckout
@@ -13,22 +13,28 @@ import java.net.URL
 import kotlin.concurrent.thread
 
 /**
- * Drop into an app module that depends on `:autlantic-checkout`.
- * Emulator backend: http://10.0.2.2:3055
+ * Sample host for Autlantic Checkout.
+ *
+ * Emulator → http://10.0.2.2:3055 (host machine loopback)
+ * Device → http://YOUR_LAN_IP:3055 with `pnpm example:mobile` running
  */
 class MainActivity : AppCompatActivity() {
-  private val backendBase = "http://10.0.2.2:3055"
+  private val backendBase =
+    System.getenv("AUTLANTIC_SAMPLE_BACKEND") ?: "http://10.0.2.2:3055"
   private var merchantRef: String? = null
   private lateinit var status: TextView
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    status = TextView(this).apply { text = "Ready"; textSize = 16f }
+    status = TextView(this).apply {
+      text = "Ready · backend $backendBase"
+      textSize = 16f
+    }
     val pay = Button(this).apply { text = "Pay with Autlantic" }
     pay.setOnClickListener { startCheckout() }
     setContentView(
-      android.widget.LinearLayout(this).apply {
-        orientation = android.widget.LinearLayout.VERTICAL
+      LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
         setPadding(48, 48, 48, 48)
         addView(status)
         addView(pay)
@@ -44,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
   private fun handleReturnIntent(intent: Intent?) {
     val data = intent?.data ?: return
-    if (data.host == "billing") {
+    if (data.scheme == "myapp" && data.host == "billing") {
       status.text = "Returned (${data.path}). Checking access…"
       pollAccess()
     }
@@ -54,12 +60,15 @@ class MainActivity : AppCompatActivity() {
     status.text = "Creating session…"
     thread {
       try {
-        val conn = (URL("$backendBase/api/checkout").openConnection() as HttpURLConnection).apply {
-          requestMethod = "POST"
-          setRequestProperty("Content-Type", "application/json")
-          doOutput = true
-          outputStream.use { it.write("""{"kind":"payment_link","amountUsdc":20}""".toByteArray()) }
-        }
+        val conn =
+          (URL("$backendBase/api/checkout").openConnection() as HttpURLConnection).apply {
+            requestMethod = "POST"
+            setRequestProperty("Content-Type", "application/json")
+            doOutput = true
+            outputStream.use {
+              it.write("""{"kind":"payment_link","amountUsdc":20}""".toByteArray())
+            }
+          }
         val body = conn.inputStream.bufferedReader().readText()
         val json = JSONObject(body)
         val checkoutUrl = json.getString("checkoutUrl")
@@ -69,7 +78,7 @@ class MainActivity : AppCompatActivity() {
           AutlanticCheckout.present(this, checkoutUrl)
         }
       } catch (e: Exception) {
-        runOnUiThread { status.text = e.message }
+        runOnUiThread { status.text = e.message ?: "Checkout failed" }
       }
     }
   }
@@ -87,7 +96,7 @@ class MainActivity : AppCompatActivity() {
           }
         }
       } catch (e: Exception) {
-        runOnUiThread { status.text = e.message }
+        runOnUiThread { status.text = e.message ?: "Access poll failed" }
       }
     }
   }
