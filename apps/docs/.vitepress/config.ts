@@ -84,6 +84,8 @@ export default withMermaid(
             { text: ".NET SDK", link: "/api/dotnet" },
             { text: "iOS Checkout", link: "/api/ios" },
             { text: "Android Checkout", link: "/api/android" },
+            { text: "Flutter Checkout", link: "/api/flutter" },
+            { text: "React Native Checkout", link: "/api/react-native" },
             { text: "TypeScript types", link: "/api/types" },
             { text: "Hosted HTTP API", link: "/api/http" },
             { text: "OpenAPI", link: "/api/openapi" },

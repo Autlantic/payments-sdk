@@ -1,6 +1,6 @@
 # Mobile checkout example
 
-Sample **merchant backend** for Autlantic iOS/Android Checkout SDKs.
+Sample **merchant backend** for Autlantic iOS / Android / Flutter / React Native Checkout SDKs.
 
 ```bash
 pnpm install
@@ -20,12 +20,14 @@ pnpm --filter @autlantic/example-mobile-checkout start
 
 ```text
 1. POST /api/checkout  →  { checkoutUrl, successUrl, cancelUrl, merchantRef }
-2. AutlanticCheckout.present(checkoutUrl)   // iOS / Android SDK
+2. AutlanticCheckout.present(checkoutUrl)   // iOS / Android / Flutter / RN
 3. Deep link successUrl / cancelUrl
 4. GET /api/access/:merchantRef until active === true
 ```
 
 Default return scheme: `myapp://billing/success` (override with `MOBILE_RETURN_SCHEME` or `MOBILE_SUCCESS_URL`).
+
+Cross-platform wrappers (path dependency until published): [`sdks/flutter`](../../sdks/flutter) (`autlantic_checkout`), [`sdks/react-native`](../../sdks/react-native) (`@autlantic/checkout`).
 
 ## Modes
 
@@ -38,6 +40,7 @@ Default return scheme: `myapp://billing/success` (override with `MOBILE_RETURN_S
 |------|--------|
 | [`ios-sample/`](./ios-sample) | Open `CheckoutSample.xcodeproj` (local SPM `sdks/ios`) |
 | [`android-sample/`](./android-sample) | Open in Android Studio or `./gradlew :app:assembleDebug` (local `sdks/android`) |
+| Flutter / RN | Use this backend with [`sdks/flutter`](../../sdks/flutter) or [`sdks/react-native`](../../sdks/react-native); no full sample app in-repo yet |
 
 ## Alternate backends (hosted)
 

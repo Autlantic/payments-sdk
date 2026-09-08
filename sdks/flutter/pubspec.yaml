@@ -1,0 +1,31 @@
+name: autlantic_checkout
+description: >
+  Autlantic Billing mobile Checkout presenter for Flutter.
+  Opens hosted checkoutUrl via ASWebAuthenticationSession (iOS) and Chrome Custom Tabs (Android).
+  Never accepts API keys.
+version: 0.1.0
+homepage: https://docs.autlantic.com/api/flutter
+repository: https://github.com/Autlantic/payments-sdk/tree/main/sdks/flutter
+issue_tracker: https://github.com/Autlantic/payments-sdk/issues
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.16.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.autlantic.checkout.flutter
+        pluginClass: AutlanticCheckoutPlugin
+      ios:
+        pluginClass: AutlanticCheckoutPlugin

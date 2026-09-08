@@ -1,0 +1,39 @@
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+
+def _ext = rootProject.ext
+def _compileSdk = _ext.has("compileSdkVersion") ? _ext.compileSdkVersion : 35
+def _minSdk = _ext.has("minSdkVersion") ? _ext.minSdkVersion : 24
+
+android {
+  namespace "com.autlantic.checkout"
+  compileSdkVersion _compileSdk
+
+  defaultConfig {
+    minSdkVersion _minSdk
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+
+  kotlinOptions {
+    jvmTarget = "17"
+  }
+
+  sourceSets {
+    main.java.srcDirs += "src/main/java"
+  }
+}
+
+repositories {
+  mavenCentral()
+  google()
+}
+
+dependencies {
+  // Provided by the consuming React Native app
+  implementation "com.facebook.react:react-android"
+  implementation "androidx.browser:browser:1.8.0"
+}

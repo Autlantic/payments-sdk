@@ -1,0 +1,30 @@
+# OSX
+.DS_Store
+
+# Xcode / CocoaPods
+Pods/
+.symlinks/
+Flutter/ephemeral/
+**/Generated.xcconfig
+**/Flutter.podspec
+
+# Android
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+**/GeneratedPluginRegistrant.*
+
+# Misc
+*.log

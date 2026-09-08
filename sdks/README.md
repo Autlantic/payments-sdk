@@ -12,6 +12,8 @@ The reference implementation remains `@autlantic/payments-recurring` under `pack
 | `dotnet/` | Merchant **server** client (NuGet) | API key + webhook secret |
 | `ios/` | Mobile **Checkout** presenter (SPM) | None |
 | `android/` | Mobile **Checkout** presenter (Maven) | None |
+| `flutter/` | Mobile **Checkout** Flutter plugin (`autlantic_checkout`) | None |
+| `react-native/` | Mobile **Checkout** RN module (`@autlantic/checkout`) | None |
 
 ## Rules
 

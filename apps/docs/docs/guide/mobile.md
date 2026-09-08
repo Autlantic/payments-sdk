@@ -36,6 +36,8 @@ Hosted checkout uses these for “Return to merchant” / cancel. After return, 
 |----------|---------|----------------|
 | **iOS** | Swift Package Manager (`sdks/ios`, tag `sdks/ios/v0.1.0`) | [iOS Checkout](/api/ios) |
 | **Android** | Module from Git until Maven Central | [Android Checkout](/api/android) |
+| **Flutter** | Path / git (`sdks/flutter`, `autlantic_checkout` **0.1.0**) | [Flutter Checkout](/api/flutter) |
+| **React Native** | Path / npm (`sdks/react-native`, `@autlantic/checkout` **0.1.0**) | [React Native Checkout](/api/react-native) |
 
 ```swift
 // iOS
@@ -47,7 +49,17 @@ AutlanticCheckout.present(url: checkoutURL, returnURLScheme: "myapp", from: self
 AutlanticCheckout.present(context, checkoutUrl)
 ```
 
-Prefer system browser surfaces (SPM uses `ASWebAuthenticationSession`; Android uses Custom Tabs) so WalletConnect can hand off to wallet apps. Avoid locked WebViews.
+```dart
+// Flutter
+await AutlanticCheckout.present(checkoutUrl, returnUrlScheme: 'myapp');
+```
+
+```ts
+// React Native
+await AutlanticCheckout.present(checkoutUrl, { returnUrlScheme: 'myapp' });
+```
+
+Prefer system browser surfaces (`ASWebAuthenticationSession` on iOS; Chrome Custom Tabs on Android — including Flutter/RN plugins) so WalletConnect can hand off to wallet apps. Avoid locked WebViews.
 
 ## Sample merchant backend
 
@@ -76,6 +88,8 @@ Alternate hosted backends: [Python](https://github.com/Autlantic/payments-sdk/tr
 
 - [iOS Checkout](/api/ios)
 - [Android Checkout](/api/android)
+- [Flutter Checkout](/api/flutter)
+- [React Native Checkout](/api/react-native)
 - [Languages and SDKs](/guide/languages)
 - [Payment links](/guide/payment-links)
 - [Webhooks](/guide/webhooks)

@@ -7,6 +7,8 @@
 - Example: `examples/mobile-checkout/java` (port 3059)
 - .NET: `Autlantic.Billing` **0.1.0** under `sdks/dotnet` · [.NET docs](/api/dotnet)
 - Example: `examples/mobile-checkout/dotnet` (port 3060)
+- Flutter: `autlantic_checkout` **0.1.0** under `sdks/flutter` · [Flutter docs](/api/flutter)
+- React Native: `@autlantic/checkout` **0.1.0** under `sdks/react-native` · [React Native docs](/api/react-native)
 
 ## 0.3.12 - Multi-language and mobile SDKs
 

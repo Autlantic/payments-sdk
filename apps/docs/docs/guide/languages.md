@@ -15,13 +15,14 @@ Autlantic Billing is **one hosted API**. Official SDKs are thin clients around t
 | **.NET** | Available (source) | [`sdks/dotnet`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/dotnet) (`Autlantic.Billing`; NuGet later) | Server only |
 | **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/ios) tag `sdks/ios/v0.1.0` | **None** |
 | **Android (Kotlin)** | Source available | [`sdks/android`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/android) (Maven Central pending namespace) | **None** |
-| **Flutter / React Native** | Later | Wrappers over native Checkout | **None** |
+| **Flutter** | Available (alpha/source) | [`autlantic_checkout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/flutter) **0.1.0** | **None** |
+| **React Native** | Available (alpha/source) | [`@autlantic/checkout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/react-native) **0.1.0** | **None** |
 
 ## Who installs what
 
 ```text
 Merchant backend  →  Node / Python / Go / PHP / Java / .NET SDK  →  billing-api (/v1 + webhooks)
-Merchant mobile   →  iOS / Android Checkout SDK  →  opens hosted checkoutUrl
+Merchant mobile   →  iOS / Android / Flutter / RN Checkout  →  opens hosted checkoutUrl
 ```
 
 - **Server SDKs** create subscriptions, payments, and payment links; verify webhooks; unlock access.
@@ -39,6 +40,8 @@ Merchant mobile   →  iOS / Android Checkout SDK  →  opens hosted checkoutUrl
 | .NET | [.NET SDK](/api/dotnet) |
 | iOS | [iOS Checkout](/api/ios) · [Mobile apps](/guide/mobile) |
 | Android | [Android Checkout](/api/android) · [Mobile apps](/guide/mobile) |
+| Flutter | [Flutter Checkout](/api/flutter) · [Mobile apps](/guide/mobile) |
+| React Native | [React Native Checkout](/api/react-native) · [Mobile apps](/guide/mobile) |
 | Any language | [Hosted HTTP API](/api/http) · [OpenAPI](/api/openapi) |
 
 ## Related
