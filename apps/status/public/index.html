@@ -18,6 +18,7 @@
     <style>
       :root {
         --color-accent: #5672cd;
+        --color-accent-hover: #3a5ccc;
         --color-accent-strong: #3451b2;
         --color-accent-muted: #ebefff;
         --color-crypto: #00875a;
@@ -30,13 +31,13 @@
         --color-border: rgb(25 28 31 / 0.08);
         --color-danger: #dc2626;
         --color-warning: #d97706;
-        --shadow-card: 0 1px 2px rgb(25 28 31 / 0.04), 0 8px 24px rgb(25 28 31 / 0.06);
-        --radius-card: 1.25rem;
+        --refresh-ms: 60000ms;
       }
 
       @media (prefers-color-scheme: dark) {
         :root {
           --color-accent: #5c73e7;
+          --color-accent-hover: #a8b1ff;
           --color-accent-strong: #3e63dd;
           --color-accent-muted: rgb(100 108 255 / 0.16);
           --color-crypto: #3dd68c;
@@ -49,7 +50,6 @@
           --color-border: rgb(255 255 255 / 0.1);
           --color-danger: #f87171;
           --color-warning: #fbbf24;
-          --shadow-card: 0 1px 2px rgb(0 0 0 / 0.35), 0 12px 32px rgb(0 0 0 / 0.35);
         }
       }
 
@@ -71,44 +71,79 @@
         inset: 0;
         z-index: 0;
         pointer-events: none;
-        background:
-          radial-gradient(
-            ellipse 90% 55% at 12% -10%,
-            color-mix(in srgb, var(--color-accent) 12%, transparent),
-            transparent 52%
-          ),
-          radial-gradient(
-            ellipse 70% 45% at 92% 8%,
-            color-mix(in srgb, var(--color-crypto) 8%, transparent),
-            transparent 48%
-          ),
-          linear-gradient(180deg, var(--color-surface-subtle) 0%, var(--color-surface) 42%);
+        overflow: hidden;
+        background: linear-gradient(
+          180deg,
+          var(--color-surface-subtle) 0%,
+          var(--color-surface) 42%
+        );
       }
 
-      .shell {
+      .app-bg::before,
+      .app-bg::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(40px);
+        animation: drift 14s ease-in-out infinite alternate;
+      }
+
+      .app-bg::before {
+        width: min(70vw, 520px);
+        height: min(70vw, 520px);
+        top: -12%;
+        left: -8%;
+        background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+      }
+
+      .app-bg::after {
+        width: min(55vw, 420px);
+        height: min(55vw, 420px);
+        top: 4%;
+        right: -10%;
+        background: color-mix(in srgb, var(--color-crypto) 16%, transparent);
+        animation-delay: -4s;
+        animation-duration: 18s;
+      }
+
+      .page {
         position: relative;
         z-index: 1;
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 1.5rem 1.25rem 4rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
 
-      header {
+      .topbar {
+        border-bottom: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+      }
+
+      .topbar-inner {
+        max-width: 72rem;
+        margin: 0 auto;
+        height: 4rem;
+        padding: 0 1rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        padding: 0.5rem 0 2rem;
+      }
+
+      @media (min-width: 640px) {
+        .topbar-inner {
+          padding: 0 1.5rem;
+        }
       }
 
       .brand {
         display: inline-flex;
         align-items: center;
         text-decoration: none;
+        line-height: 0;
       }
 
       .brand img {
-        height: 2rem;
+        height: 2.25rem;
         width: auto;
         display: block;
       }
@@ -126,154 +161,336 @@
         }
       }
 
-      .nav-links {
+      .nav {
         display: flex;
-        gap: 1rem;
+        align-items: center;
+        gap: 1.25rem;
         font-size: 0.875rem;
-      }
-
-      .nav-links a {
-        color: var(--color-ink-secondary);
-        text-decoration: none;
         font-weight: 500;
       }
 
-      .nav-links a:hover {
+      .nav a {
+        color: var(--color-ink-secondary);
+        text-decoration: none;
+      }
+
+      .nav a:hover {
+        color: var(--color-accent-strong);
+      }
+
+      .live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.3rem 0.65rem;
+        border-radius: 999px;
+        border: 1px solid var(--color-border);
+        background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-ink-secondary);
+      }
+
+      .live-pill .pulse {
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 50%;
+        background: var(--color-crypto);
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-crypto) 55%, transparent);
+        animation: pulse 1.8s ease-out infinite;
+      }
+
+      .live-pill.checking .pulse {
+        background: var(--color-accent);
+        animation: pulse-accent 1s ease-out infinite;
+      }
+
+      .live-pill.down .pulse {
+        background: var(--color-danger);
+        animation: pulse-danger 1.4s ease-out infinite;
+      }
+
+      main {
+        flex: 1;
+        max-width: 72rem;
+        width: 100%;
+        margin: 0 auto;
+        padding: 3rem 1rem 4rem;
+        display: grid;
+        gap: 0;
+      }
+
+      @media (min-width: 640px) {
+        main {
+          padding: 4rem 1.5rem 5rem;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        main {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+          gap: 0;
+          min-height: calc(100vh - 4rem);
+          padding-top: 0;
+          padding-bottom: 0;
+          align-items: stretch;
+        }
+      }
+
+      .intro {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 0 2.5rem;
+        animation: fade-up 0.55s ease-out both;
+      }
+
+      @media (min-width: 1024px) {
+        .intro {
+          border-right: 1px solid var(--color-border);
+          padding: 4rem 2.5rem 4rem 0;
+        }
+      }
+
+      .eyebrow {
+        margin: 0 0 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
         color: var(--color-accent-strong);
       }
 
       h1 {
+        margin: 0;
         font-family: "Instrument Serif", Georgia, serif;
-        font-weight: 400;
-        font-size: clamp(2rem, 5vw, 2.75rem);
-        letter-spacing: -0.02em;
-        line-height: 1.15;
-        margin: 0 0 0.5rem;
+        font-weight: 600;
+        font-size: clamp(2.4rem, 5vw, 3.4rem);
+        letter-spacing: -0.03em;
+        line-height: 1.05;
         color: var(--color-ink);
       }
 
       .lede {
+        margin: 1rem 0 0;
+        max-width: 28rem;
         color: var(--color-ink-secondary);
-        margin: 0 0 1.75rem;
         line-height: 1.55;
-        max-width: 36rem;
-        font-size: 1.015rem;
+        font-size: 1.02rem;
+      }
+
+      .aside-foot {
+        margin-top: 2.5rem;
+        font-size: 0.875rem;
+        color: var(--color-ink-muted);
+      }
+
+      .panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        animation: fade-up 0.65s ease-out 0.08s both;
+      }
+
+      @media (min-width: 1024px) {
+        .panel {
+          padding: 4rem 0 4rem 2.5rem;
+        }
+      }
+
+      .refresh-track {
+        height: 2px;
+        width: 100%;
+        margin-bottom: 1.25rem;
+        border-radius: 999px;
+        background: var(--color-border);
+        overflow: hidden;
+      }
+
+      .refresh-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: inherit;
+        background: linear-gradient(
+          90deg,
+          color-mix(in srgb, var(--color-accent) 40%, transparent),
+          var(--color-accent-strong)
+        );
+        transform-origin: left center;
+      }
+
+      .refresh-bar.running {
+        animation: refresh-fill var(--refresh-ms) linear forwards;
+      }
+
+      .refresh-bar.checking {
+        width: 35%;
+        animation: sweep 1.1s ease-in-out infinite;
       }
 
       .overall {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 0.85rem;
-        padding: 1.1rem 1.2rem;
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-card);
-        background: var(--color-surface);
-        box-shadow: var(--shadow-card);
-        margin-bottom: 1rem;
-        animation: fade-up 0.55s ease-out both;
+        gap: 0.65rem 0.9rem;
+        margin-bottom: 1.5rem;
       }
 
-      .dot {
-        width: 0.7rem;
-        height: 0.7rem;
-        border-radius: 50%;
-        background: var(--color-warning);
-        flex-shrink: 0;
-        box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-warning) 18%, transparent);
-      }
-
-      .dot.ok {
-        background: var(--color-crypto);
-        box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-crypto) 18%, transparent);
-      }
-
-      .dot.bad {
-        background: var(--color-danger);
-        box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-danger) 18%, transparent);
-      }
-
-      .overall strong {
-        font-size: 1.05rem;
+      .overall-state {
+        font-family: "Instrument Serif", Georgia, serif;
+        font-size: clamp(1.5rem, 3vw, 1.85rem);
         font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--color-ink);
+        transition: color 0.35s ease, opacity 0.25s ease;
       }
 
-      .meta {
+      .overall-state.ok {
+        color: var(--color-crypto);
+      }
+
+      .overall-state.bad {
+        color: var(--color-danger);
+      }
+
+      .overall-state.warn {
+        color: var(--color-warning);
+      }
+
+      .overall-state.checking {
+        color: var(--color-ink-secondary);
+      }
+
+      .overall-meta {
+        font-size: 0.875rem;
         color: var(--color-ink-muted);
-        font-size: 0.85rem;
-        margin-top: 0.2rem;
       }
 
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: grid;
-        gap: 0.75rem;
+      .list {
+        border-top: 1px solid var(--color-border);
       }
 
-      li {
+      .row {
         display: grid;
         grid-template-columns: auto 1fr auto;
-        gap: 0.75rem;
-        align-items: start;
-        padding: 1rem 1.1rem;
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-card);
-        background: var(--color-surface);
-        box-shadow: var(--shadow-card);
-        animation: fade-up 0.65s ease-out both;
+        gap: 0.35rem 0.85rem;
+        align-items: baseline;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--color-border);
+        opacity: 0;
+        transform: translateY(8px);
+        animation: row-in 0.45s ease-out forwards;
       }
 
-      li:nth-child(2) {
-        animation-delay: 0.06s;
+      .row:nth-child(1) {
+        animation-delay: 0.05s;
       }
-      li:nth-child(3) {
+      .row:nth-child(2) {
         animation-delay: 0.12s;
       }
+      .row:nth-child(3) {
+        animation-delay: 0.19s;
+      }
 
-      .name {
+      .row-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        margin-top: 0.4rem;
+        background: var(--color-ink-muted);
+        box-shadow: 0 0 0 0 transparent;
+      }
+
+      .row-dot.ok {
+        background: var(--color-crypto);
+        animation: soft-pulse 2.4s ease-out infinite;
+      }
+
+      .row-dot.bad {
+        background: var(--color-danger);
+        animation: soft-pulse-danger 1.6s ease-out infinite;
+      }
+
+      .row-dot.checking {
+        background: var(--color-accent);
+        animation: soft-pulse-accent 1s ease-out infinite;
+      }
+
+      .row-name {
         font-weight: 600;
         color: var(--color-ink);
       }
 
-      .detail {
-        color: var(--color-ink-muted);
+      .row-detail {
+        grid-column: 2;
         font-size: 0.85rem;
-        grid-column: 2 / -1;
-        line-height: 1.4;
+        color: var(--color-ink-muted);
       }
 
-      .badge {
-        font-size: 0.7rem;
+      .row-state {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+        align-self: center;
+        font-size: 0.8125rem;
         font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--color-warning);
+        color: var(--color-ink-muted);
       }
 
-      .badge.ok {
+      .row-state.ok {
         color: var(--color-crypto);
       }
 
-      .badge.bad {
+      .row-state.bad {
         color: var(--color-danger);
       }
 
-      footer {
-        margin-top: 2.25rem;
-        color: var(--color-ink-muted);
-        font-size: 0.9rem;
-        line-height: 1.55;
-        animation: fade-up 0.7s ease-out 0.15s both;
+      .row.skeleton .row-name,
+      .row.skeleton .row-detail,
+      .row.skeleton .row-state {
+        color: transparent;
+        border-radius: 0.35rem;
+        background: linear-gradient(
+          90deg,
+          var(--color-surface-muted),
+          color-mix(in srgb, var(--color-accent) 12%, var(--color-surface-muted)),
+          var(--color-surface-muted)
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.2s linear infinite;
       }
 
-      footer a {
+      .row.skeleton .row-name {
+        width: 8rem;
+        height: 1rem;
+      }
+
+      .row.skeleton .row-detail {
+        width: 11rem;
+        height: 0.85rem;
+        margin-top: 0.15rem;
+      }
+
+      .row.skeleton .row-state {
+        width: 2rem;
+        height: 0.9rem;
+      }
+
+      .foot {
+        margin-top: 1.75rem;
+        font-size: 0.875rem;
+        line-height: 1.55;
+        color: var(--color-ink-muted);
+      }
+
+      .foot a {
         color: var(--color-accent-strong);
         text-decoration: none;
         font-weight: 500;
       }
 
-      footer a:hover {
+      .foot a:hover {
         text-decoration: underline;
       }
 
@@ -287,73 +504,247 @@
           transform: translateY(0);
         }
       }
+
+      @keyframes row-in {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes drift {
+        from {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        to {
+          transform: translate3d(4%, 6%, 0) scale(1.08);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-crypto) 55%, transparent);
+        }
+        70% {
+          box-shadow: 0 0 0 10px transparent;
+        }
+        100% {
+          box-shadow: 0 0 0 0 transparent;
+        }
+      }
+
+      @keyframes pulse-accent {
+        0% {
+          box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent);
+        }
+        70% {
+          box-shadow: 0 0 0 10px transparent;
+        }
+        100% {
+          box-shadow: 0 0 0 0 transparent;
+        }
+      }
+
+      @keyframes pulse-danger {
+        0% {
+          box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-danger) 45%, transparent);
+        }
+        70% {
+          box-shadow: 0 0 0 10px transparent;
+        }
+        100% {
+          box-shadow: 0 0 0 0 transparent;
+        }
+      }
+
+      @keyframes soft-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-crypto) 0%, transparent);
+          opacity: 1;
+        }
+        50% {
+          box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-crypto) 18%, transparent);
+          opacity: 0.85;
+        }
+      }
+
+      @keyframes soft-pulse-accent {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 transparent;
+          opacity: 1;
+        }
+        50% {
+          box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 22%, transparent);
+          opacity: 0.8;
+        }
+      }
+
+      @keyframes soft-pulse-danger {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 transparent;
+        }
+        50% {
+          box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-danger) 22%, transparent);
+        }
+      }
+
+      @keyframes refresh-fill {
+        from {
+          width: 0%;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      @keyframes sweep {
+        0% {
+          transform: translateX(-120%);
+        }
+        100% {
+          transform: translateX(320%);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 100% 0;
+        }
+        100% {
+          background-position: -100% 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .app-bg::before,
+        .app-bg::after,
+        .live-pill .pulse,
+        .row-dot,
+        .refresh-bar,
+        .row.skeleton .row-name,
+        .row.skeleton .row-detail,
+        .row.skeleton .row-state {
+          animation: none !important;
+        }
+
+        .row {
+          opacity: 1;
+          transform: none;
+          animation: none;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="app-bg" aria-hidden="true"></div>
-    <div class="shell">
-      <header>
-        <a class="brand" href="https://autlantic.com" aria-label="Autlantic">
-          <img
-            class="mark-light"
-            src="https://portal.autlantic.com/brand/autlantic-wordmark.svg"
-            alt=""
-            width="140"
-            height="32"
-          />
-          <img
-            class="mark-dark"
-            src="https://portal.autlantic.com/brand/autlantic-wordmark-light.svg"
-            alt=""
-            width="140"
-            height="32"
-          />
-        </a>
-        <nav class="nav-links" aria-label="Related">
-          <a href="https://docs.autlantic.com">Docs</a>
-          <a href="https://portal.autlantic.com">Portal</a>
-        </nav>
+    <div class="page">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="https://autlantic.com" aria-label="Autlantic">
+            <img
+              class="mark-light"
+              src="https://portal.autlantic.com/brand/autlantic-wordmark.svg"
+              alt=""
+              width="140"
+              height="36"
+            />
+            <img
+              class="mark-dark"
+              src="https://portal.autlantic.com/brand/autlantic-wordmark-light.svg"
+              alt=""
+              width="140"
+              height="36"
+            />
+          </a>
+          <nav class="nav" aria-label="Related">
+            <span class="live-pill checking" id="live-pill" aria-live="polite">
+              <span class="pulse" aria-hidden="true"></span>
+              <span id="live-label">Checking</span>
+            </span>
+            <a href="https://docs.autlantic.com">Docs</a>
+            <a href="https://portal.autlantic.com">Portal</a>
+          </nav>
+        </div>
       </header>
 
-      <h1>Billing status</h1>
-      <p class="lede">
-        Live checks for Autlantic Billing. Probes run from this service against production
-        origins and refresh every minute.
-      </p>
+      <main>
+        <section class="intro">
+          <p class="eyebrow">Autlantic Billing</p>
+          <h1>System status</h1>
+          <p class="lede">
+            Live checks for the hosted Billing API, merchant portal, and docs. Probes keep running
+            while this page is open.
+          </p>
+          <p class="aside-foot">USDC on Base. Direct to your wallet.</p>
+        </section>
 
-      <div class="overall" id="overall">
-        <span class="dot" id="overall-dot"></span>
-        <div>
-          <strong id="overall-label">Checking…</strong>
-          <div class="meta" id="overall-meta"></div>
-        </div>
-      </div>
-      <ul id="checks"></ul>
-      <footer>
-        Primary signal: Billing API <code>GET /healthz</code>. Incidents:
-        <a href="mailto:support@autlantic.com">support@autlantic.com</a>. Guide:
-        <a href="https://docs.autlantic.com/resources/status">status docs</a>.
-      </footer>
+        <section class="panel" aria-live="polite">
+          <div class="refresh-track" aria-hidden="true">
+            <div class="refresh-bar checking" id="refresh-bar"></div>
+          </div>
+          <div class="overall">
+            <div class="overall-state checking" id="overall-label">Checking systems…</div>
+            <div class="overall-meta" id="overall-meta">Starting probe</div>
+          </div>
+          <div class="list" id="checks"></div>
+          <p class="foot">
+            Primary signal: Billing API <code>GET /healthz</code>. Incidents:
+            <a href="mailto:support@autlantic.com">support@autlantic.com</a>.
+            <a href="https://docs.autlantic.com/resources/status">Status guide</a>.
+          </p>
+        </section>
+      </main>
     </div>
     <script>
+      const REFRESH_MS = 60_000;
       const list = document.getElementById("checks");
       const overallLabel = document.getElementById("overall-label");
       const overallMeta = document.getElementById("overall-meta");
-      const overallDot = document.getElementById("overall-dot");
+      const livePill = document.getElementById("live-pill");
+      const liveLabel = document.getElementById("live-label");
+      const refreshBar = document.getElementById("refresh-bar");
 
-      function setBadge(el, state) {
-        el.className = "badge " + state;
-        el.textContent = state === "ok" ? "Operational" : state === "bad" ? "Down" : "Checking";
+      function showSkeleton() {
+        list.innerHTML = "";
+        for (let i = 0; i < 3; i++) {
+          const row = document.createElement("div");
+          row.className = "row skeleton";
+          row.innerHTML =
+            '<span class="row-dot checking"></span><div class="row-name">.</div><div class="row-state">.</div><div class="row-detail">.</div>';
+          list.append(row);
+        }
+      }
+
+      function setLive(mode, text) {
+        livePill.className = "live-pill " + mode;
+        liveLabel.textContent = text;
+      }
+
+      function restartRefreshBar() {
+        refreshBar.className = "refresh-bar";
+        void refreshBar.offsetWidth;
+        refreshBar.className = "refresh-bar running";
       }
 
       async function run() {
-        list.innerHTML = "";
+        setLive("checking", "Checking");
+        overallLabel.className = "overall-state checking";
+        overallLabel.textContent = "Checking systems…";
+        overallMeta.textContent = "Probing production origins";
+        refreshBar.className = "refresh-bar checking";
+        showSkeleton();
+
         try {
           const res = await fetch("/api/status", { cache: "no-store" });
           const data = await res.json();
           const state = data.state || "partial";
-          overallDot.className =
-            "dot " + (state === "operational" ? "ok" : state === "major" ? "bad" : "");
+          const mode =
+            state === "operational" ? "ok" : state === "major" ? "bad" : "warn";
+
+          overallLabel.className = "overall-state " + mode;
           overallLabel.textContent =
             state === "operational"
               ? "All systems operational"
@@ -361,34 +752,44 @@
                 ? "Major outage"
                 : "Partial outage";
           overallMeta.textContent =
-            "Last checked " +
+            "Updated " +
             new Date(data.checkedAt || Date.now()).toLocaleString() +
-            " · refreshes every 60s";
+            " · next check in 60s";
 
+          setLive(state === "major" ? "down" : "", state === "major" ? "Issue" : "Live");
+          restartRefreshBar();
+
+          list.innerHTML = "";
           for (const check of data.checks || []) {
-            const li = document.createElement("li");
+            const row = document.createElement("div");
+            row.className = "row";
             const dot = document.createElement("span");
-            dot.className = "dot " + (check.ok ? "ok" : "bad");
+            dot.className = "row-dot " + (check.ok ? "ok" : "bad");
             const name = document.createElement("div");
-            name.className = "name";
+            name.className = "row-name";
             name.textContent = check.name;
-            const badge = document.createElement("div");
-            setBadge(badge, check.ok ? "ok" : "bad");
             const detail = document.createElement("div");
-            detail.className = "detail";
+            detail.className = "row-detail";
             detail.textContent = check.detail || check.url;
-            li.append(dot, name, badge, detail);
-            list.append(li);
+            const st = document.createElement("div");
+            st.className = "row-state " + (check.ok ? "ok" : "bad");
+            st.textContent = check.ok ? "Up" : "Down";
+            row.append(dot, name, st, detail);
+            list.append(row);
           }
         } catch (err) {
-          overallDot.className = "dot bad";
+          overallLabel.className = "overall-state bad";
           overallLabel.textContent = "Status service unreachable";
           overallMeta.textContent = err && err.message ? err.message : "Failed to load /api/status";
+          setLive("down", "Down");
+          restartRefreshBar();
+          list.innerHTML = "";
         }
       }
 
+      showSkeleton();
       run();
-      setInterval(run, 60_000);
+      setInterval(run, REFRESH_MS);
     </script>
   </body>
 </html>
