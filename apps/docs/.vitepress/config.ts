@@ -59,6 +59,7 @@ export default withMermaid(
             { text: "Debugging", link: "/guide/debugging" },
             { text: "Retries", link: "/guide/retries" },
             { text: "Sandbox & testing", link: "/guide/sandbox" },
+            { text: "Test clock", link: "/guide/test-clock" },
             { text: "Webhooks", link: "/guide/webhooks" },
             { text: "Local webhooks", link: "/guide/local-webhooks" },
             { text: "Reconciliation", link: "/guide/reconciliation" },
