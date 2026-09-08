@@ -7,6 +7,7 @@ The reference implementation remains `@autlantic/payments-recurring` under `pack
 |-----------|------|---------|
 | `python/` | Merchant **server** client (PyPI) | API key + webhook secret |
 | `go/` | Merchant **server** client (Go module) | API key + webhook secret |
+| `php/` | Merchant **server** client (Composer) | API key + webhook secret |
 | `ios/` | Mobile **Checkout** presenter (SPM) | None |
 | `android/` | Mobile **Checkout** presenter (Maven) | None |
 

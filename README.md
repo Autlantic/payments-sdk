@@ -80,7 +80,7 @@ Full guides: [docs.autlantic.com](https://docs.autlantic.com)
 
 Most integrators only need `@autlantic/payments-recurring`.
 
-Official non-TypeScript and mobile Checkout SDKs live under [`sdks/`](./sdks) (Python, Go, iOS, Android). See [Languages and SDKs](https://docs.autlantic.com/guide/languages).
+Official non-TypeScript and mobile Checkout SDKs live under [`sdks/`](./sdks) (Python, Go, PHP, iOS, Android). See [Languages and SDKs](https://docs.autlantic.com/guide/languages).
 
 ## Features
 

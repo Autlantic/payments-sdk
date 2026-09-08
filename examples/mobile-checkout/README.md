@@ -46,6 +46,7 @@ Default return scheme: `myapp://billing/success` (override with `MOBILE_RETURN_S
 | Node (this folder) | 3055 | `@autlantic/payments-recurring` (sandbox or hosted) |
 | [`python/`](./python) | 3056 | `autlantic-billing` |
 | [`go/`](./go) | 3057 | Go module |
+| [`php/`](./php) | 3058 | `autlantic/billing` |
 
 ## Tests
 

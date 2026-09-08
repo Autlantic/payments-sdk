@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- PHP: `autlantic/billing` **0.1.0** under `sdks/php` (Composer; Packagist after submit) · [PHP docs](/api/php)
+- Example: `examples/mobile-checkout/php` (port 3058)
+
 ## 0.3.12 - Multi-language and mobile SDKs
 
 - `@autlantic/payments-recurring` **0.3.12** on npm: `AUTLANTIC_API_VERSION` (`2026-01-01`), `Autlantic-Version` header, `successUrl` / `cancelUrl` on create subscription, payment, and payment link

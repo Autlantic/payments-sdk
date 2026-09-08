@@ -10,6 +10,30 @@ Already tagged: `sdks/ios/v0.1.0`. Xcode → Add Package → `https://github.com
 
 Already live: `pip install autlantic-billing`. Re-publish by bumping `sdks/python/pyproject.toml` and tagging `sdks/python/v*`.
 
+## PHP (Composer / Packagist)
+
+1. Tag `sdks/php/v0.1.0` (and push).
+2. On [packagist.org](https://packagist.org) → Submit → `https://github.com/Autlantic/payments-sdk` (or sync GitHub org).
+3. Packagist may need a custom path / monorepo package: use the Packagist “Custom package” / subtree or [Satis](https://getcomposer.org/doc/articles/handling-private-packages.md) if the root composer.json is not the package. For this repo the package lives at `sdks/php`; submit with **Git** URL and ensure Packagist discovers `sdks/php/composer.json` via a dedicated repo mirror **or** publish from a `sdks/php` subtree split.
+
+Simplest path for merchants today (before Packagist):
+
+```json
+{
+  "repositories": [{
+    "type": "vcs",
+    "url": "https://github.com/Autlantic/payments-sdk.git"
+  }],
+  "require": {
+    "autlantic/billing": "dev-main"
+  }
+}
+```
+
+Composer VCS installs look for `composer.json` at the repo root. For monorepo install until a Packagist subtree exists, use a **path** or **package** repository pointing at `sdks/php`, or a git subtree split to `Autlantic/billing-php`.
+
+Recommended: create (or subtree-split) a thin `Autlantic/billing-php` repo whose root is `sdks/php`, then `composer require autlantic/billing`.
+
 ## Android (Maven Central)
 
 Gradle + CI are wired under `sdks/android` and `.github/workflows/publish-android.yml`.

@@ -1,0 +1,45 @@
+{
+  "name": "autlantic/billing",
+  "description": "Official Autlantic Billing server SDK for PHP (hosted API + webhook verify)",
+  "type": "library",
+  "license": "MIT",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Autlantic Limited",
+      "email": "support@autlantic.com",
+      "homepage": "https://autlantic.com"
+    }
+  ],
+  "keywords": ["autlantic", "billing", "usdc", "base", "subscriptions", "webhooks"],
+  "homepage": "https://docs.autlantic.com/api/php",
+  "support": {
+    "docs": "https://docs.autlantic.com/guide/languages",
+    "source": "https://github.com/Autlantic/payments-sdk/tree/main/sdks/php",
+    "issues": "https://github.com/Autlantic/payments-sdk/issues"
+  },
+  "require": {
+    "php": ">=8.1",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-hash": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Autlantic\\Billing\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Autlantic\\Billing\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
