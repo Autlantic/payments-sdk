@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Autlantic Billing status</title>
+    <meta
+      name="description"
+      content="Live operational status for Autlantic Billing API, merchant portal, and docs."
+    />
+    <link rel="icon" href="https://docs.autlantic.com/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --bg0: #0b1220;
+        --bg1: #121a2b;
+        --ink: #e8eef9;
+        --muted: #9aa8c0;
+        --ok: #3ecf8e;
+        --bad: #f07178;
+        --warn: #e6c07b;
+        --line: rgba(232, 238, 249, 0.12);
+        --card: rgba(18, 26, 43, 0.9);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(1200px 600px at 10% -10%, #1a335c 0%, transparent 55%),
+          radial-gradient(900px 500px at 100% 0%, #163024 0%, transparent 50%),
+          linear-gradient(180deg, var(--bg0), var(--bg1));
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 3rem 1.25rem 4rem;
+      }
+      h1 {
+        font-family: "IBM Plex Serif", Georgia, serif;
+        font-weight: 600;
+        font-size: clamp(1.75rem, 4vw, 2.35rem);
+        letter-spacing: -0.02em;
+        margin: 0 0 0.35rem;
+      }
+      .lede {
+        color: var(--muted);
+        margin: 0 0 1.75rem;
+        line-height: 1.5;
+      }
+      .overall {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.1rem;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--card);
+        margin-bottom: 1rem;
+      }
+      .dot {
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 50%;
+        background: var(--warn);
+        flex-shrink: 0;
+      }
+      .dot.ok {
+        background: var(--ok);
+      }
+      .dot.bad {
+        background: var(--bad);
+      }
+      .overall strong {
+        font-size: 1.05rem;
+      }
+      .meta {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-top: 0.15rem;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.65rem;
+      }
+      li {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.75rem;
+        align-items: start;
+        padding: 0.9rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--card);
+      }
+      .name {
+        font-weight: 560;
+      }
+      .detail {
+        color: var(--muted);
+        font-size: 0.85rem;
+        grid-column: 2 / -1;
+      }
+      .badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--warn);
+      }
+      .badge.ok {
+        color: var(--ok);
+      }
+      .badge.bad {
+        color: var(--bad);
+      }
+      footer {
+        margin-top: 2rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+      a {
+        color: #8ec5ff;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Autlantic Billing</h1>
+      <p class="lede">
+        Public status for hosted Billing. Probes run on this status service against production
+        origins.
+      </p>
+      <div class="overall" id="overall">
+        <span class="dot" id="overall-dot"></span>
+        <div>
+          <strong id="overall-label">Checking…</strong>
+          <div class="meta" id="overall-meta"></div>
+        </div>
+      </div>
+      <ul id="checks"></ul>
+      <footer>
+        Primary signal: Billing API <code>GET /healthz</code>. Incidents and DPA requests:
+        <a href="mailto:support@autlantic.com">support@autlantic.com</a>. Docs:
+        <a href="https://docs.autlantic.com/resources/status">status guide</a>.
+      </footer>
+    </main>
+    <script>
+      const list = document.getElementById("checks");
+      const overallLabel = document.getElementById("overall-label");
+      const overallMeta = document.getElementById("overall-meta");
+      const overallDot = document.getElementById("overall-dot");
+
+      function setBadge(el, state) {
+        el.className = "badge " + state;
+        el.textContent = state === "ok" ? "Operational" : state === "bad" ? "Down" : "Checking";
+      }
+
+      async function run() {
+        list.innerHTML = "";
+        try {
+          const res = await fetch("/api/status", { cache: "no-store" });
+          const data = await res.json();
+          const state = data.state || "partial";
+          overallDot.className =
+            "dot " + (state === "operational" ? "ok" : state === "major" ? "bad" : "warn");
+          overallLabel.textContent =
+            state === "operational"
+              ? "All systems operational"
+              : state === "major"
+                ? "Major outage"
+                : "Partial outage";
+          overallMeta.textContent =
+            "Last checked " +
+            new Date(data.checkedAt || Date.now()).toLocaleString() +
+            " · refreshes every 60s";
+
+          for (const check of data.checks || []) {
+            const li = document.createElement("li");
+            const dot = document.createElement("span");
+            dot.className = "dot " + (check.ok ? "ok" : "bad");
+            const name = document.createElement("div");
+            name.className = "name";
+            name.textContent = check.name;
+            const badge = document.createElement("div");
+            setBadge(badge, check.ok ? "ok" : "bad");
+            const detail = document.createElement("div");
+            detail.className = "detail";
+            detail.textContent = check.detail || check.url;
+            li.append(dot, name, badge, detail);
+            list.append(li);
+          }
+        } catch (err) {
+          overallDot.className = "dot bad";
+          overallLabel.textContent = "Status service unreachable";
+          overallMeta.textContent = err && err.message ? err.message : "Failed to load /api/status";
+        }
+      }
+
+      run();
+      setInterval(run, 60_000);
+    </script>
+  </body>
+</html>

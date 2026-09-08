@@ -4,7 +4,7 @@
 
 | Surface | Branches | What ships from where |
 |---------|----------|------------------------|
-| This repo (`payments-sdk`) | `main` + **`production`** | Packages/tags from **`main`**; docs + example-store Railway from **`production`** |
+| This repo (`payments-sdk`) | `main` + **`production`** | Packages/tags from **`main`**; docs + example-store + status Railway from **`production`** |
 | PHP mirror (`billing-php`) | `main` only | No Railway |
 | Autlantic hosted apps | `main` → `staging` → `production` | Railway staging/production (private app repos) |
 
@@ -13,7 +13,7 @@
 | Branch | Purpose | Railway |
 |--------|---------|---------|
 | `main` | PRs, SDK source of truth, npm/PyPI/NuGet/pub tags | **Not** for docs/store deploy |
-| `production` | What Railway builds for docs.autlantic.com (+ example store) | **Yes** — docs / example-store |
+| `production` | What Railway builds for docs.autlantic.com, example store, status.autlantic.com | **Yes** — docs / example-store / status |
 
 Optional later: add `staging` if you want a docs preview env. Until then, promote `main` → `production` before docs go live.
 
@@ -30,10 +30,11 @@ Package publishes still happen from **`main`** (or version tags on `main`). Prom
 
 ## Railway (you must set once)
 
-For each payments-sdk Railway service (`railway.docs.toml`, `railway.example-store.toml`):
+For each payments-sdk Railway service (`railway.docs.toml`, `railway.example-store.toml`, `railway.status.toml`):
 
 1. Settings → Source → branch = **`production`** (not `main`)
 2. Redeploy once after switching
+3. Status service: custom domain **`status.autlantic.com`**
 
 ## Related
 

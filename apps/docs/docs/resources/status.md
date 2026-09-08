@@ -1,34 +1,27 @@
 # Status page
 
-Merchants and operators should use **[status.autlantic.com](https://status.autlantic.com)** as the public status surface when it is configured.
+Live public surface: **[status.autlantic.com](https://status.autlantic.com)**.
 
-## Recommended setup
+The status service probes production origins every request (and the page refreshes every 60 seconds):
 
-1. Point `status.autlantic.com` at a status provider (Better Stack, or similar).
-2. Monitor the hosted Billing API at **https://billing.autlantic.com**.
-3. Publish incidents and maintenance windows on the status page so integrators have a single place to check.
+| Check | Target |
+|-------|--------|
+| Billing API | `GET https://billing.autlantic.com/healthz` → `{ "ok": true }` |
+| Merchant portal | `GET https://portal.autlantic.com/` |
+| Docs | `GET https://docs.autlantic.com/` |
 
-## Health checks
+Machine-readable: `GET https://status.autlantic.com/api/status` and `GET https://status.autlantic.com/healthz`.
 
-Probe the Billing API with an unauthenticated GET:
+## Operator setup (Railway)
 
-| Path | Response | Use |
-|------|----------|-----|
-| `GET /healthz` | `{ "ok": true }` | Lightweight liveness for uptime monitors |
-| `GET /health` | JSON including `ok`, service name, chain metadata | Richer diagnostics (not required for basic uptime) |
+1. In the payments-sdk Railway project, add a service with config file `railway.status.toml`.
+2. Set the source branch to **`production`** (never `main`).
+3. Attach custom domain **`status.autlantic.com`** (Cloudflare DNS should already point at Cloudflare/Railway).
 
-Example:
-
-```bash
-curl -sS https://billing.autlantic.com/healthz
-# {"ok":true}
-```
-
-Configure Better Stack (or equivalent) to poll `https://billing.autlantic.com/healthz` on a short interval from multiple regions. Alert on non-2xx or body that is not `ok: true`.
-
-Optional: also monitor the merchant portal and docs origins if you want full stack visibility. Prefer the Billing API health endpoint as the primary signal for payment availability.
+Optional: also configure Better Stack (or similar) to poll `https://billing.autlantic.com/healthz` and page on-call for non-2xx or body that is not `ok: true`. Prefer the Billing API health endpoint as the primary signal for payment availability.
 
 ## Related
 
 - [Trust center](/guide/trust)
+- [SOC 2 readiness](/guide/soc2-readiness)
 - [Deploy docs on Railway](/resources/deploy-railway) (operators)

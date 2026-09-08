@@ -1,0 +1,20 @@
+# Autlantic Billing status — status.autlantic.com
+# Railway: new service → Settings → Config file path → railway.status.toml
+# Source branch: production (never main)
+
+[build]
+builder = "NIXPACKS"
+nixpacksConfigPath = "nixpacks.status.toml"
+buildCommand = "pnpm install --frozen-lockfile"
+watchPatterns = [
+  "apps/status/**",
+  "railway.status.toml",
+  "nixpacks.status.toml",
+  "pnpm-lock.yaml",
+]
+
+[deploy]
+startCommand = "pnpm --filter @autlantic/status start"
+restartPolicyType = "ON_FAILURE"
+
+# Railway → Settings → Networking → Custom domain: status.autlantic.com

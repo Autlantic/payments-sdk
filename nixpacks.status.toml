@@ -1,0 +1,2 @@
+# Status service only (see railway.status.toml → nixpacksConfigPath).
+providers = ["node"]

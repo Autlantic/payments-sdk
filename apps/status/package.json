@@ -1,0 +1,14 @@
+{
+  "name": "@autlantic/status",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Public status page for Autlantic Billing (status.autlantic.com)",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
