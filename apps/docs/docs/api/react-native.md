@@ -1,6 +1,9 @@
-# React Native Checkout SDK
+# React Native SDK
 
-Official **mobile** Checkout presenter for React Native. Opens hosted Autlantic checkout URLs. **No API keys** in the app.
+Official Autlantic Billing **mobile Checkout presenter** for React Native.
+Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) · [Languages](/guide/languages).
+
+**USDC on Base** · never put API keys or webhook secrets in the app.
 
 Source: [`sdks/react-native`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/react-native). Package: `@autlantic/checkout` **0.1.0**.
 
@@ -44,8 +47,8 @@ Sample: [`examples/mobile-checkout`](https://github.com/Autlantic/payments-sdk/t
 
 ## Related
 
+- [Languages and SDKs](/guide/languages)
 - [Mobile apps](/guide/mobile)
+- [Security](/guide/security)
 - [Flutter Checkout](/api/flutter)
 - [iOS Checkout](/api/ios) · [Android Checkout](/api/android)
-- [Languages and SDKs](/guide/languages)
-- [Security](/guide/security)

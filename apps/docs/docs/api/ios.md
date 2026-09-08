@@ -1,6 +1,9 @@
-# iOS Checkout SDK
+# iOS SDK
 
-Official **mobile** Checkout presenter. Opens hosted Autlantic checkout URLs. **No API keys** in the app.
+Official Autlantic Billing **mobile Checkout presenter** for iOS.
+Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) · [Languages](/guide/languages).
+
+**USDC on Base** · never put API keys or webhook secrets in the app.
 
 Uses **Swift Package Manager** (not CocoaPods). Tag: `sdks/ios/v0.1.0`.
 
@@ -50,7 +53,7 @@ Sample: [`examples/mobile-checkout`](https://github.com/Autlantic/payments-sdk/t
 
 ## Related
 
-- [Mobile apps](/guide/mobile)
-- [Android Checkout](/api/android)
 - [Languages and SDKs](/guide/languages)
+- [Mobile apps](/guide/mobile)
 - [Security](/guide/security)
+- [Android Checkout](/api/android)

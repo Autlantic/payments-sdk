@@ -1,6 +1,27 @@
-# Autlantic Billing (PHP)
+<p align="center">
+  <img src="https://autlantic.com/brand/autlantic-icon-1024-master.png" alt="Autlantic" width="96" height="96" />
+</p>
 
-Official **server** client for the hosted Autlantic Billing API.
+<h1 align="center">Autlantic Billing — PHP</h1>
+
+<p align="center">
+  <strong>USDC payments on Base</strong><br />
+  Official server client for the hosted Autlantic Billing API.
+</p>
+
+<p align="center">
+  <a href="https://docs.autlantic.com/api/php"><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
+  <a href="https://github.com/Autlantic/payments-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
+  <a href="https://autlantic.com"><img src="https://img.shields.io/badge/product-autlantic.com-111827?style=flat-square" alt="Autlantic" /></a>
+</p>
+
+---
+
+## Why this SDK
+
+Same Billing API as Node — create subscriptions, one-time payments, and shareable payment links; verify webhooks. Non-custodial USDC on Base settles to your merchant `payoutAddressEvm`. API keys and webhook secrets stay on the server.
+
+## Install
 
 ```bash
 composer require autlantic/billing
@@ -13,13 +34,12 @@ composer config repositories.autlantic vcs https://github.com/Autlantic/billing-
 composer require autlantic/billing:^0.1
 ```
 
-Or path-require from this monorepo (`sdks/php`).
+Or path-require from this monorepo (`sdks/php`). Requires **PHP 8.1+**, `ext-curl`, `ext-json`, `ext-hash`.
 
-## Usage
+## Quick start
 
 ```php
 use Autlantic\Billing\AutlanticBilling;
-use Autlantic\Billing\Webhook;
 
 $billing = AutlanticBilling::fromEnv(); // AUTLANTIC_BILLING_API_KEY
 
@@ -29,25 +49,50 @@ $link = $billing->createPaymentLink([
   'successUrl' => 'myapp://billing/success',
   'cancelUrl' => 'myapp://billing/cancel',
 ]);
-$url = $link['url'] ?? null;
+// Share $link['url'] or open it with a mobile Checkout SDK
 ```
 
-Webhook handler:
+## Webhooks
+
+Verify `x-autlantic-signature` with your portal endpoint secret:
 
 ```php
+use Autlantic\Billing\Webhook;
+
 $ok = Webhook::verify($secret, $rawBody, $_SERVER['HTTP_X_AUTLANTIC_SIGNATURE'] ?? null);
 $event = Webhook::parseEvent($rawBody);
+// Unlock on invoice.paid / payment.paid / subscription.activated
 ```
 
-## Notes
+## Environment
 
-- Hosted API only. Pins `Autlantic-Version: 2026-01-01`.
-- Secrets stay on the server. Mobile apps use Checkout SDKs, not this package.
-- PHP 8.1+, `ext-curl`, `ext-json`, `ext-hash`.
+| Env var | Purpose |
+|---------|---------|
+| `AUTLANTIC_BILLING_API_KEY` | `abk_test_…` or `abk_live_…` (required) |
+| `AUTLANTIC_BILLING_API_URL` | Default `https://billing.autlantic.com` |
+| `AUTLANTIC_BILLING_MERCHANT_ID` | Optional merchant id |
+
+Hosted mode only. Pins `Autlantic-Version: 2026-01-01`.
+
+## Documentation
+
+| | |
+|--|--|
+| [PHP SDK](https://docs.autlantic.com/api/php) | API reference |
+| [Languages](https://docs.autlantic.com/guide/languages) | All SDK surfaces |
+| [Mobile apps](https://docs.autlantic.com/guide/mobile) | Checkout presenters |
+| [Webhooks](https://docs.autlantic.com/guide/webhooks) | Signature & events |
+| [Terms](https://autlantic.com/terms) · [Privacy](https://autlantic.com/privacy) · [Security](https://autlantic.com/security) | Legal |
+
+## Develop
 
 ```bash
 composer install
 composer test
 ```
 
-Docs: [PHP SDK](https://docs.autlantic.com/api/php) · [Languages](https://docs.autlantic.com/guide/languages)
+## License
+
+MIT · Operated by **Autlantic Limited** (UK company no. 17422039).
+
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk).

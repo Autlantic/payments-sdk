@@ -1,6 +1,9 @@
-# Android Checkout SDK
+# Android SDK
 
-Official **mobile** Checkout presenter. Opens hosted Autlantic checkout URLs via Chrome Custom Tabs. **No API keys** in the app.
+Official Autlantic Billing **mobile Checkout presenter** for Android.
+Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) · [Languages](/guide/languages).
+
+**USDC on Base** · never put API keys or webhook secrets in the app.
 
 Source: [`sdks/android`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/android).
 
@@ -47,7 +50,7 @@ Sample: openable app [`examples/mobile-checkout/android-sample`](https://github.
 
 ## Related
 
-- [Mobile apps](/guide/mobile)
-- [iOS Checkout](/api/ios)
 - [Languages and SDKs](/guide/languages)
+- [Mobile apps](/guide/mobile)
 - [Security](/guide/security)
+- [iOS Checkout](/api/ios)

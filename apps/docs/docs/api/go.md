@@ -1,6 +1,9 @@
 # Go SDK
 
-Official **server** client for the hosted Billing API.
+Official Autlantic Billing **server client** for Go.
+Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) · [Languages](/guide/languages).
+
+**USDC on Base** · secrets server-only.
 
 ```bash
 go get github.com/Autlantic/payments-sdk/sdks/go@sdks/go/v0.1.0
@@ -69,8 +72,9 @@ Sample merchant backend: [`examples/mobile-checkout/go`](https://github.com/Autl
 
 ## Related
 
+- [Languages and SDKs](/guide/languages)
+- [Mobile apps](/guide/mobile)
+- [Security](/guide/security)
 - [Python SDK](/api/python)
 - [Node.js SDK](/api/nodejs)
-- [Mobile apps](/guide/mobile)
 - [API versioning](/guide/api-versioning)
-- [Languages and SDKs](/guide/languages)

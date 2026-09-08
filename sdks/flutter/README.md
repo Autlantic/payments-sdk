@@ -1,36 +1,55 @@
-# autlantic_checkout
+<p align="center">
+  <img src="https://autlantic.com/brand/autlantic-icon-1024-master.png" alt="Autlantic" width="96" height="96" />
+</p>
 
-Flutter plugin that presents hosted Autlantic checkout URLs. **No API keys** in the app.
+<h1 align="center">Autlantic Billing — Flutter</h1>
 
-- **iOS:** `ASWebAuthenticationSession` (system browser sheet)
-- **Android:** Chrome Custom Tabs (`androidx.browser`)
+<p align="center">
+  <strong>USDC payments on Base</strong><br />
+  Official mobile Checkout presenter. Opens hosted checkout URLs — no API keys in the app.
+</p>
 
-Do not embed locked WebViews — WalletConnect needs to hand off to wallet apps.
+<p align="center">
+  <a href="https://docs.autlantic.com/api/flutter"><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
+  <a href="https://github.com/Autlantic/payments-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
+  <a href="https://autlantic.com"><img src="https://img.shields.io/badge/product-autlantic.com-111827?style=flat-square" alt="Autlantic" /></a>
+</p>
+
+---
+
+## Why this SDK
+
+Checkout presenter only (`autlantic_checkout`). Your backend creates the session; this plugin opens the hosted `checkoutUrl`. **iOS:** `ASWebAuthenticationSession` · **Android:** Chrome Custom Tabs. Never embed `abk_*` keys or webhook secrets in the app. Do not lock checkout in a WebView — WalletConnect needs to hand off to wallet apps.
 
 ## Install
 
-Path dependency (until pub.dev):
+Until pub.dev:
 
 ```yaml
 dependencies:
   autlantic_checkout:
-    path: /path/to/payments-sdk/sdks/flutter
+    git:
+      url: https://github.com/Autlantic/payments-sdk.git
+      path: sdks/flutter
+      ref: sdks/flutter/v0.1.0
 ```
 
-## API
+Or a local path to `sdks/flutter`.
+
+## Quick start
 
 ```dart
 import 'package:autlantic_checkout/autlantic_checkout.dart';
 
 final result = await AutlanticCheckout.present(
-  checkoutUrl, // from YOUR backend — never call Billing /v1 with a secret from the app
+  checkoutUrl, // from YOUR backend
   returnUrlScheme: 'myapp',
 );
 
 switch (result.status) {
   case AutlanticCheckoutStatus.completed:
     // iOS: optional result.callbackUrl
-    // Android: Custom Tabs opened; handle deep links in the host app, then poll YOUR backend
+    // Android: Custom Tabs opened; handle deep links, then poll YOUR backend
     break;
   case AutlanticCheckoutStatus.canceled:
     break;
@@ -48,8 +67,27 @@ switch (result.status) {
 
 Sample merchant backend: [`examples/mobile-checkout`](../../examples/mobile-checkout) (`pnpm example:mobile`).
 
-## Related
+## Documentation
 
-- [Flutter docs](https://docs.autlantic.com/api/flutter)
-- [Mobile apps](https://docs.autlantic.com/guide/mobile)
-- [iOS Checkout](https://docs.autlantic.com/api/ios) · [Android Checkout](https://docs.autlantic.com/api/android)
+| | |
+|--|--|
+| [Flutter Checkout](https://docs.autlantic.com/api/flutter) | API reference |
+| [Mobile apps](https://docs.autlantic.com/guide/mobile) | Mobile integration guide |
+| [iOS](https://docs.autlantic.com/api/ios) · [Android](https://docs.autlantic.com/api/android) | Native Checkout |
+| [Languages](https://docs.autlantic.com/guide/languages) | All SDK surfaces |
+| [Security](https://docs.autlantic.com/guide/security) | Secrets & threat model |
+
+## Develop
+
+```bash
+cd sdks/flutter
+flutter analyze
+```
+
+Maintainer publish: `flutter pub publish` (see [`../PUBLISHING.md`](../PUBLISHING.md)).
+
+## License
+
+MIT · Operated by **Autlantic Limited** (UK company no. 17422039).
+
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk).

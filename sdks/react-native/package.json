@@ -1,7 +1,8 @@
 {
   "name": "@autlantic/checkout",
   "version": "0.1.0",
-  "description": "Autlantic Billing mobile Checkout presenter for React Native. Opens hosted checkoutUrl; no API keys.",
+  "description": "Autlantic Billing mobile Checkout presenter for React Native. Opens hosted checkoutUrl via ASWebAuthenticationSession (iOS) and Chrome Custom Tabs (Android). No API keys.",
+  "license": "MIT",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "react-native": "src/index.ts",
@@ -15,23 +16,32 @@
     "README.md"
   ],
   "scripts": {
-    "typescript": "tsc --noEmit"
+    "typescript": "tsc --noEmit",
+    "prepublishOnly": "npm run typescript"
   },
   "keywords": [
     "react-native",
     "autlantic",
     "checkout",
     "billing",
-    "usdc"
+    "usdc",
+    "payments",
+    "ios",
+    "android"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Autlantic/payments-sdk.git",
+    "url": "git+https://github.com/Autlantic/payments-sdk.git",
     "directory": "sdks/react-native"
   },
+  "bugs": {
+    "url": "https://github.com/Autlantic/payments-sdk/issues"
+  },
   "author": "Autlantic Limited <support@autlantic.com>",
-  "license": "MIT",
   "homepage": "https://docs.autlantic.com/api/react-native",
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"

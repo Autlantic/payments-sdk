@@ -1,6 +1,9 @@
 # Python SDK
 
-Official **server** client for the hosted Billing API.
+Official Autlantic Billing **server client** for Python.
+Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) · [Languages](/guide/languages).
+
+**USDC on Base** · secrets server-only.
 
 ```bash
 pip install autlantic-billing
@@ -79,8 +82,9 @@ Sample merchant backend: [`examples/mobile-checkout/python`](https://github.com/
 
 ## Related
 
+- [Languages and SDKs](/guide/languages)
+- [Mobile apps](/guide/mobile)
+- [Security](/guide/security)
 - [Go SDK](/api/go)
 - [Node.js SDK](/api/nodejs)
-- [Mobile apps](/guide/mobile)
 - [API versioning](/guide/api-versioning)
-- [Languages and SDKs](/guide/languages)

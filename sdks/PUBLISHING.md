@@ -51,6 +51,47 @@ cd sdks/dotnet && dotnet pack -c Release
 
 Suggested publish flow: bump `Version` in `Autlantic.Billing.csproj` + `Version.SdkVersion`, tag `sdks/dotnet/v*`, push package with `dotnet nuget push` (API key / GitHub Actions secret later).
 
+## Flutter (pub.dev)
+
+Package: `autlantic_checkout` in `sdks/flutter` (tag `sdks/flutter/v0.1.0`).
+
+```bash
+cd sdks/flutter
+flutter pub publish --dry-run
+# when ready (logged into pub.dev as Autlantic publisher):
+flutter pub publish
+```
+
+Until published, path/git dependency:
+
+```yaml
+dependencies:
+  autlantic_checkout:
+    git:
+      url: https://github.com/Autlantic/payments-sdk.git
+      path: sdks/flutter
+      ref: sdks/flutter/v0.1.0
+```
+
+## React Native (npm)
+
+Package: `@autlantic/checkout` in `sdks/react-native` (tag `sdks/react-native/v0.1.0`).
+
+```bash
+cd sdks/react-native
+npm run typescript
+npm publish --access public   # requires npm org @autlantic
+```
+
+Until published:
+
+```bash
+npm install github:Autlantic/payments-sdk#sdks/react-native/v0.1.0
+# or path: npm install ../payments-sdk/sdks/react-native
+```
+
+Metro may need `watchFolders` / `nodeModulesPaths` for monorepo path installs.
+
 ## Android (Maven Central)
 
 Gradle + CI are wired under `sdks/android` and `.github/workflows/publish-android.yml`.
@@ -99,6 +140,6 @@ implementation("com.autlantic:checkout:0.1.0")
 
 ## Suggested finish line
 
-1. You: confirm `com.autlantic` **Verified** + add Maven/GPG secrets; submit **billing-php** on Packagist; add `BILLING_PHP_TOKEN`
+1. You: confirm `com.autlantic` **Verified** + add Maven/GPG secrets; submit **billing-php** on Packagist; add `BILLING_PHP_TOKEN`; publish Flutter (pub.dev) / RN (npm) / .NET (NuGet) when ready
 2. Agent: tag Android + Java Maven releases; confirm Central sync
-3. Agent: update docs to “Available on Maven Central” / Packagist
+3. Agent: update docs to “Available on Maven Central” / Packagist / pub.dev / npm

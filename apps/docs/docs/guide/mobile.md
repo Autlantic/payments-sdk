@@ -61,6 +61,10 @@ await AutlanticCheckout.present(checkoutUrl, { returnUrlScheme: 'myapp' });
 
 Prefer system browser surfaces (`ASWebAuthenticationSession` on iOS; Chrome Custom Tabs on Android — including Flutter/RN plugins) so WalletConnect can hand off to wallet apps. Avoid locked WebViews.
 
+## Device smoke (Test keys)
+
+Step-by-step phone/simulator check with `abk_test_*`: [Device smoke test](/guide/device-smoke).
+
 ## Sample merchant backend
 
 ```bash
@@ -86,6 +90,7 @@ Alternate hosted backends: [Python](https://github.com/Autlantic/payments-sdk/tr
 
 ## Related
 
+- [Device smoke test](/guide/device-smoke)
 - [iOS Checkout](/api/ios)
 - [Android Checkout](/api/android)
 - [Flutter Checkout](/api/flutter)

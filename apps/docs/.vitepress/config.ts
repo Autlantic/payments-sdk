@@ -47,6 +47,7 @@ export default withMermaid(
             { text: "Getting started", link: "/guide/getting-started" },
             { text: "15-minute integration", link: "/guide/integration" },
             { text: "Mobile apps", link: "/guide/mobile" },
+            { text: "Device smoke test", link: "/guide/device-smoke" },
             { text: "One-time payments", link: "/guide/one-time-payments" },
             { text: "Payment links", link: "/guide/payment-links" },
             { text: "Lifecycle", link: "/guide/lifecycle" },

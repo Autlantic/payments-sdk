@@ -1,6 +1,6 @@
 # Languages and SDKs
 
-Autlantic Billing is **one hosted API**. Official SDKs are thin clients around that API (Stripe-style). They are not separate billing backends.
+Autlantic Billing is **one hosted API**. Official SDKs are thin clients around that API (Stripe-style). They are not separate billing backends. Package READMEs and API pages share the branding layout in [`sdks/README.STANDARD.md`](https://github.com/Autlantic/payments-sdk/blob/main/sdks/README.STANDARD.md).
 
 ## Matrix
 

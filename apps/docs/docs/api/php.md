@@ -1,6 +1,9 @@
 # PHP SDK
 
-Official **server** client for the hosted Billing API.
+Official Autlantic Billing **server client** for PHP.
+Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) · [Languages](/guide/languages).
+
+**USDC on Base** · secrets server-only.
 
 ```bash
 composer require autlantic/billing
@@ -78,9 +81,10 @@ Sample merchant backend: [`examples/mobile-checkout/php`](https://github.com/Aut
 
 ## Related
 
+- [Languages and SDKs](/guide/languages)
+- [Mobile apps](/guide/mobile)
+- [Security](/guide/security)
 - [Python SDK](/api/python)
 - [Go SDK](/api/go)
 - [Node.js SDK](/api/nodejs)
-- [Mobile apps](/guide/mobile)
 - [API versioning](/guide/api-versioning)
-- [Languages and SDKs](/guide/languages)

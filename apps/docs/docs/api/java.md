@@ -1,6 +1,9 @@
 # Java SDK
 
-Official **server** client for the hosted Billing API.
+Official Autlantic Billing **server client** for Java.
+Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) · [Languages](/guide/languages).
+
+**USDC on Base** · secrets server-only.
 
 Source: [`sdks/java`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/java). Tag `sdks/java/v0.1.0` when publishing. Maven Central (`com.autlantic:billing`) shares the Android namespace gate — use a composite/path dependency until then.
 
@@ -76,11 +79,12 @@ Sample merchant backend: [`examples/mobile-checkout/java`](https://github.com/Au
 
 ## Related
 
+- [Languages and SDKs](/guide/languages)
+- [Mobile apps](/guide/mobile)
+- [Security](/guide/security)
 - [PHP SDK](/api/php)
 - [.NET SDK](/api/dotnet)
 - [Python SDK](/api/python)
 - [Go SDK](/api/go)
 - [Node.js SDK](/api/nodejs)
-- [Mobile apps](/guide/mobile)
 - [API versioning](/guide/api-versioning)
-- [Languages and SDKs](/guide/languages)

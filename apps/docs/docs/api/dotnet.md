@@ -1,6 +1,9 @@
 # .NET SDK
 
-Official **server** client for the hosted Billing API.
+Official Autlantic Billing **server client** for .NET.
+Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) · [Languages](/guide/languages).
+
+**USDC on Base** · secrets server-only.
 
 Source: [`sdks/dotnet`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/dotnet). Tag `sdks/dotnet/v0.1.0` when publishing. NuGet package id: `Autlantic.Billing`.
 
@@ -76,11 +79,12 @@ Sample merchant backend: [`examples/mobile-checkout/dotnet`](https://github.com/
 
 ## Related
 
+- [Languages and SDKs](/guide/languages)
+- [Mobile apps](/guide/mobile)
+- [Security](/guide/security)
 - [Java SDK](/api/java)
 - [PHP SDK](/api/php)
 - [Python SDK](/api/python)
 - [Go SDK](/api/go)
 - [Node.js SDK](/api/nodejs)
-- [Mobile apps](/guide/mobile)
 - [API versioning](/guide/api-versioning)
-- [Languages and SDKs](/guide/languages)

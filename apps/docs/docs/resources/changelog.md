@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- SDK READMEs and API docs aligned to shared Autlantic branding standard (`sdks/README.STANDARD.md`)
+- Guide: [Device smoke test](/guide/device-smoke) (Test-key phone / simulator walkthrough)
+- Flutter / RN: pub.dev + npm publish metadata and maintainer steps in `sdks/PUBLISHING.md`
 - PHP: mirror [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php) `v0.1.0` for Packagist/VCS install · [PHP docs](/api/php)
 - Java: `com.autlantic:billing` **0.1.0** under `sdks/java` · [Java docs](/api/java)
 - Example: `examples/mobile-checkout/java` (port 3059)

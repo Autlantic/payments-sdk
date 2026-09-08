@@ -1,6 +1,22 @@
-# @autlantic/payments-recurring
+<p align="center">
+  <img src="https://autlantic.com/brand/autlantic-icon-1024-master.png" alt="Autlantic" width="96" height="96" />
+</p>
 
-Autlantic Billing SDK. Create USDC subscriptions, one-time payments, and shareable payment links on Base. Receive webhooks. Test and Live environments.
+<h1 align="center">Autlantic Billing — Node.js</h1>
+
+<p align="center">
+  <strong>USDC payments on Base</strong><br />
+  Official TypeScript server client for subscriptions, one-time payments, payment links, and webhooks.
+</p>
+
+<p align="center">
+  <a href="https://docs.autlantic.com/api/nodejs"><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
+  <a href="https://www.npmjs.com/package/@autlantic/payments-recurring"><img src="https://img.shields.io/npm/v/@autlantic/payments-recurring?style=flat-square&color=5672cd" alt="npm" /></a>
+  <a href="https://github.com/Autlantic/payments-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
+  <a href="https://autlantic.com"><img src="https://img.shields.io/badge/product-autlantic.com-111827?style=flat-square" alt="Autlantic" /></a>
+</p>
+
+---
 
 USDC settles to your merchant `payoutAddressEvm`. Autlantic does not custody subscription revenue. Relayers sponsor gas and submit transactions; they do not hold member balances.
 
@@ -11,8 +27,6 @@ USDC settles to your merchant `payoutAddressEvm`. Autlantic does not custody sub
 - Billing Terms: https://portal.autlantic.com/terms  
 - Non-custodial: https://autlantic.com/non-custodial  
 - Security: https://autlantic.com/security  
-
-Operated by **Autlantic Limited** (UK company no. 17422039).
 
 ## Install
 
@@ -91,3 +105,9 @@ const { charge } = await billing.activateSubscription(subscription.id);
 ## Hosted API
 
 Point `AUTLANTIC_BILLING_API_URL` at your billing API. Mode, chain, and checkout badge come from the API key. See [API.md](./API.md) and https://docs.autlantic.com/guide/sandbox.
+
+## License
+
+MIT · Operated by **Autlantic Limited** (UK company no. 17422039).
+
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk).

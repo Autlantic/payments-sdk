@@ -1,5 +1,10 @@
 # Node.js SDK
 
+Official Autlantic Billing **server client** for Node.js / TypeScript.
+Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) · [Languages](/guide/languages).
+
+**USDC on Base** · secrets server-only.
+
 `@autlantic/payments-recurring`
 
 ## Test vs Live
@@ -105,3 +110,11 @@ Events include `subscription.*`, `invoice.*`, and `payment.created` / `payment.p
 ### Errors and debugging
 
 Throws **`AutlanticBillingError`** (`code`, `type`, `statusCode`, `requestId`). Enable `debug: true` or `AUTLANTIC_BILLING_DEBUG=1` for redacted HTTP traces. Full guide: [Debugging](/guide/debugging).
+
+## Related
+
+- [Languages and SDKs](/guide/languages)
+- [Mobile apps](/guide/mobile)
+- [Security](/guide/security)
+- [Debugging](/guide/debugging)
+- [API versioning](/guide/api-versioning)
