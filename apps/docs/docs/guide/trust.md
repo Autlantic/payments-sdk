@@ -46,7 +46,7 @@ RPC providers, block explorers, and wallet software used by merchants or end use
 
 A Data Processing Agreement is available on request at **[support@autlantic.com](mailto:support@autlantic.com)**.
 
-A short outline template for negotiation (starting point only, pending Autlantic Limited counsel review) is published at [/legal/dpa-template.md](/legal/dpa-template.md). It is **not** legal advice and is **not** an executed agreement.
+A short outline template for negotiation (starting point only, pending Autlantic Limited counsel review) is published at [DPA outline template](/resources/dpa-template). It is **not** legal advice and is **not** an executed agreement.
 
 ## Status
 
