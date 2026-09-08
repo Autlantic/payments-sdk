@@ -47,6 +47,7 @@ Default return scheme: `myapp://billing/success` (override with `MOBILE_RETURN_S
 | [`python/`](./python) | 3056 | `autlantic-billing` |
 | [`go/`](./go) | 3057 | Go module |
 | [`php/`](./php) | 3058 | `autlantic/billing` |
+| [`java/`](./java) | 3059 | `com.autlantic:billing` |
 
 ## Tests
 

@@ -1,6 +1,6 @@
 # How to publish non-TypeScript SDKs
 
-Node/npm and Python/PyPI are live. iOS uses SPM from Git. Android publishes to Maven Central via GitHub Actions.
+Node/npm and Python/PyPI are live. iOS uses SPM from Git. Android publishes to Maven Central via GitHub Actions. PHP mirrors to [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php) for Composer/Packagist.
 
 ## iOS (SPM)
 
@@ -12,27 +12,33 @@ Already live: `pip install autlantic-billing`. Re-publish by bumping `sdks/pytho
 
 ## PHP (Composer / Packagist)
 
-1. Tag `sdks/php/v0.1.0` (and push).
-2. On [packagist.org](https://packagist.org) → Submit → `https://github.com/Autlantic/payments-sdk` (or sync GitHub org).
-3. Packagist may need a custom path / monorepo package: use the Packagist “Custom package” / subtree or [Satis](https://getcomposer.org/doc/articles/handling-private-packages.md) if the root composer.json is not the package. For this repo the package lives at `sdks/php`; submit with **Git** URL and ensure Packagist discovers `sdks/php/composer.json` via a dedicated repo mirror **or** publish from a `sdks/php` subtree split.
+Source of truth: `sdks/php` in this repo. Packagist-friendly mirror: **https://github.com/Autlantic/billing-php** (root = package).
 
-Simplest path for merchants today (before Packagist):
+### One-time
 
-```json
-{
-  "repositories": [{
-    "type": "vcs",
-    "url": "https://github.com/Autlantic/payments-sdk.git"
-  }],
-  "require": {
-    "autlantic/billing": "dev-main"
-  }
-}
+1. Mirror already seeded with `v0.1.0`.
+2. Add GitHub Actions secret **`BILLING_PHP_TOKEN`** on payments-sdk (PAT with `contents:write` on `Autlantic/billing-php`) so `.github/workflows/sync-php-mirror.yml` can push on `sdks/php/v*` tags.
+3. [packagist.org](https://packagist.org) → Submit → `https://github.com/Autlantic/billing-php` → enable GitHub sync.
+
+Until Packagist indexes:
+
+```bash
+composer config repositories.autlantic vcs https://github.com/Autlantic/billing-php.git
+composer require autlantic/billing:^0.1
 ```
 
-Composer VCS installs look for `composer.json` at the repo root. For monorepo install until a Packagist subtree exists, use a **path** or **package** repository pointing at `sdks/php`, or a git subtree split to `Autlantic/billing-php`.
+### Re-publish
 
-Recommended: create (or subtree-split) a thin `Autlantic/billing-php` repo whose root is `sdks/php`, then `composer require autlantic/billing`.
+```bash
+# bump version in sdks/php/composer.json + Version.php
+git tag -a sdks/php/v0.1.1 -m "autlantic/billing 0.1.1"
+git push origin sdks/php/v0.1.1
+# workflow syncs billing-php + tag v0.1.1
+```
+
+## Java (Maven Central later)
+
+Library lives in `sdks/java` (`com.autlantic:billing`). Same `com.autlantic` namespace as Android Checkout — publish after namespace Verified + GPG/Maven secrets (see Android section). Until then, use Gradle `includeBuild` / project dependency (see example `examples/mobile-checkout/java`).
 
 ## Android (Maven Central)
 
@@ -59,6 +65,7 @@ gpg --export-secret-keys -a KEYID > secret.asc
 | `GPG_SIGNING_KEY` | Full contents of `secret.asc` (ASCII armored private key) |
 | `GPG_SIGNING_KEY_ID` | 8-char or long key id |
 | `GPG_SIGNING_PASSWORD` | GPG passphrase |
+| `BILLING_PHP_TOKEN` | PAT for PHP mirror sync (optional until next PHP tag) |
 
 5. Optional: GitHub Environment named `maven-central` (not required by current workflow).
 
@@ -81,6 +88,6 @@ implementation("com.autlantic:checkout:0.1.0")
 
 ## Suggested finish line
 
-1. You: confirm `com.autlantic` **Verified** + add the five GitHub secrets  
-2. Agent: tag `sdks/android/v0.1.0` and confirm Actions + Maven Central sync  
-3. Agent: update docs Android page to “Available on Maven Central”
+1. You: confirm `com.autlantic` **Verified** + add Maven/GPG secrets; submit **billing-php** on Packagist; add `BILLING_PHP_TOKEN`
+2. Agent: tag Android + Java Maven releases; confirm Central sync
+3. Agent: update docs to “Available on Maven Central” / Packagist

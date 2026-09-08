@@ -2,8 +2,9 @@
 
 ## Unreleased
 
-- PHP: `autlantic/billing` **0.1.0** under `sdks/php` (Composer; Packagist after submit) · [PHP docs](/api/php)
-- Example: `examples/mobile-checkout/php` (port 3058)
+- PHP: mirror [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php) `v0.1.0` for Packagist/VCS install · [PHP docs](/api/php)
+- Java: `com.autlantic:billing` **0.1.0** under `sdks/java` · [Java docs](/api/java)
+- Example: `examples/mobile-checkout/java` (port 3059)
 
 ## 0.3.12 - Multi-language and mobile SDKs
 
@@ -11,6 +12,7 @@
 - Hosted API live pin: `Autlantic-Version: 2026-01-01` on `billing.autlantic.com`
 - Python: [`autlantic-billing`](https://pypi.org/project/autlantic-billing/) **0.1.0** on PyPI
 - Go: module tag `sdks/go/v0.1.0`
+- PHP: `autlantic/billing` **0.1.0** (`sdks/php` / `sdks/php/v0.1.0`)
 - iOS Checkout (SPM): tag `sdks/ios/v0.1.0` · [iOS docs](/api/ios)
 - Android Checkout: source in `sdks/android` · [Android docs](/api/android) (Maven Central pending)
 - Docs: [Languages](/guide/languages), [Mobile](/guide/mobile), [API versioning](/guide/api-versioning), [Python](/api/python), [Go](/api/go)

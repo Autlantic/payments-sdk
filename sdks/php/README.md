@@ -4,15 +4,18 @@ Official **server** client for the hosted Autlantic Billing API.
 
 ```bash
 composer require autlantic/billing
-# (Packagist after package submit; until then use a Composer path repo → sdks/php)
 ```
 
-Until Packagist is linked, install from a path repo (see [PHP docs](https://docs.autlantic.com/api/php)):
+Packagist-friendly mirror: [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php). Until Packagist indexes:
 
 ```bash
-composer config repositories.autlantic path ./sdks/php
-composer require autlantic/billing:@dev
+composer config repositories.autlantic vcs https://github.com/Autlantic/billing-php.git
+composer require autlantic/billing:^0.1
 ```
+
+Or path-require from this monorepo (`sdks/php`).
+
+## Usage
 
 ```php
 use Autlantic\Billing\AutlanticBilling;

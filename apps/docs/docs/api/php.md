@@ -3,12 +3,19 @@
 Official **server** client for the hosted Billing API.
 
 ```bash
-# Local / monorepo (until Packagist package is live)
-composer config repositories.autlantic path /path/to/payments-sdk/sdks/php
-composer require autlantic/billing:@dev
+composer require autlantic/billing
 ```
 
-Or path-require from `examples/mobile-checkout/php`. Tag: `sdks/php/v0.1.0`.
+Mirror repo (Packagist-ready root): [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php) tag `v0.1.0`. Source of truth remains `sdks/php` in payments-sdk.
+
+Until Packagist indexes the package:
+
+```bash
+composer config repositories.autlantic vcs https://github.com/Autlantic/billing-php.git
+composer require autlantic/billing:^0.1
+```
+
+Or a path repo to `payments-sdk/sdks/php`.
 
 ## Quick start
 
