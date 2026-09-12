@@ -18,7 +18,7 @@ Vulnerability disclosure for published packages: email **[support@autlantic.com]
 
 Product security page: [autlantic.com/security](https://autlantic.com/security) (company Security FAQ). Short product pages: [portal.autlantic.com/security](https://portal.autlantic.com/security), [platform.autlantic.com/security](https://platform.autlantic.com/security).
 
-This page does **not** claim SOC 2 or other formal compliance certifications. See [SOC 2 readiness](/guide/soc2-readiness) for what exists vs what still needs a CPA engagement. Ask [support@autlantic.com](mailto:support@autlantic.com) if you need a current statement for procurement.
+This page does **not** claim SOC 2 or other formal compliance certifications. See [SOC 2 readiness](/guide/soc2-readiness) and the company [compliance page](https://autlantic.com/compliance) for what exists vs what still needs a CPA engagement. Ask [support@autlantic.com](mailto:support@autlantic.com) if you need a current statement for procurement.
 
 ## Subprocessors
 
@@ -29,6 +29,7 @@ Infrastructure used to run Autlantic Billing (hosted API, portal, worker, docs).
 | Railway | Hosting and managed database for billing API, portal, worker, and docs |
 | Cloudflare | DNS and edge protection (where configured) |
 | Sentry | Application error monitoring |
+| WorkOS | Enterprise SSO (SAML / OIDC) for the merchant portal, when a connection is enabled |
 | Resend | Transactional email for portal auth and merchant notifications |
 | Cloudinary | Merchant logo and branding images (where configured) |
 | Google | Optional portal Google sign-in; Firebase Cloud Messaging for portal mobile push (where configured) |
@@ -45,6 +46,7 @@ Canonical schedule: [autlantic.com/dpa](https://autlantic.com/dpa). Public Base 
 | Privacy Policy | [autlantic.com/privacy](https://autlantic.com/privacy) |
 | Refund Policy | [autlantic.com/refunds](https://autlantic.com/refunds) |
 | Security FAQ | [autlantic.com/security](https://autlantic.com/security) |
+| Compliance / SOC 2 readiness | [autlantic.com/compliance](https://autlantic.com/compliance) |
 | DPA outline | [autlantic.com/dpa](https://autlantic.com/dpa) |
 | Billing Terms (portal) | [portal.autlantic.com/terms](https://portal.autlantic.com/terms) |
 | About Autlantic Limited | [autlantic.com/about](https://autlantic.com/about) |
