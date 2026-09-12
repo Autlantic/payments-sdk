@@ -73,6 +73,7 @@ export default withMermaid(
           text: "Legal & policies",
           items: [
             { text: "About Autlantic", link: "https://autlantic.com/about" },
+            { text: "Legal hub", link: "https://autlantic.com/legal" },
             { text: "Terms of Service", link: "https://autlantic.com/terms" },
             { text: "Privacy Policy", link: "https://autlantic.com/privacy" },
             { text: "Refund Policy", link: "https://autlantic.com/refunds" },
