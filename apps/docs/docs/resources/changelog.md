@@ -1,8 +1,16 @@
 # Changelog
 
+## 0.3.13 - Catalog product/price writes and coupon CRUD
+
+- `@autlantic/payments-recurring` **0.3.13**: `createProduct`, `updateProduct`, `createPrice`, `updatePrice`; `listProducts({ includeInactive })`
+- Hosted API: `POST/PATCH /v1/products`, `POST /v1/products/:id/prices`, `PATCH /v1/prices/:id`, `GET /v1/products?includeInactive=1`
+- Catalog intervals on write: `month` | `year` | `once` | `week` | `five_minute`
+- Coupons: `listCoupons`, `createCoupon`, `updateCoupon`, `deleteCoupon`; hosted `GET/POST /v1/coupons`, `PATCH/DELETE /v1/coupons/:id` (optional `scopeKey`, `metadata`, `expiresAt`)
+- OpenAPI: `/v1/coupons` paths + `BillingCoupon` schema. Creator/platform coupons use metadata (`source`, `creatorId`, `planId`, `oncePerMember`); Billing is coupon SoT (portal + creator UI share the same store).
+
 ## Docs - Registries, status, and trust
 
-Package versions unchanged (`payments-recurring@0.3.12`). Documents registry publishes, status, and portal/trust docs since 0.3.12:
+Package versions unchanged until 0.3.13 (`payments-recurring@0.3.12`). Documents registry publishes, status, and portal/trust docs since 0.3.12:
 
 - PHP: [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.0** on Packagist (GitHub auto-update enabled) · [PHP docs](/api/php)
 - Public status: **[status.autlantic.com](https://status.autlantic.com)** live (API, portal, docs probes; `/api/status` and `/healthz`) · [Status](/resources/status)
