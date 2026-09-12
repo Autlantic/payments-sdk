@@ -54,9 +54,11 @@ Send `Autlantic-Version: 2026-01-01` (default when omitted). See [API versioning
 | `POST` | `/v1/products/:id/prices` | Create price on a product |
 | `PATCH` | `/v1/prices/:id` | Update price (amountUsdc, interval, trialDays, active) |
 | `GET` | `/v1/coupons` | List coupons (`?includeInactive=1` optional) |
-| `POST` | `/v1/coupons` | Create coupon (code, percentOff or amountOffUsdc, optional scopeKey/metadata/expiresAt) |
+| `POST` | `/v1/coupons` | Create coupon (code, percentOff or amountOffUsdc, optional scopeKey / metadata / expiresAt). Metadata may include `oncePerMember`, `planId`, `creatorId` for platform creator coupons. |
 | `PATCH` | `/v1/coupons/:id` | Update coupon |
 | `DELETE` | `/v1/coupons/:id` | Delete coupon |
+
+Billing is the coupon source of truth for portal and Autlantic creator UI. Hosted checkout resolves codes via the same store (`scopeKey` prefers creator-scoped, then merchant-wide).
 | `POST` | `/v1/payments` | Create one-time payment (`priceId` once or `amountUsdc`) |
 | `GET` | `/v1/payments/:id` | Fetch payment |
 | `POST` | `/v1/payment-links` | Create shareable payment link (returns `url`) |

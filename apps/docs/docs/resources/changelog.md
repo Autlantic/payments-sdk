@@ -6,6 +6,7 @@
 - Hosted API: `POST/PATCH /v1/products`, `POST /v1/products/:id/prices`, `PATCH /v1/prices/:id`, `GET /v1/products?includeInactive=1`
 - Catalog intervals on write: `month` | `year` | `once` | `week` | `five_minute`
 - Coupons: `listCoupons`, `createCoupon`, `updateCoupon`, `deleteCoupon`; hosted `GET/POST /v1/coupons`, `PATCH/DELETE /v1/coupons/:id` (optional `scopeKey`, `metadata`, `expiresAt`)
+- OpenAPI: `/v1/coupons` paths + `BillingCoupon` schema. Creator/platform coupons use metadata (`source`, `creatorId`, `planId`, `oncePerMember`); Billing is coupon SoT (portal + creator UI share the same store).
 
 ## Docs - Registries, status, and trust
 
