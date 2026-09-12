@@ -48,7 +48,15 @@ Send `Autlantic-Version: 2026-01-01` (default when omitted). See [API versioning
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `GET` | `/v1/products` | List active catalog products and prices |
+| `GET` | `/v1/products` | List catalog products and prices (`?includeInactive=1` optional) |
+| `POST` | `/v1/products` | Create product (optional nested `price`: amountUsdc, interval, trialDays, active) |
+| `PATCH` | `/v1/products/:id` | Update product (name, description, active, metadata) |
+| `POST` | `/v1/products/:id/prices` | Create price on a product |
+| `PATCH` | `/v1/prices/:id` | Update price (amountUsdc, interval, trialDays, active) |
+| `GET` | `/v1/coupons` | List coupons (`?includeInactive=1` optional) |
+| `POST` | `/v1/coupons` | Create coupon (code, percentOff or amountOffUsdc, optional scopeKey/metadata/expiresAt) |
+| `PATCH` | `/v1/coupons/:id` | Update coupon |
+| `DELETE` | `/v1/coupons/:id` | Delete coupon |
 | `POST` | `/v1/payments` | Create one-time payment (`priceId` once or `amountUsdc`) |
 | `GET` | `/v1/payments/:id` | Fetch payment |
 | `POST` | `/v1/payment-links` | Create shareable payment link (returns `url`) |

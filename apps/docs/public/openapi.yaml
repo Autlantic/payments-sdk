@@ -41,8 +41,15 @@ paths:
   /v1/products:
     get:
       tags: [Catalog]
-      summary: List active products and prices
+      summary: List products and prices
       operationId: listProducts
+      parameters:
+        - name: includeInactive
+          in: query
+          schema:
+            type: string
+            enum: ["1", "true"]
+          description: Include inactive products and prices
       responses:
         "200":
           description: Catalog for the API key mode
@@ -55,6 +62,175 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Product"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Catalog]
+      summary: Create a product
+      operationId: createProduct
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                active:
+                  type: boolean
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
+                price:
+                  type: object
+                  required: [amountUsdc, interval]
+                  properties:
+                    amountUsdc:
+                      type: number
+                    interval:
+                      $ref: "#/components/schemas/CatalogPriceInterval"
+                    trialDays:
+                      type: integer
+                    active:
+                      type: boolean
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product:
+                    $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/products/{id}:
+    patch:
+      tags: [Catalog]
+      summary: Update a product
+      operationId: updateProduct
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                active:
+                  type: boolean
+                metadata:
+                  type: object
+                  nullable: true
+                  additionalProperties:
+                    type: string
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product:
+                    $ref: "#/components/schemas/Product"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/products/{id}/prices:
+    post:
+      tags: [Catalog]
+      summary: Create a price on a product
+      operationId: createPrice
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amountUsdc, interval]
+              properties:
+                amountUsdc:
+                  type: number
+                interval:
+                  $ref: "#/components/schemas/CatalogPriceInterval"
+                trialDays:
+                  type: integer
+                active:
+                  type: boolean
+      responses:
+        "201":
+          description: Created price
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  price:
+                    $ref: "#/components/schemas/Price"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/prices/{id}:
+    patch:
+      tags: [Catalog]
+      summary: Update a price
+      operationId: updatePrice
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amountUsdc:
+                  type: number
+                interval:
+                  $ref: "#/components/schemas/CatalogPriceInterval"
+                trialDays:
+                  type: integer
+                active:
+                  type: boolean
+      responses:
+        "200":
+          description: Updated price
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  price:
+                    $ref: "#/components/schemas/Price"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
         "401":
           $ref: "#/components/responses/Unauthorized"
 
@@ -772,6 +948,10 @@ components:
           description: Server or client request id when available
       required: [error]
 
+    CatalogPriceInterval:
+      type: string
+      enum: [month, year, once, week, five_minute]
+
     Product:
       type: object
       properties:
@@ -783,6 +963,11 @@ components:
           type: [string, "null"]
         active:
           type: boolean
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
         prices:
           type: array
           items:
@@ -798,8 +983,7 @@ components:
         amountUsdc:
           type: number
         interval:
-          type: string
-          enum: [month, year, once]
+          $ref: "#/components/schemas/CatalogPriceInterval"
         trialDays:
           type: integer
         active:

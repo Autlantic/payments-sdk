@@ -8,10 +8,18 @@ export {
 export type {
   AutlanticBillingConfig,
   BillingCatalogPrice,
+  BillingCatalogPriceInterval,
   BillingCatalogProduct,
+  BillingCoupon,
+  CreateBillingCouponRequest,
+  CreateCatalogPriceRequest,
+  CreateCatalogProductRequest,
   CreatePaymentLinkRequest,
   CreatePaymentRequest,
   CreateSubscriptionRequest,
+  UpdateBillingCouponRequest,
+  UpdateCatalogPriceRequest,
+  UpdateCatalogProductRequest,
 } from "./config";
 export {
   AutlanticBillingError,
