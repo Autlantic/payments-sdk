@@ -63,7 +63,15 @@ Env vars:
 | `getPaymentLink(id)` | Fetch a payment link |
 | `disablePaymentLink(id)` | Disable a payment link |
 | `openPaymentLink(id, { customerWallet })` | Mint a one-time payment from a link |
-| `listProducts()` | List active catalog products and prices (hosted API, scoped to key mode) |
+| `listProducts({ includeInactive? })` | List catalog products and prices (hosted API, scoped to key mode) |
+| `createProduct(input)` | Create catalog product (optional nested price) |
+| `updateProduct(id, input)` | Update catalog product name / description / active / metadata |
+| `createPrice(productId, input)` | Create a price on a product |
+| `updatePrice(priceId, input)` | Update price amount / interval / trial / active |
+| `listCoupons({ includeInactive? })` | List merchant coupons (hosted API; **0.3.13+**, npm pending) |
+| `createCoupon(input)` | Create coupon (percent or fixed USDC off; optional scopeKey/metadata) |
+| `updateCoupon(id, input)` | Update coupon fields / active |
+| `deleteCoupon(id)` | Delete coupon |
 | `createSubscription(input)` | Create incomplete subscription + open invoice (`priceId` or `amountUsdc` + `interval`) |
 | `listSubscriptions({ status? })` | List merchant subscriptions (key mode) |
 | `getSubscription(id)` | Fetch subscription |
@@ -129,7 +137,11 @@ Public checkout (no API key; Test/Live from the session):
 
 Authenticated (`X-Autlantic-Api-Key` / `x-autlantic-api-key`):
 
-- `GET /v1/products` — list (`?` scoped to key mode)
+- `GET /v1/products` — list (`?includeInactive=1` to include inactive)
+- `POST /v1/products` — create product (optional nested `price`)
+- `PATCH /v1/products/:id` — update product
+- `POST /v1/products/:id/prices` — create price
+- `PATCH /v1/prices/:id` — update price
 - `POST /v1/payments` — create one-time payment
 - `GET /v1/payments/:id`
 - `POST /v1/payment-links` — create shareable payment link

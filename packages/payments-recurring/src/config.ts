@@ -18,11 +18,18 @@ export type AutlanticBillingConfig = {
   logger?: BillingLogger;
 };
 
+export type BillingCatalogPriceInterval =
+  | "month"
+  | "year"
+  | "once"
+  | "week"
+  | "five_minute";
+
 export type BillingCatalogPrice = {
   id: string;
   productId: string;
   amountUsdc: number;
-  interval: "month" | "year" | "once";
+  interval: BillingCatalogPriceInterval;
   trialDays: number;
   active: boolean;
 };
@@ -34,6 +41,81 @@ export type BillingCatalogProduct = {
   active: boolean;
   metadata: Record<string, string> | null;
   prices: BillingCatalogPrice[];
+};
+
+export type CreateCatalogProductRequest = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  metadata?: Record<string, string>;
+  price?: {
+    amountUsdc: number;
+    interval: BillingCatalogPriceInterval;
+    trialDays?: number;
+    active?: boolean;
+  };
+};
+
+export type UpdateCatalogProductRequest = {
+  name?: string;
+  description?: string | null;
+  active?: boolean;
+  metadata?: Record<string, string> | null;
+};
+
+export type CreateCatalogPriceRequest = {
+  amountUsdc: number;
+  interval: BillingCatalogPriceInterval;
+  trialDays?: number;
+  active?: boolean;
+};
+
+export type UpdateCatalogPriceRequest = {
+  active?: boolean;
+  amountUsdc?: number;
+  interval?: BillingCatalogPriceInterval;
+  trialDays?: number;
+};
+
+export type BillingCoupon = {
+  id: string;
+  code: string;
+  percentOff: number | null;
+  amountOffUsdc: number | null;
+  duration: "once" | "forever";
+  active: boolean;
+  maxRedemptions: number | null;
+  redemptionCount: number;
+  /** Empty = merchant-wide; otherwise e.g. platform creatorId. */
+  scopeKey: string;
+  expiresAt: string | null;
+  metadata: Record<string, string> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateBillingCouponRequest = {
+  code: string;
+  percentOff?: number | null;
+  amountOffUsdc?: number | null;
+  duration?: "once" | "forever";
+  maxRedemptions?: number | null;
+  scopeKey?: string | null;
+  expiresAt?: string | null;
+  metadata?: Record<string, string> | null;
+  active?: boolean;
+};
+
+export type UpdateBillingCouponRequest = {
+  code?: string;
+  percentOff?: number | null;
+  amountOffUsdc?: number | null;
+  duration?: "once" | "forever";
+  maxRedemptions?: number | null;
+  scopeKey?: string | null;
+  expiresAt?: string | null;
+  metadata?: Record<string, string> | null;
+  active?: boolean;
 };
 
 /**

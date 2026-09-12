@@ -26,10 +26,18 @@ import { defaultSandboxChainId, VAULT_PLACEHOLDER_BASE_SEPOLIA } from "@autlanti
 import type { BillingInterval, RecurringInvoice, RecurringSubscription } from "@autlantic/payments-recurring-core";
 import type {
   AutlanticBillingConfig,
+  BillingCatalogPrice,
   BillingCatalogProduct,
+  BillingCoupon,
+  CreateBillingCouponRequest,
+  CreateCatalogPriceRequest,
+  CreateCatalogProductRequest,
   CreatePaymentLinkRequest,
   CreatePaymentRequest,
   CreateSubscriptionRequest,
+  UpdateBillingCouponRequest,
+  UpdateCatalogPriceRequest,
+  UpdateCatalogProductRequest,
 } from "./config";
 import { AutlanticBillingError } from "./errors";
 import {
@@ -39,7 +47,7 @@ import {
   type BillingLogger,
 } from "./logger";
 
-export const AUTLANTIC_BILLING_SDK_VERSION = "0.3.12";
+export const AUTLANTIC_BILLING_SDK_VERSION = "0.3.13";
 
 /** Hosted API contract pin (Stripe-style). Sent as `Autlantic-Version`. */
 export const AUTLANTIC_API_VERSION = "2026-01-01";
@@ -384,11 +392,111 @@ export class AutlanticBilling {
   }
 
   /** Active products and prices from the merchant catalog (hosted API). */
-  async listProducts(): Promise<{ products: BillingCatalogProduct[] }> {
+  async listProducts(input?: {
+    includeInactive?: boolean;
+  }): Promise<{ products: BillingCatalogProduct[] }> {
     if (this.localStore) {
       return { products: [] };
     }
-    return this.get("/v1/products");
+    const query = input?.includeInactive ? "?includeInactive=1" : "";
+    return this.get(`/v1/products${query}`);
+  }
+
+  /** Create a catalog product (optional nested price). Hosted API only. */
+  async createProduct(
+    input: CreateCatalogProductRequest,
+  ): Promise<{ product: BillingCatalogProduct }> {
+    if (this.localStore) {
+      throw AutlanticBillingError.configuration(
+        "createProduct requires apiBaseUrl (hosted catalog writes)",
+      );
+    }
+    return this.post("/v1/products", input);
+  }
+
+  /** Update a catalog product. Hosted API only. */
+  async updateProduct(
+    productId: string,
+    input: UpdateCatalogProductRequest,
+  ): Promise<{ product: BillingCatalogProduct }> {
+    if (this.localStore) {
+      throw AutlanticBillingError.configuration(
+        "updateProduct requires apiBaseUrl (hosted catalog writes)",
+      );
+    }
+    return this.patch(`/v1/products/${encodeURIComponent(productId)}`, input);
+  }
+
+  /** Create a price on a catalog product. Hosted API only. */
+  async createPrice(
+    productId: string,
+    input: CreateCatalogPriceRequest,
+  ): Promise<{ price: BillingCatalogPrice }> {
+    if (this.localStore) {
+      throw AutlanticBillingError.configuration(
+        "createPrice requires apiBaseUrl (hosted catalog writes)",
+      );
+    }
+    return this.post(`/v1/products/${encodeURIComponent(productId)}/prices`, input);
+  }
+
+  /** Update a catalog price. Hosted API only. */
+  async updatePrice(
+    priceId: string,
+    input: UpdateCatalogPriceRequest,
+  ): Promise<{ price: BillingCatalogPrice }> {
+    if (this.localStore) {
+      throw AutlanticBillingError.configuration(
+        "updatePrice requires apiBaseUrl (hosted catalog writes)",
+      );
+    }
+    return this.patch(`/v1/prices/${encodeURIComponent(priceId)}`, input);
+  }
+
+  /** List merchant coupons (hosted API). */
+  async listCoupons(input?: {
+    includeInactive?: boolean;
+  }): Promise<{ coupons: BillingCoupon[] }> {
+    if (this.localStore) {
+      return { coupons: [] };
+    }
+    const query = input?.includeInactive ? "?includeInactive=1" : "";
+    return this.get(`/v1/coupons${query}`);
+  }
+
+  /** Create a merchant coupon. Hosted API only. */
+  async createCoupon(
+    input: CreateBillingCouponRequest,
+  ): Promise<{ coupon: BillingCoupon }> {
+    if (this.localStore) {
+      throw AutlanticBillingError.configuration(
+        "createCoupon requires apiBaseUrl (hosted catalog writes)",
+      );
+    }
+    return this.post("/v1/coupons", input);
+  }
+
+  /** Update a merchant coupon. Hosted API only. */
+  async updateCoupon(
+    couponId: string,
+    input: UpdateBillingCouponRequest,
+  ): Promise<{ coupon: BillingCoupon }> {
+    if (this.localStore) {
+      throw AutlanticBillingError.configuration(
+        "updateCoupon requires apiBaseUrl (hosted catalog writes)",
+      );
+    }
+    return this.patch(`/v1/coupons/${encodeURIComponent(couponId)}`, input);
+  }
+
+  /** Delete a merchant coupon. Hosted API only. */
+  async deleteCoupon(couponId: string): Promise<{ ok: true }> {
+    if (this.localStore) {
+      throw AutlanticBillingError.configuration(
+        "deleteCoupon requires apiBaseUrl (hosted catalog writes)",
+      );
+    }
+    return this.delete(`/v1/coupons/${encodeURIComponent(couponId)}`);
   }
 
   async listSubscriptions(input?: {
@@ -666,6 +774,11 @@ export class AutlanticBilling {
       headers: { "Content-Type": "application/json" },
       body,
     });
+  }
+
+  private async delete<T>(path: string): Promise<T> {
+    const base = this.requireApiBase();
+    return this.fetchJson(`${base}${path}`, { method: "DELETE", path });
   }
 
   private async fetchJson<T>(
