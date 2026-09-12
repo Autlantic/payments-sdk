@@ -79,8 +79,9 @@ export default withMermaid(
             { text: "Refund Policy", link: "https://autlantic.com/refunds" },
             { text: "Billing Terms (portal)", link: "https://portal.autlantic.com/terms" },
             { text: "Non-custodial", link: "https://autlantic.com/non-custodial" },
-            { text: "Security (product)", link: "https://autlantic.com/security" },
-            { text: "DPA outline (template)", link: "/resources/dpa-template" },
+            { text: "Security FAQ", link: "https://autlantic.com/security" },
+            { text: "DPA outline", link: "https://autlantic.com/dpa" },
+            { text: "DPA outline (docs mirror)", link: "/resources/dpa-template" },
           ],
         },
         {

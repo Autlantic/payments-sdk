@@ -2,9 +2,15 @@
 
 **Status:** Draft outline only. **Not legal advice.** **Not an executed agreement.** Pending review by Autlantic Limited counsel before use with customers.
 
-**Parties (placeholders):** Autlantic Limited (UK) as processor / service provider; Merchant as controller / customer.
+**Canonical company page:** [autlantic.com/dpa](https://autlantic.com/dpa) (prefer that URL in contracts and procurement packs).
 
-Contact for a negotiated DPA: [support@autlantic.com](mailto:support@autlantic.com)
+**Processor / service provider:** Autlantic Limited, company number 17422039, registered office 71-75 Shelton Street, Covent Garden, London, United Kingdom, WC2H 9JQ.
+
+**Controller / customer:** the merchant legal entity using Autlantic Billing.
+
+**Governing law (intended):** England and Wales.
+
+Contact for a negotiated DPA: [support@autlantic.com](mailto:support@autlantic.com) only (no separate privacy@ or legal@ inboxes).
 
 ---
 
@@ -34,11 +40,11 @@ Process only as needed to provide the service, comply with law, and as documente
 
 ## 5. Security
 
-Technical and organizational measures appropriate to the service (access control, secrets handling, transport encryption, webhook signing). Integrator obligations remain as documented in the [Security guide](/guide/security) and repository `SECURITY.md`.
+Technical and organizational measures appropriate to the service (access control, secrets handling, transport encryption, webhook signing). Integrator obligations remain as documented in the [Security guide](/guide/security), [Security FAQ](https://autlantic.com/security), and repository `SECURITY.md`.
 
 ## 6. Subprocessors
 
-Use of infrastructure subprocessors (for example hosting) as disclosed on the [Trust center](/guide/trust). Notice / objection mechanics to be agreed in the final DPA.
+Use of infrastructure subprocessors as disclosed on the canonical [autlantic.com/dpa](https://autlantic.com/dpa) schedule and summarized on the [Trust center](/guide/trust). Do not treat this docs page as the authoritative list. Notice / objection mechanics to be agreed in the final DPA.
 
 ## 7. International transfers
 
