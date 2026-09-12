@@ -68,7 +68,7 @@ Env vars:
 | `updateProduct(id, input)` | Update catalog product name / description / active / metadata |
 | `createPrice(productId, input)` | Create a price on a product |
 | `updatePrice(priceId, input)` | Update price amount / interval / trial / active |
-| `listCoupons({ includeInactive? })` | List merchant coupons (hosted API) |
+| `listCoupons({ includeInactive? })` | List merchant coupons (hosted API; **0.3.13+**, npm pending) |
 | `createCoupon(input)` | Create coupon (percent or fixed USDC off; optional scopeKey/metadata) |
 | `updateCoupon(id, input)` | Update coupon fields / active |
 | `deleteCoupon(id)` | Delete coupon |

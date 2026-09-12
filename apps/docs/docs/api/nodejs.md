@@ -52,7 +52,7 @@ AutlanticBilling.fromEnv();
 |--------|-------------|
 | `listProducts()` | List catalog products and prices (hosted API; `includeInactive` optional) |
 | `createProduct` / `updateProduct` / `createPrice` / `updatePrice` | Catalog writes (hosted API) |
-| `listCoupons` / `createCoupon` / `updateCoupon` / `deleteCoupon` | Coupon CRUD (hosted API; optional `scopeKey` / `metadata`) |
+| `listCoupons` / `createCoupon` / `updateCoupon` / `deleteCoupon` | Coupon CRUD (hosted API; optional `scopeKey` / `metadata`; **0.3.13+**, npm pending) |
 | `createPayment(input)` | Create one-time USDC payment + `/checkout/pay/:id` |
 | `getPayment(id)` | Fetch one-time payment |
 | `confirmPayment(id, { txHash? })` | Confirm one-time payment |
