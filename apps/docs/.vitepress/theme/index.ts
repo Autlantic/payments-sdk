@@ -1,11 +1,10 @@
 import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
-import AutlanticNavBarTitle from "./AutlanticNavBarTitle.vue";
+import Layout from "./Layout.vue";
 import "./custom.css";
 
+// Nav title is swapped via vite resolve.alias → AutlanticNavBarTitle.vue
 export default {
   extends: DefaultTheme,
-  enhanceApp({ app }) {
-    app.component("VPNavBarTitle", AutlanticNavBarTitle);
-  },
+  Layout,
 } satisfies Theme;
