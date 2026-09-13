@@ -2,11 +2,51 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitepress";
 import { withMermaid } from "vitepress-plugin-mermaid";
-import { DOCS_FOOTER_COPYRIGHT, DOCS_FOOTER_MESSAGE } from "./company-legal";
 
 const PRODUCT = "https://autlantic.com";
 const GITHUB = "https://github.com/autlantic/payments-sdk";
 const docsRoot = path.dirname(fileURLToPath(import.meta.url));
+
+/** Portal/platform-style icons (dark mark on light UI, light mark on dark UI). */
+const faviconHead: [string, Record<string, string>][] = [
+  ["link", { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" }],
+  [
+    "link",
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "32x32",
+      href: "/brand/autlantic-icon-32-dark.png",
+      media: "(prefers-color-scheme: light)",
+    },
+  ],
+  [
+    "link",
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "32x32",
+      href: "/brand/autlantic-icon-32-light.png",
+      media: "(prefers-color-scheme: dark)",
+    },
+  ],
+  [
+    "link",
+    {
+      rel: "apple-touch-icon",
+      href: "/brand/autlantic-icon-180-dark.png",
+    },
+  ],
+  ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
+  ["link", { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" }],
+  [
+    "link",
+    {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Fira+Sans:wght@900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap",
+    },
+  ],
+];
 
 export default withMermaid(
   defineConfig({
@@ -14,6 +54,45 @@ export default withMermaid(
     srcDir: "docs",
     vite: {
       publicDir: path.resolve(docsRoot, "../public"),
+      // Inject favicons into the bare VitePress index so the tab icon works in dev
+      // before client head hydration (portal/platform use the same PNG pair).
+      plugins: [
+        {
+          name: "autlantic-docs-index-head",
+          transformIndexHtml(html) {
+            const tags = faviconHead
+              .map(([tag, attrs]) => {
+                const attr = Object.entries(attrs)
+                  .map(([k, v]) => (v === "" ? k : `${k}="${v}"`))
+                  .join(" ");
+                return `<${tag} ${attr}>`;
+              })
+              .join("\n    ");
+            return html.replace("<head>", `<head>\n    ${tags}`);
+          },
+        },
+      ],
+      // pnpm does not hoist mermaid's CJS deps; without these, optimizeDeps.include
+      // fails and dayjs.min.js is loaded as ESM → blank page (no default export).
+      optimizeDeps: {
+        include: [
+          "mermaid",
+          "dayjs",
+          "debug",
+          "@braintree/sanitize-url",
+          "cytoscape",
+          "cytoscape-cose-bilkent",
+        ],
+      },
+      // Local imports in VPNavBar.vue win over app.component(); alias is the supported override.
+      resolve: {
+        alias: [
+          {
+            find: /^.*\/VPNavBarTitle\.vue$/,
+            replacement: path.resolve(docsRoot, "theme/AutlanticNavBarTitle.vue"),
+          },
+        ],
+      },
     },
     title: "Autlantic Billing",
     description:
@@ -21,7 +100,7 @@ export default withMermaid(
     lang: "en-US",
     cleanUrls: true,
     lastUpdated: true,
-    head: [["link", { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" }]],
+    head: faviconHead,
     themeConfig: {
       // Custom VPNavBarTitle theme component renders the Autlantic wordmark.
       siteTitle: false,
@@ -115,10 +194,7 @@ export default withMermaid(
         },
       ],
       socialLinks: [{ icon: "github", link: GITHUB }],
-      footer: {
-        message: DOCS_FOOTER_MESSAGE,
-        copyright: DOCS_FOOTER_COPYRIGHT,
-      },
+      // Footer rendered by AutlanticFooter.vue (layout-bottom).
     },
   }),
 );
