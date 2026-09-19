@@ -91,7 +91,7 @@ function chainRpcUrl(chainId: BillingChainId): string {
 }
 
 async function ethCall(chainId: BillingChainId, to: string, data: string): Promise<string> {
-  const maxAttempts = 5;
+  const maxAttempts = 8;
   let lastError = "eth_call failed";
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -112,14 +112,14 @@ async function ethCall(chainId: BillingChainId, to: string, data: string): Promi
     }
 
     lastError = json.error?.message ?? "eth_call failed";
-    const retryable = /rate limit|too many requests|429|timeout|temporarily unavailable/i.test(
+    const retryable = /rate limit|too many requests|429|timeout|temporarily unavailable|over rate limit/i.test(
       lastError,
     );
     if (!retryable || attempt === maxAttempts - 1) {
       throw new Error(lastError);
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+    await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
   }
 
   throw new Error(lastError);
@@ -185,7 +185,7 @@ export async function waitUntilVaultChargeDue(input: {
   }
 
   throw new Error(
-    "Vault signup confirmed, but the first charge is not ready yet. Wait a minute and tap Register on vault and pay again.",
+    "Vault signup confirmed, but the first charge is not ready yet. Wait a minute and tap Start plan again.",
   );
 }
 

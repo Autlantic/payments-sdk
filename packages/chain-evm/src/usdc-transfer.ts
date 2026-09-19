@@ -139,7 +139,7 @@ export async function fetchTransactionReceipt(
 
     if (json.error) {
       lastError = json.error.message ?? lastError;
-      const retryable = /rate limit|too many requests|429|timeout|temporarily unavailable/i.test(
+      const retryable = /rate limit|too many requests|429|timeout|temporarily unavailable|over rate limit/i.test(
         lastError,
       );
       if (!retryable || attempt === maxAttempts - 1) {

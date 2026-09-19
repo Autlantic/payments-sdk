@@ -23,6 +23,7 @@ export function findSubscriptionByOnChainId(
 
   for (const subscription of store.listAllSubscriptions()) {
     if (excludeSubscriptionId && subscription.id === excludeSubscriptionId) continue;
+    if (subscription.status === "canceled") continue;
     if (getOnChainSubscriptionId(subscription) === digits) return subscription;
   }
 
