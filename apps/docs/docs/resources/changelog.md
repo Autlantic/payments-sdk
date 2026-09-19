@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.14 / core 0.2.7 / chain-evm 0.2.11 / billing-engine 0.3.6 - Fractional allowance caps
+
+- Round default allowance caps to 6 USDC decimals (fixes `0.1 × 12` float noise)
+- Compare allowance / balance checks in USDC micros in `@autlantic/chain-evm` preflight
+
+```bash
+pnpm publish:sdk
+# bump billing-hosting + Autlantic platform pins, then pnpm install
+```
+
+
 ## 0.3.13 - Catalog product/price writes and coupon CRUD (npm pending)
 
 Hosted `/v1/coupons` is live. Client helpers and catalog writes land in `@autlantic/payments-recurring` **0.3.13** on `main` but are **not on npm yet** (latest published: **0.3.12**). Until publish, call HTTP directly or pin from git.

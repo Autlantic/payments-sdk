@@ -1,6 +1,6 @@
 {
   "name": "@autlantic/payments-recurring-core",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Types and billing rules for Autlantic recurring USDC payments",
   "license": "MIT",
   "repository": {
