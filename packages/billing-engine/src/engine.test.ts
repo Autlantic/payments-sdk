@@ -8,7 +8,9 @@ import {
   completeMandate,
   createMemoryBillingStore,
   createSubscription,
+  findSubscriptionByOnChainId,
   refundInvoice,
+  setOnChainSubscriptionId,
   updateSubscriptionCustomerWallet,
 } from "./index";
 
@@ -106,6 +108,41 @@ describe("billing-engine", () => {
     assert.equal(
       store.getMandate(subscription.mandateId!)?.walletAddress,
       "0x2222222222222222222222222222222222222222",
+    );
+  });
+
+  it("ignores canceled subscriptions when resolving on-chain id owners", () => {
+    const store = createMemoryBillingStore();
+    const first = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_onchain_a",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 10,
+      interval: "month",
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    setOnChainSubscriptionId(store, first.subscription.id, "42");
+    cancelSubscription(store, first.subscription.id, true);
+
+    assert.equal(findSubscriptionByOnChainId(store, "42"), null);
+
+    const second = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_onchain_b",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 10,
+      interval: "month",
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    setOnChainSubscriptionId(store, second.subscription.id, "42");
+    assert.equal(findSubscriptionByOnChainId(store, "42")?.id, second.subscription.id);
+    assert.equal(
+      findSubscriptionByOnChainId(store, "42", second.subscription.id),
+      null,
     );
   });
 
