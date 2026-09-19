@@ -25,13 +25,26 @@ export function activateSubscriptionLive(
   const linked = setOnChainSubscriptionId(store, subscriptionId, onChainSubscriptionId);
   if (!linked) return null;
 
+  const openInvoice = store
+    .listInvoicesBySubscription(subscriptionId)
+    .find((inv) => inv.status === "open");
+  const requiresPaidCharge = Boolean(openInvoice && openInvoice.amountUsdc > 0);
+
+  const normalizedTx = txHash?.trim();
+  const canFinalizeInvoice =
+    Boolean(openInvoice) &&
+    isValidLiveChargeTxHash(normalizedTx) &&
+    !findInvoiceByTxHash(store, normalizedTx!, openInvoice!.id);
+
+  // Never mark a paid live subscription active without a finalized on-chain charge.
+  if (requiresPaidCharge && !canFinalizeInvoice) {
+    return null;
+  }
+
   const mandateResult = completeMandate(store, subscriptionId);
   if (!mandateResult) return null;
 
   const events: BillingWebhookEvent[] = [...mandateResult.events];
-  const openInvoice = store
-    .listInvoicesBySubscription(subscriptionId)
-    .find((inv) => inv.status === "open");
 
   if (!openInvoice) {
     return {
@@ -42,22 +55,31 @@ export function activateSubscriptionLive(
     };
   }
 
-  const normalizedTx = txHash?.trim();
-  const canFinalizeInvoice =
-    isValidLiveChargeTxHash(normalizedTx) &&
-    !findInvoiceByTxHash(store, normalizedTx!, openInvoice.id);
+  if (openInvoice.amountUsdc <= 0) {
+    const charge = attemptInvoiceCharge(store, openInvoice.id, {
+      sandbox: false,
+      txHash: normalizedTx && isValidLiveChargeTxHash(normalizedTx) ? normalizedTx : undefined,
+    });
+    if (charge) events.push(...charge.events);
+    return {
+      subscription: charge?.subscription ?? mandateResult.subscription,
+      mandate: mandateResult.mandate,
+      charge,
+      events,
+    };
+  }
 
-  const charge = canFinalizeInvoice
-    ? attemptInvoiceCharge(store, openInvoice.id, {
-        sandbox: false,
-        txHash: normalizedTx,
-      })
-    : null;
-
-  if (charge) events.push(...charge.events);
+  const charge = attemptInvoiceCharge(store, openInvoice.id, {
+    sandbox: false,
+    txHash: normalizedTx,
+  });
+  if (!charge?.ok) {
+    return null;
+  }
+  events.push(...charge.events);
 
   return {
-    subscription: charge?.subscription ?? mandateResult.subscription,
+    subscription: charge.subscription,
     mandate: mandateResult.mandate,
     charge,
     events,
