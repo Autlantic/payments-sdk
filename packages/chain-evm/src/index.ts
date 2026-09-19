@@ -66,6 +66,7 @@ export {
   isVaultSubscriptionCharged,
   findVaultChargeTxHash,
   waitUntilVaultChargeDue,
+  readLatestBlockTimestamp,
   preflightLiveCharge,
   preflightLiveRefund,
   type PreflightChargeResult,

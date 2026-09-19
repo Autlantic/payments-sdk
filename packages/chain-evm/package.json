@@ -1,6 +1,6 @@
 {
   "name": "@autlantic/chain-evm",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "Base + USDC helpers for Autlantic recurring billing",
   "license": "MIT",
   "repository": {
