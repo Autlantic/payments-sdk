@@ -4,6 +4,7 @@ import { defaultSandboxChainId } from "@autlantic/chain-evm";
 import { VAULT_PLACEHOLDER_BASE_SEPOLIA } from "@autlantic/chain-evm";
 import {
   attemptInvoiceCharge,
+  activateSubscriptionLive,
   cancelSubscription,
   completeMandate,
   createMemoryBillingStore,
@@ -174,6 +175,40 @@ describe("billing-engine", () => {
       paid?.invoice.txHash,
       "0x40d92ab13df6748f58ca92867c4dfafd0f8884b527da83e1f19c32b5f5af5626",
     );
+  });
+
+  it("retries live activate when mandate is already active", () => {
+    const store = createMemoryBillingStore();
+    const { subscription, invoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_live_retry",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 0.2,
+      interval: "month",
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+
+    // Simulate partial activate: mandate flipped active, invoice still open.
+    completeMandate(store, subscription.id);
+    assert.equal(store.getMandate(subscription.mandateId!)?.status, "active");
+    assert.equal(store.getInvoice(invoice.id)?.status, "open");
+    assert.equal(store.getSubscription(subscription.id)?.status, "incomplete");
+
+    const tx = "0xf6a314aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0db5c3";
+    const activated = activateSubscriptionLive(store, subscription.id, "42", tx);
+    assert.ok(activated);
+    assert.equal(activated?.charge?.ok, true);
+    assert.equal(activated?.subscription.status, "active");
+    assert.equal(store.getInvoice(invoice.id)?.status, "paid");
+    assert.equal(store.getInvoice(invoice.id)?.txHash, tx);
+
+    // Second retry is a no-op success.
+    const again = activateSubscriptionLive(store, subscription.id, "42", tx);
+    assert.ok(again);
+    assert.equal(again?.subscription.status, "active");
+    assert.equal(again?.charge?.ok, true);
   });
 
   it("refunds a paid invoice in sandbox", () => {

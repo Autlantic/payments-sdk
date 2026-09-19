@@ -16,6 +16,11 @@ export type ActivateLiveResult = {
   events: BillingWebhookEvent[];
 };
 
+/**
+ * Finalize a live checkout after an on-chain charge.
+ * Idempotent: safe to retry when the mandate is already active or the invoice
+ * was already paid (partial activate / multi-instance write-through races).
+ */
 export function activateSubscriptionLive(
   store: BillingStore,
   subscriptionId: string,
@@ -25,9 +30,54 @@ export function activateSubscriptionLive(
   const linked = setOnChainSubscriptionId(store, subscriptionId, onChainSubscriptionId);
   if (!linked) return null;
 
-  const openInvoice = store
-    .listInvoicesBySubscription(subscriptionId)
-    .find((inv) => inv.status === "open");
+  const subscription = store.getSubscription(subscriptionId);
+  if (!subscription?.mandateId) return null;
+
+  const mandate = store.getMandate(subscription.mandateId);
+  if (!mandate) return null;
+
+  const invoices = store.listInvoicesBySubscription(subscriptionId);
+  const paidInvoice =
+    invoices
+      .filter((inv) => inv.status === "paid")
+      .sort(
+        (a, b) =>
+          +new Date(b.paidAt ?? b.createdAt) - +new Date(a.paidAt ?? a.createdAt),
+      )[0] ?? null;
+
+  // Already finalized (retry / other instance wrote paid+active).
+  if (paidInvoice && (subscription.status === "active" || subscription.status === "incomplete")) {
+    let activeSub = subscription;
+    if (subscription.status === "incomplete") {
+      activeSub = {
+        ...subscription,
+        status: "active",
+        updatedAt: new Date(),
+      };
+      store.saveSubscription(activeSub);
+    }
+    const activeMandate =
+      mandate.status === "active"
+        ? mandate
+        : (() => {
+            const now = new Date();
+            const updated: RecurringMandate = {
+              ...mandate,
+              status: "active",
+              activatedAt: mandate.activatedAt ?? now,
+            };
+            store.saveMandate(updated);
+            return updated;
+          })();
+    return {
+      subscription: activeSub,
+      mandate: activeMandate,
+      charge: { ok: true, invoice: paidInvoice, subscription: activeSub, events: [] },
+      events: [],
+    };
+  }
+
+  const openInvoice = invoices.find((inv) => inv.status === "open");
   const requiresPaidCharge = Boolean(openInvoice && openInvoice.amountUsdc > 0);
 
   const normalizedTx = txHash?.trim();
@@ -41,15 +91,40 @@ export function activateSubscriptionLive(
     return null;
   }
 
-  const mandateResult = completeMandate(store, subscriptionId);
-  if (!mandateResult) return null;
+  const events: BillingWebhookEvent[] = [];
+  let activeMandate = mandate;
+  let mandateSub = subscription;
 
-  const events: BillingWebhookEvent[] = [...mandateResult.events];
+  if (mandate.status === "pending") {
+    const mandateResult = completeMandate(store, subscriptionId);
+    if (!mandateResult) return null;
+    activeMandate = mandateResult.mandate;
+    mandateSub = mandateResult.subscription;
+    events.push(...mandateResult.events);
+  } else if (mandate.status !== "active") {
+    return null;
+  }
 
   if (!openInvoice) {
+    // Mandate active, no open invoice: promote incomplete → active when nothing is owed.
+    if (mandateSub.status === "incomplete") {
+      const now = new Date();
+      const activated: RecurringSubscription = {
+        ...mandateSub,
+        status: "active",
+        updatedAt: now,
+      };
+      store.saveSubscription(activated);
+      return {
+        subscription: activated,
+        mandate: activeMandate,
+        charge: null,
+        events,
+      };
+    }
     return {
-      subscription: mandateResult.subscription,
-      mandate: mandateResult.mandate,
+      subscription: mandateSub,
+      mandate: activeMandate,
       charge: null,
       events,
     };
@@ -62,8 +137,8 @@ export function activateSubscriptionLive(
     });
     if (charge) events.push(...charge.events);
     return {
-      subscription: charge?.subscription ?? mandateResult.subscription,
-      mandate: mandateResult.mandate,
+      subscription: charge?.subscription ?? mandateSub,
+      mandate: activeMandate,
       charge,
       events,
     };
@@ -80,7 +155,7 @@ export function activateSubscriptionLive(
 
   return {
     subscription: charge.subscription,
-    mandate: mandateResult.mandate,
+    mandate: activeMandate,
     charge,
     events,
   };
