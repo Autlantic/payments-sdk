@@ -162,30 +162,47 @@ export async function waitUntilVaultChargeDue(input: {
   onChainSubscriptionId: string;
   maxWaitMs?: number;
 }): Promise<void> {
-  const maxWaitMs = input.maxWaitMs ?? 150_000;
+  const maxWaitMs = input.maxWaitMs ?? 120_000;
   const started = Date.now();
+  let lastError: string | null = null;
 
   while (Date.now() - started < maxWaitMs) {
-    const sub = await readVaultSubscription({
-      chainId: input.chainId,
-      vaultAddress: input.vaultAddress,
-      onChainSubscriptionId: input.onChainSubscriptionId,
-    });
+    try {
+      const sub = await readVaultSubscription({
+        chainId: input.chainId,
+        vaultAddress: input.vaultAddress,
+        onChainSubscriptionId: input.onChainSubscriptionId,
+      });
 
-    if (!sub) {
-      throw new Error("On-chain subscription not found after vault signup.");
+      if (!sub) {
+        throw new Error("On-chain subscription not found after vault signup.");
+      }
+
+      const now = Math.floor(Date.now() / 1000);
+      const remainingSec = sub.periodEnd - now;
+      if (remainingSec <= 0) {
+        return;
+      }
+
+      const remainingMs = Math.min(
+        (remainingSec + 2) * 1000,
+        maxWaitMs - (Date.now() - started),
+      );
+      if (remainingMs <= 0) break;
+      await new Promise((resolve) => setTimeout(resolve, remainingMs));
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : String(err);
+      const retryable = /rate limit|too many requests|429|timeout|temporarily unavailable|over rate limit/i.test(
+        lastError,
+      );
+      if (!retryable) throw err;
+      await new Promise((resolve) => setTimeout(resolve, 8_000));
     }
-
-    const now = Math.floor(Date.now() / 1000);
-    if (now >= sub.periodEnd) {
-      return;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
 
   throw new Error(
-    "Vault signup confirmed, but the first charge is not ready yet. Wait a minute and tap Start plan again.",
+    lastError ??
+      "Vault signup confirmed, but the first charge is not ready yet. Wait a minute and tap Complete payment again.",
   );
 }
 
