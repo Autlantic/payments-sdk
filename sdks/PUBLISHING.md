@@ -36,6 +36,24 @@ git push origin sdks/php/v0.1.1
 # workflow syncs billing-php + tag v0.1.1
 ```
 
+## WooCommerce plugin
+
+Source of truth: `integrations/woocommerce`. Distribution mirror: **https://github.com/Autlantic/woocommerce-autlantic** (root = plugin). WordPress stores should install the vendored zip from a GitHub release, not Composer.
+
+### One-time
+
+1. Create the empty public repo `Autlantic/woocommerce-autlantic`.
+2. Add GitHub Actions secret **`WOOCOMMERCE_MIRROR_TOKEN`** on payments-sdk (PAT with `contents:write` on that repo) so `.github/workflows/sync-woocommerce-mirror.yml` can push on `integrations/woocommerce/v*` tags.
+
+### Re-publish
+
+```bash
+# bump Version in integrations/woocommerce/autlantic-billing.php and readme.txt Stable tag
+bash integrations/woocommerce/bin/package.sh
+git tag -a integrations/woocommerce/v1.1.1 -m "autlantic-billing 1.1.1"
+git push origin integrations/woocommerce/v1.1.1
+```
+
 ## Java (Maven Central)
 
 Gradle + CI are wired under `sdks/java` and `.github/workflows/publish-java.yml` (same Maven/GPG secrets as Android). Do **not** tag until secrets + `com.autlantic` namespace are ready.

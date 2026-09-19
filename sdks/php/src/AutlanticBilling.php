@@ -151,6 +151,31 @@ final class AutlanticBilling
         return $this->request('GET', $path);
     }
 
+    /** @return array<string, mixed> */
+    public function getInvoice(string $invoiceId): array
+    {
+        return $this->request('GET', '/v1/invoices/' . rawurlencode($invoiceId));
+    }
+
+    /**
+     * @param array<string, mixed>|null $body
+     * @return array<string, mixed>
+     */
+    public function refundInvoice(string $invoiceId, ?array $body = null): array
+    {
+        return $this->request(
+            'POST',
+            '/v1/invoices/' . rawurlencode($invoiceId) . '/refund',
+            $body ?? [],
+        );
+    }
+
+    /** @return array<string, mixed> */
+    public function voidInvoice(string $invoiceId): array
+    {
+        return $this->request('POST', '/v1/invoices/' . rawurlencode($invoiceId) . '/void', []);
+    }
+
     /**
      * @param array<string, mixed>|null $body
      * @return array<string, mixed>

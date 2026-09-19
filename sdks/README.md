@@ -36,16 +36,19 @@ README layout for every package: **[README.STANDARD.md](./README.STANDARD.md)**.
 | **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** | **None** |
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
 | **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
+| **WooCommerce** | Available (plugin) | [`integrations/woocommerce`](../integrations/woocommerce) | Server API key + webhook secret |
 
 ## Who installs what
 
 ```text
 Merchant backend  →  Node / Python / Go / PHP / Java / .NET SDK  →  billing-api (/v1 + webhooks)
 Merchant mobile   →  iOS / Android / Flutter / RN Checkout  →  opens hosted checkoutUrl
+WooCommerce store →  Autlantic Billing plugin  →  PHP SDK → billing-api + webhooks
 ```
 
 - **Server SDKs** create subscriptions, payments, and payment links; verify webhooks; unlock access.
 - **Mobile SDKs** only present the hosted checkout URL and handle return deep links. They never accept `abk_*` keys or webhook secrets.
+- **WooCommerce plugin** is a full gateway (not a language SDK). It uses the PHP server SDK and merchant portal credentials.
 
 ## Rules
 
