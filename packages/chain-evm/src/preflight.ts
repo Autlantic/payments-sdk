@@ -367,9 +367,34 @@ export async function findVaultChargeTxHash(input: {
   chainId: BillingChainId;
   vaultAddress: string;
   onChainSubscriptionId: string;
+  /** Prefer recent window; public RPCs often reject fromBlock 0. Default ~3.5 days on Base. */
+  lookbackBlocks?: number;
 }): Promise<string | null> {
   const id = BigInt(input.onChainSubscriptionId.replace(/\D/g, "") || "0");
   const topic1 = `0x${id.toString(16).padStart(64, "0")}`;
+  const lookback = input.lookbackBlocks ?? 150_000;
+
+  let fromBlockHex = "0x0";
+  try {
+    const blockRes = await fetch(chainRpcUrl(input.chainId), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "eth_blockNumber",
+        params: [],
+      }),
+    });
+    const blockJson = (await blockRes.json()) as { result?: string };
+    if (blockJson.result) {
+      const latest = Number(BigInt(blockJson.result));
+      const from = Math.max(0, latest - lookback);
+      fromBlockHex = `0x${from.toString(16)}`;
+    }
+  } catch {
+    // Fall through with genesis; may fail on public RPC.
+  }
 
   const res = await fetch(chainRpcUrl(input.chainId), {
     method: "POST",
@@ -382,14 +407,20 @@ export async function findVaultChargeTxHash(input: {
         {
           address: input.vaultAddress,
           topics: [CHARGED_EVENT_TOPIC, topic1],
-          fromBlock: "0x0",
+          fromBlock: fromBlockHex,
           toBlock: "latest",
         },
       ],
     }),
   });
-  const json = (await res.json()) as { result?: Array<{ transactionHash?: string }> };
-  const logs = json.result ?? [];
+  const json = (await res.json()) as {
+    result?: Array<{ transactionHash?: string }>;
+    error?: { message?: string };
+  };
+  if (json.error?.message || !json.result) {
+    return null;
+  }
+  const logs = json.result;
   const latest = logs[logs.length - 1];
   return latest?.transactionHash ?? null;
 }
