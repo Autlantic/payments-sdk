@@ -90,6 +90,28 @@ function chainRpcUrl(chainId: BillingChainId): string {
   return process.env.AUTLANTIC_BASE_SEPOLIA_RPC_URL?.trim() || "https://sepolia.base.org";
 }
 
+/** Vault charge() gates on block.timestamp; use this instead of Date.now(). */
+export async function readLatestBlockTimestamp(chainId: BillingChainId): Promise<number> {
+  const res = await fetch(chainRpcUrl(chainId), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "eth_getBlockByNumber",
+      params: ["latest", false],
+    }),
+  });
+  const json = (await res.json()) as {
+    result?: { timestamp?: string };
+    error?: { message?: string };
+  };
+  if (!json.result?.timestamp) {
+    throw new Error(json.error?.message ?? "Could not read latest block timestamp");
+  }
+  return Number(BigInt(json.result.timestamp));
+}
+
 async function ethCall(chainId: BillingChainId, to: string, data: string): Promise<string> {
   const maxAttempts = 8;
   let lastError = "eth_call failed";
@@ -178,7 +200,7 @@ export async function waitUntilVaultChargeDue(input: {
         throw new Error("On-chain subscription not found after vault signup.");
       }
 
-      const now = Math.floor(Date.now() / 1000);
+      const now = await readLatestBlockTimestamp(input.chainId);
       const remainingSec = sub.periodEnd - now;
       if (remainingSec <= 0) {
         return;
@@ -233,7 +255,7 @@ export async function preflightLiveCharge(input: {
       return { ok: false, code: "MANDATE_INACTIVE", message: "On-chain subscription is canceling" };
     }
 
-    const now = Math.floor(Date.now() / 1000);
+    const now = await readLatestBlockTimestamp(input.chainId);
     if (now < sub.periodEnd) {
       return { ok: false, code: "RELAYER_ERROR", message: "On-chain billing period is not due yet" };
     }
