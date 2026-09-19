@@ -228,14 +228,14 @@ export async function preflightLiveCharge(input: {
       spender: input.vaultAddress,
     });
 
-    if (allowance < input.amountUsdc) {
+    if (usdcToMicro(allowance) < usdcToMicro(input.amountUsdc)) {
       return {
         ok: false,
         code: "ALLOWANCE_REVOKED",
         message: "USDC allowance is too low for this charge",
       };
     }
-    if (allowance < input.allowanceCapUsdc) {
+    if (usdcToMicro(allowance) < usdcToMicro(input.allowanceCapUsdc)) {
       return {
         ok: false,
         code: "ALLOWANCE_TOO_LOW",
@@ -249,7 +249,7 @@ export async function preflightLiveCharge(input: {
       owner: input.customerWallet,
     });
 
-    if (balance < input.amountUsdc) {
+    if (usdcToMicro(balance) < usdcToMicro(input.amountUsdc)) {
       return {
         ok: false,
         code: "INSUFFICIENT_BALANCE",
@@ -282,7 +282,7 @@ export async function preflightLiveRefund(input: {
       spender: input.vaultAddress,
     });
 
-    if (allowance < input.amountUsdc) {
+    if (usdcToMicro(allowance) < usdcToMicro(input.amountUsdc)) {
       return {
         ok: false,
         code: "ALLOWANCE_TOO_LOW",
@@ -296,7 +296,7 @@ export async function preflightLiveRefund(input: {
       owner: input.merchantWallet,
     });
 
-    if (balance < input.amountUsdc) {
+    if (usdcToMicro(balance) < usdcToMicro(input.amountUsdc)) {
       return {
         ok: false,
         code: "INSUFFICIENT_BALANCE",
