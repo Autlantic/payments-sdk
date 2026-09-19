@@ -25,6 +25,11 @@ describe("intervals", () => {
     assert.equal(defaultAllowanceCapUsdc(20, "month"), 240);
   });
 
+  it("rounds fractional caps to 6 USDC decimals", () => {
+    // 0.1 * 12 is 1.2000000000000002 in IEEE float; cap must be exact 1.2
+    assert.equal(defaultAllowanceCapUsdc(0.1, "month"), 1.2);
+  });
+
   it("adds five minutes for test interval", () => {
     const start = new Date("2026-01-15T12:00:00.000Z");
     const end = periodEndFromStart(start, "five_minute");

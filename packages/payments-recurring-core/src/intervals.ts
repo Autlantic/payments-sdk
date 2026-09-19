@@ -37,11 +37,17 @@ export function nextPeriodEnd(currentPeriodEnd: Date, interval: BillingInterval)
   return periodEndFromStart(currentPeriodEnd, interval);
 }
 
-/** Default rolling allowance cap: N billing periods worth. */
+/** Default rolling allowance cap: N billing periods worth (6 USDC decimals). */
 export function defaultAllowanceCapUsdc(amountUsdc: number, interval: BillingInterval): number {
-  if (interval === "five_minute") return amountUsdc * 12;
+  if (interval === "five_minute") {
+    return roundUsdc(amountUsdc * 12);
+  }
   const periods = interval === "year" ? 3 : 12;
-  return amountUsdc * periods;
+  return roundUsdc(amountUsdc * periods);
+}
+
+function roundUsdc(amount: number): number {
+  return Math.round(amount * 1e6) / 1e6;
 }
 
 export function intervalPeriodSeconds(interval: BillingInterval): number {
