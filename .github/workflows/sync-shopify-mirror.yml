@@ -38,6 +38,7 @@ jobs:
       - name: Smoke + typecheck
         run: |
           pnpm install --filter @autlantic/shopify-billing...
+          pnpm exec turbo run build --filter=@autlantic/payments-recurring
           pnpm --filter @autlantic/shopify-billing smoke
           pnpm --filter @autlantic/shopify-billing typecheck
 
