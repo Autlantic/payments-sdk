@@ -1,0 +1,83 @@
+# Sync integrations/magento → Autlantic/magento-autlantic (Composer package root).
+# Requires repo secret MAGENTO_MIRROR_TOKEN (PAT with contents:write on that mirror).
+# Create the empty public repo once before the first tag.
+name: Sync Magento module mirror
+
+on:
+  push:
+    tags:
+      - "integrations/magento/v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require mirror token
+        env:
+          TOKEN: ${{ secrets.MAGENTO_MIRROR_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "Add GitHub Actions secret MAGENTO_MIRROR_TOKEN (PAT with write access to Autlantic/magento-autlantic)."
+            exit 1
+          fi
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: none
+
+      - name: Smoke
+        run: php integrations/magento/bin/smoke.php
+
+      - name: Push mirror
+        env:
+          TOKEN: ${{ secrets.MAGENTO_MIRROR_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME:-}"
+          VERSION="1.0.0"
+          if [[ "$TAG" == integrations/magento/v* ]]; then
+            VERSION="${TAG#integrations/magento/v}"
+          fi
+          export VERSION
+
+          WORK=$(mktemp -d)
+          rsync -a \
+            --exclude vendor \
+            --exclude composer.lock \
+            --exclude .DS_Store \
+            --exclude '*.zip' \
+            integrations/magento/ "$WORK/"
+          cd "$WORK"
+
+          python3 - <<'PY'
+          import json, os
+          path = "composer.json"
+          with open(path) as f:
+              data = json.load(f)
+          data.pop("repositories", None)
+          data["version"] = os.environ["VERSION"]
+          with open(path, "w") as f:
+              json.dump(data, f, indent=2)
+              f.write("\n")
+          PY
+
+          git init -b main
+          git config user.email "support@autlantic.com"
+          git config user.name "Autlantic"
+          git add -A
+          git commit -m "autlantic/module-billing ${VERSION} (synced from payments-sdk)"
+
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/Autlantic/magento-autlantic.git"
+          git push -f origin main
+
+          if [[ "$TAG" == integrations/magento/v* ]]; then
+            git tag -a "v${VERSION}" -m "autlantic/module-billing ${VERSION}"
+            git push -f origin "v${VERSION}"
+          fi

@@ -230,7 +230,6 @@ final class AutlanticBilling
             $error = curl_error($ch);
             $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
             $headerSize = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-            curl_close($ch);
 
             if ($raw === false || $errno !== 0) {
                 $lastError = new AutlanticBillingException(

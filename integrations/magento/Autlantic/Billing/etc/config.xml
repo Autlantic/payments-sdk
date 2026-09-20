@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <autlantic>
+                <active>0</active>
+                <model>Autlantic\Magento\Model\PaymentMethod</model>
+                <order_status>pending</order_status>
+                <title>USDC (Autlantic)</title>
+                <payment_action>order</payment_action>
+                <api_url>https://billing.autlantic.com</api_url>
+                <order_status_on_paid>processing</order_status_on_paid>
+                <logging>0</logging>
+                <allowspecific>0</allowspecific>
+                <group>offline</group>
+            </autlantic>
+        </payment>
+    </default>
+</config>

@@ -1,0 +1,97 @@
+# Sync integrations/shopify → Autlantic/shopify-autlantic (app source root).
+# Requires repo secret SHOPIFY_MIRROR_TOKEN (PAT with contents:write on that mirror).
+# Create the empty public repo once before the first tag.
+# Does not publish to npm; checkout listing still needs Shopify Payments Partner approval.
+name: Sync Shopify app mirror
+
+on:
+  push:
+    tags:
+      - "integrations/shopify/v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require mirror token
+        env:
+          TOKEN: ${{ secrets.SHOPIFY_MIRROR_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "Add GitHub Actions secret SHOPIFY_MIRROR_TOKEN (PAT with write access to Autlantic/shopify-autlantic)."
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Smoke + typecheck
+        run: |
+          pnpm install --filter @autlantic/shopify-billing...
+          pnpm --filter @autlantic/shopify-billing smoke
+          pnpm --filter @autlantic/shopify-billing typecheck
+
+      - name: Push mirror
+        env:
+          TOKEN: ${{ secrets.SHOPIFY_MIRROR_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME:-}"
+          VERSION="1.0.0"
+          if [[ "$TAG" == integrations/shopify/v* ]]; then
+            VERSION="${TAG#integrations/shopify/v}"
+          fi
+          export VERSION
+
+          WORK=$(mktemp -d)
+          rsync -a \
+            --exclude node_modules \
+            --exclude dist \
+            --exclude .data \
+            --exclude .env \
+            --exclude .shopify \
+            --exclude .DS_Store \
+            integrations/shopify/ "$WORK/"
+          cd "$WORK"
+
+          python3 - <<'PY'
+          import json, os
+          path = "package.json"
+          with open(path) as f:
+              data = json.load(f)
+          data["version"] = os.environ["VERSION"]
+          # Mirror is a standalone clone; consumers install @autlantic/payments-recurring from npm.
+          deps = data.get("dependencies") or {}
+          if deps.get("@autlantic/payments-recurring") == "workspace:*":
+              deps["@autlantic/payments-recurring"] = "^0.3.14"
+              data["dependencies"] = deps
+          with open(path, "w") as f:
+              json.dump(data, f, indent=2)
+              f.write("\n")
+          PY
+
+          git init -b main
+          git config user.email "support@autlantic.com"
+          git config user.name "Autlantic"
+          git add -A
+          git commit -m "autlantic shopify billing ${VERSION} (synced from payments-sdk)"
+
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/Autlantic/shopify-autlantic.git"
+          git push -f origin main
+
+          if [[ "$TAG" == integrations/shopify/v* ]]; then
+            git tag -a "v${VERSION}" -m "autlantic shopify billing ${VERSION}"
+            git push -f origin "v${VERSION}"
+          fi
