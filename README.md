@@ -80,7 +80,7 @@ Full guides: [docs.autlantic.com](https://docs.autlantic.com)
 
 Most integrators only need `@autlantic/payments-recurring`.
 
-Official non-TypeScript and mobile Checkout SDKs live under [`sdks/`](./sdks) (Python, Go, PHP, Java, .NET, iOS, Android, Flutter, React Native). See [Languages and SDKs](https://docs.autlantic.com/guide/languages).
+Official non-TypeScript and mobile Checkout SDKs live under [`sdks/`](./sdks) (Python, Go, PHP, Java, .NET, iOS, Android, Flutter, React Native). Commerce plugins: [`integrations/`](./integrations) — WooCommerce (published zip), Magento 2 (Composer module), Shopify (offsite payments app; Checkout listing needs Shopify Payments Partner approval). See [Languages and SDKs](https://docs.autlantic.com/guide/languages) and [`integrations/README.md`](./integrations/README.md).
 
 ## Features
 
@@ -105,7 +105,9 @@ Official non-TypeScript and mobile Checkout SDKs live under [`sdks/`](./sdks) (P
 | Non-custodial overview | https://autlantic.com/non-custodial |
 | Product security | https://autlantic.com/security |
 | Security (repo) | [SECURITY.md](./SECURITY.md) |
-| Publishing | [PUBLISHING.md](./PUBLISHING.md) |
+| Publishing (npm) | [PUBLISHING.md](./PUBLISHING.md) |
+| Publishing (SDKs + plugins) | [sdks/PUBLISHING.md](./sdks/PUBLISHING.md) |
+| Commerce integrations | [integrations/README.md](./integrations/README.md) |
 
 ## Develop in this repo
 

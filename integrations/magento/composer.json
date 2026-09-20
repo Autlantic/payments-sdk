@@ -1,0 +1,30 @@
+{
+  "name": "autlantic/module-billing",
+  "description": "Autlantic Billing payment method for Magento 2 (USDC on Base)",
+  "type": "magento2-module",
+  "license": "MIT",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Autlantic Limited",
+      "email": "support@autlantic.com",
+      "homepage": "https://autlantic.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "autlantic/billing": "^0.1",
+    "magento/framework": "*",
+    "magento/module-payment": "*",
+    "magento/module-checkout": "*",
+    "magento/module-sales": "*"
+  },
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Autlantic\\Magento\\": "Autlantic/Billing"
+    }
+  }
+}

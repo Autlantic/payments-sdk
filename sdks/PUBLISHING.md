@@ -36,6 +36,70 @@ git push origin sdks/php/v0.1.1
 # workflow syncs billing-php + tag v0.1.1
 ```
 
+## WooCommerce plugin
+
+Source of truth: `integrations/woocommerce`. Distribution mirror: **https://github.com/Autlantic/woocommerce-autlantic** (root = plugin). WordPress stores should install the vendored zip from a GitHub release, not Composer.
+
+### One-time
+
+1. Create the empty public repo `Autlantic/woocommerce-autlantic`.
+2. Add GitHub Actions secret **`WOOCOMMERCE_MIRROR_TOKEN`** on payments-sdk (PAT with `contents:write` on that repo) so `.github/workflows/sync-woocommerce-mirror.yml` can push on `integrations/woocommerce/v*` tags.
+
+### Re-publish
+
+```bash
+# bump Version in integrations/woocommerce/autlantic-billing.php and readme.txt Stable tag
+bash integrations/woocommerce/bin/package.sh
+git tag -a integrations/woocommerce/v1.1.1 -m "autlantic-billing 1.1.1"
+git push origin integrations/woocommerce/v1.1.1
+```
+
+## Magento 2 module
+
+Source of truth: `integrations/magento`. Distribution mirror (planned): **https://github.com/Autlantic/magento-autlantic** (Composer package root = module). Package: `autlantic/module-billing`. Magento module: `Autlantic_Magento`.
+
+### One-time
+
+1. Create the empty public repo `Autlantic/magento-autlantic`.
+2. Add GitHub Actions secret **`MAGENTO_MIRROR_TOKEN`** on payments-sdk (PAT with `contents:write` on that repo) so `.github/workflows/sync-magento-mirror.yml` can push on `integrations/magento/v*` tags.
+3. Optional: [packagist.org](https://packagist.org) → Submit → `https://github.com/Autlantic/magento-autlantic` → enable GitHub sync. Until then, merchants use a VCS Composer repository (see [`integrations/magento/README.md`](../integrations/magento/README.md)).
+4. Ensure `autlantic/billing` is installable (Packagist or [`billing-php`](https://github.com/Autlantic/billing-php)).
+
+### Re-publish
+
+```bash
+# bump version in integrations/magento/composer.json
+php integrations/magento/bin/smoke.php
+git tag -a integrations/magento/v1.0.0 -m "autlantic/module-billing 1.0.0"
+git push origin integrations/magento/v1.0.0
+# sync workflow (when present) pushes magento-autlantic + tag v1.0.0
+```
+
+## Shopify payments app
+
+Source of truth: `integrations/shopify`. Distribution mirror (planned): **https://github.com/Autlantic/shopify-autlantic** (app source root). Package `@autlantic/shopify-billing` stays **private** in the monorepo; merchants/deployments clone the mirror or this path — do not publish it to npm.
+
+Checkout listing requires **Shopify Payments Partner** approval for the offsite payments extension. Partner login and approval are interactive and cannot be completed by CI alone.
+
+### One-time
+
+1. Create the empty public repo `Autlantic/shopify-autlantic`.
+2. Add GitHub Actions secret **`SHOPIFY_MIRROR_TOKEN`** so `.github/workflows/sync-shopify-mirror.yml` can push on `integrations/shopify/v*` tags.
+3. Create the Partner app; set real `client_id` / `application_url` in `shopify.app.toml` (keep secrets out of git).
+4. Complete Payments Partner approval, then deploy the app + payments extension from Partner / CLI.
+
+### Re-publish (source mirror)
+
+```bash
+# bump version in integrations/shopify/package.json
+pnpm --filter @autlantic/shopify-billing smoke
+pnpm --filter @autlantic/shopify-billing typecheck
+git tag -a integrations/shopify/v1.0.0 -m "autlantic shopify billing 1.0.0"
+git push origin integrations/shopify/v1.0.0
+```
+
+Deploy the running app separately (your host + `shopify app deploy` when Partner status allows). See [`integrations/shopify/README.md`](../integrations/shopify/README.md).
+
 ## Java (Maven Central)
 
 Gradle + CI are wired under `sdks/java` and `.github/workflows/publish-java.yml` (same Maven/GPG secrets as Android). Do **not** tag until secrets + `com.autlantic` namespace are ready.

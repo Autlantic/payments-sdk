@@ -36,16 +36,23 @@ README layout for every package: **[README.STANDARD.md](./README.STANDARD.md)**.
 | **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** | **None** |
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
 | **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
+| **WooCommerce** | Available (plugin; mirror zip) | [`integrations/woocommerce`](../integrations/woocommerce) · [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic) | Server API key + webhook secret |
+| **Magento 2** | Available (module; Composer mirror pending) | [`integrations/magento`](../integrations/magento) | Server API key + webhook secret |
+| **Shopify** | Available (app source; Payments Partner approval for checkout) | [`integrations/shopify`](../integrations/shopify) | Server API key + webhook secret + Shopify app credentials |
 
 ## Who installs what
 
 ```text
 Merchant backend  →  Node / Python / Go / PHP / Java / .NET SDK  →  billing-api (/v1 + webhooks)
 Merchant mobile   →  iOS / Android / Flutter / RN Checkout  →  opens hosted checkoutUrl
+WooCommerce store →  Autlantic Billing plugin  →  PHP SDK → billing-api + webhooks
+Magento store     →  Autlantic Billing module  →  PHP SDK → billing-api + webhooks
+Shopify store     →  Autlantic Billing app     →  Node SDK → billing-api + webhooks
 ```
 
 - **Server SDKs** create subscriptions, payments, and payment links; verify webhooks; unlock access.
 - **Mobile SDKs** only present the hosted checkout URL and handle return deep links. They never accept `abk_*` keys or webhook secrets.
+- **Commerce plugins** are full gateways / payment methods (not language SDKs). They use the server SDKs and merchant portal credentials.
 
 ## Rules
 
