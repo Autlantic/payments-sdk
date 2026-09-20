@@ -1,6 +1,6 @@
 # SDK README standard
 
-All packages under `sdks/` and `packages/payments-recurring` follow the **same first look** as the repo root [README](../README.md): Autlantic icon, centered title, USDC/Base line, badge row, then Install → Quick start → Docs.
+All packages under `sdks/`, `packages/payments-recurring`, and `integrations/*` follow the **same first look** as the repo root [README](../README.md): Autlantic icon, centered title, USDC/Base line, badge row, then content.
 
 ## Brand assets (CDN — required for GitHub/npm/PyPI)
 
@@ -11,23 +11,23 @@ All packages under `sdks/` and `packages/payments-recurring` follow the **same f
 | Product | https://autlantic.com |
 | Docs | https://docs.autlantic.com |
 
-## Header (every SDK README)
+## Header (every SDK / integration README)
 
 ```html
 <p align="center">
   <img src="https://autlantic.com/brand/autlantic-icon-1024-master.png" alt="Autlantic" width="96" height="96" />
 </p>
 
-<h1 align="center">Autlantic Billing — {Language}</h1>
+<h1 align="center">Autlantic Billing — {Language or Platform}</h1>
 
 <p align="center">
   <strong>USDC payments on Base</strong><br />
-  {One sentence: server client OR mobile Checkout presenter.}
+  {One sentence: server client OR mobile Checkout OR commerce plugin.}
 </p>
 
 <p align="center">
-  <a href="https://docs.autlantic.com/api/{slug}"><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
-  <!-- package badge when published -->
+  <a href="https://docs.autlantic.com/..."><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
+  <!-- package / mirror / release badge when published -->
   <a href="https://github.com/Autlantic/payments-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
   <a href="https://autlantic.com"><img src="https://img.shields.io/badge/product-autlantic.com-111827?style=flat-square" alt="Autlantic" /></a>
 </p>
@@ -58,12 +58,25 @@ All packages under `sdks/` and `packages/payments-recurring` follow the **same f
 6. **Develop** — analyze / sample path  
 7. **License**
 
+### Commerce plugins (WooCommerce, Magento, Shopify)
+
+1. **Why this plugin/module/app** — payment link + hosted checkout + webhooks; secrets in store/admin  
+2. **Install** — zip / Composer / deploy  
+3. **Quick start** — admin settings + webhook URL  
+4. **What it does** — short feature table  
+5. **Webhooks**  
+6. **Documentation** — always include [Commerce plugins](https://docs.autlantic.com/guide/commerce)  
+7. **Develop** — smoke  
+8. **License** — MIT · Autlantic Limited (UK 17422039) · Part of payments-sdk
+
+Shopify READMEs must state **Payments Partner approval** for production checkout listing.
+
 ## Rules
 
-- Lead with Autlantic branding, not the language name alone.
+- Lead with Autlantic branding, not the language/platform name alone.
 - One product sentence: **USDC payments on Base**.
 - Never show embedding `abk_*` or webhook secrets in mobile READMEs.
-- Point package docs to `https://docs.autlantic.com/api/{slug}`.
+- Point package docs to `https://docs.autlantic.com/api/{slug}` (or `/guide/commerce` for plugins).
 - Cross-link the monorepo: “Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk).”
 - Keep Quick start short (one create + one webhook or one present).
 

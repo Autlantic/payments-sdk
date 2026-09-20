@@ -1,20 +1,39 @@
-# Integrations
+<p align="center">
+  <img src="https://autlantic.com/brand/autlantic-icon-1024-master.png" alt="Autlantic" width="96" height="96" />
+</p>
 
-Commerce platform plugins built on Autlantic Billing (hosted API + language SDKs).
+<h1 align="center">Autlantic Billing — Integrations</h1>
 
-| Integration | Path | Status | Install | Notes |
-|-------------|------|--------|---------|--------|
-| WooCommerce | [`woocommerce/`](./woocommerce) | **Published** (mirror zip v1.1.1) | GitHub release zip | Full gateway. Soft WooCommerce Subscriptions. PHP SDK. |
-| Magento 2 | [`magento/`](./magento) | Source ready (mirror workflow ready) | Composer `autlantic/module-billing` | Payment method + hosted redirect. PHP SDK. Module `Autlantic_Magento`. |
-| Shopify | [`shopify/`](./shopify) | Source ready (mirror workflow ready; Partner approval pending) | Deploy Hono app + payments extension | Offsite payments app. Node SDK. **Checkout listing needs Shopify Payments Partner approval.** |
+<p align="center">
+  <strong>USDC payments on Base</strong><br />
+  Official commerce plugins for WooCommerce, Magento 2, and Shopify.
+</p>
+
+<p align="center">
+  <a href="https://docs.autlantic.com/guide/commerce"><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
+  <a href="https://github.com/Autlantic/payments-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
+  <a href="https://autlantic.com"><img src="https://img.shields.io/badge/product-autlantic.com-111827?style=flat-square" alt="Autlantic" /></a>
+</p>
+
+---
+
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Language clients live under [`sdks/`](../sdks).
+
+| Integration | Path | Status | Install |
+|-------------|------|--------|---------|
+| WooCommerce | [`woocommerce/`](./woocommerce) | Published (zip **1.1.1**) | [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) |
+| Magento 2 | [`magento/`](./magento) | Published (Composer **1.0.0**) | [magento-autlantic](https://github.com/Autlantic/magento-autlantic) |
+| Shopify | [`shopify/`](./shopify) | Source published; Payments Partner approval for checkout | [shopify-autlantic](https://github.com/Autlantic/shopify-autlantic) |
 
 ## Shared behavior
 
-- One-time checkout uses single-use Autlantic **payment links** and hosted checkout (not an in-store card form).
-- Webhooks use header `x-autlantic-signature`; each plugin verifies with the portal endpoint secret.
-- Store currency must be **USD** or **USDC**.
-- One-time payment-link **refunds are manual** (merchant sends USDC back). Invoice refunds via API apply only where an Autlantic invoice id exists (WooCommerce subscriptions path).
+- One-time checkout uses single-use Autlantic **payment links** and hosted checkout
+- Webhooks use `x-autlantic-signature` and the portal endpoint secret
+- Store currency must be **USD** or **USDC**
+- One-time payment-link **refunds are manual**; invoice refunds apply where an Autlantic invoice id exists (Woo subscriptions path)
 
-Language clients live under [`sdks/`](../sdks). Publishing / mirrors: [`sdks/PUBLISHING.md`](../sdks/PUBLISHING.md).
+Publishing / mirrors: [`sdks/PUBLISHING.md`](../sdks/PUBLISHING.md) · Docs: [Commerce plugins](https://docs.autlantic.com/guide/commerce).
 
-Do not put Autlantic platform merchant secrets, private GitHub URLs, or internal hostnames in these plugins.
+## License
+
+MIT · Operated by **Autlantic Limited** (UK company no. 17422039).
