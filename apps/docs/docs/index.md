@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Autlantic Billing
   text: USDC on Base
-  tagline: TypeScript, Python, and Go server SDKs plus iOS/Android Checkout. Hosted API for USDC subscriptions, one-time payments, and payment links. Non-custodial settlement to your EVM wallet.
+  tagline: TypeScript, Python, and Go server SDKs, iOS/Android Checkout, plus WooCommerce, Magento, and Shopify plugins. Hosted API for USDC subscriptions, one-time payments, and payment links. Non-custodial settlement to your EVM wallet.
   actions:
     - theme: brand
       text: Get started
@@ -34,6 +34,7 @@ features:
 | **npm SDK** | Node backends, in-process sandbox, full control |
 | **Hosted HTTP API** | Any server stack (curl, Python, Go, PHP), API key only |
 | **Mobile Checkout** | iOS / Android apps: open `checkoutUrl`; no API keys in the app ([guide](/guide/mobile)) |
+| **Commerce plugins** | WooCommerce, Magento 2, Shopify ([guide](/guide/commerce)) |
 
 Language matrix: [Languages and SDKs](/guide/languages). API pin: [API versioning](/guide/api-versioning) (`Autlantic-Version: 2026-01-01`).
 
