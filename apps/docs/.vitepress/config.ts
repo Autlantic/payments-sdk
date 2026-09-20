@@ -118,6 +118,7 @@ export default withMermaid(
             { text: "Overview", link: "/" },
             { text: "Packages", link: "/guide/packages" },
             { text: "Languages and SDKs", link: "/guide/languages" },
+            { text: "Commerce plugins", link: "/guide/commerce" },
           ],
         },
         {
@@ -125,6 +126,7 @@ export default withMermaid(
           items: [
             { text: "Getting started", link: "/guide/getting-started" },
             { text: "15-minute integration", link: "/guide/integration" },
+            { text: "Commerce plugins", link: "/guide/commerce" },
             { text: "Mobile apps", link: "/guide/mobile" },
             { text: "Device smoke test", link: "/guide/device-smoke" },
             { text: "One-time payments", link: "/guide/one-time-payments" },

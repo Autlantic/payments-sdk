@@ -1,5 +1,12 @@
 # Changelog
 
+## Docs - Commerce plugins (WooCommerce, Magento, Shopify)
+
+- New guide: [Commerce plugins](/guide/commerce) — payment-link checkout, webhooks, install links
+- [Languages](/guide/languages) matrix includes WooCommerce, Magento 2, and Shopify
+- Mirrors: [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic), [magento-autlantic](https://github.com/Autlantic/magento-autlantic), [shopify-autlantic](https://github.com/Autlantic/shopify-autlantic)
+- Shopify checkout listing still requires Shopify Payments Partner approval
+
 ## 0.3.14 / core 0.2.7 / chain-evm 0.2.11 / billing-engine 0.3.6 - Fractional allowance caps
 
 - Round default allowance caps to 6 USDC decimals (fixes `0.1 × 12` float noise)
