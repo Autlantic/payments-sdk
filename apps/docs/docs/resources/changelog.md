@@ -1,5 +1,16 @@
 # Changelog
 
+## billing-engine 0.3.10 - Incomplete checkout reuse and expiry
+
+- `createOrReuseSubscription`: resume the same incomplete checkout for the same merchantRef (or plan + customer) instead of minting duplicates
+- `expireIncompleteCheckouts`: cancel abandoned incomplete sessions after 24h (configurable) and void open invoices
+- `processDueInvoicesLive`: skip incomplete checkouts that never called `vault.subscribe()` so they are not charged or emailed as renewals
+
+```bash
+pnpm --filter @autlantic/billing-engine publish --access public
+# bump billing-hosting pins to 0.3.10, then deploy billing-api + billing-worker
+```
+
 ## Docs - Commerce plugins (WooCommerce, Magento, Shopify)
 
 - New guide: [Commerce plugins](/guide/commerce) — payment-link checkout, webhooks, install links
