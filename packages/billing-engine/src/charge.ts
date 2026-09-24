@@ -241,6 +241,14 @@ export async function processDueInvoicesLive(
       if (recordMode !== options.mode) continue;
     }
 
+    // Incomplete checkout waiting on vault.subscribe(): not a renewal. Do not
+    // failCharge / webhook / email. processIncompleteFirstCharges handles the
+    // first charge once onChainSubscriptionId exists; expireIncompleteCheckouts
+    // cancels abandoned sessions after TTL.
+    if (subscription.status === "incomplete" && !getOnChainSubscriptionId(subscription)) {
+      continue;
+    }
+
     const onChainSubscriptionId = getOnChainSubscriptionId(subscription);
     if (!onChainSubscriptionId) {
       results.push(

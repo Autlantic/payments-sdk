@@ -25,6 +25,17 @@ export {
   updateSubscriptionCustomerWallet,
 } from "./subscriptions";
 export {
+  PENDING_CHECKOUT_WALLET,
+  DEFAULT_INCOMPLETE_CHECKOUT_TTL_MS,
+  isPendingCheckoutWallet,
+  findReusableIncompleteSubscription,
+  createOrReuseSubscription,
+  cancelDuplicateIncompleteCheckouts,
+  expireIncompleteCheckouts,
+  type CreateOrReuseSubscriptionResult,
+  type ExpireIncompleteCheckoutsResult,
+} from "./incomplete-checkout";
+export {
   findInvoiceByTxHash,
   findSubscriptionByOnChainId,
   getOnChainSubscriptionId,
