@@ -2,6 +2,8 @@
 
 **One rule for Railway:** live Autlantic Railway services deploy from **`production` only** — never from `main`.
 
+**Release rule:** package publishes from `main` after `pnpm test`. Docs/status promote `main` → `production` only after SDK QA (`docs/qa/sdk.md` in the platform repo). Do not treat an npm publish as “live on Autlantic” until platform/billing-hosting pins are promoted through staging.
+
 | Surface | Branches | What ships from where |
 |---------|----------|------------------------|
 | This repo (`payments-sdk`) | `main` + **`production`** | Packages/tags from **`main`**; docs + example-store + status Railway from **`production`** |
