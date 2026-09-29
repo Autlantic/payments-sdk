@@ -1,0 +1,3 @@
+# Shopify billing app only (see railway.shopify.toml → nixpacksConfigPath).
+# Without an explicit provider list, Nixpacks may detect sdks/dotnet at repo root.
+providers = ["node"]
