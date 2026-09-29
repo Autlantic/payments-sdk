@@ -31,8 +31,36 @@ Current reference bar: enqueue-safe admin JS, `Requires Plugins`, clean activati
 | Website-scoped webhook secrets | Multi-website verify |
 | Indexed id → order lookup | Not scan-only |
 | Admin test connection / activity / order panel | Required |
-| Invoice refunds | When invoice id present |
-| **Runtime E2E on Magento 2.4.6+** | Required for enterprise-proven |
+| Invoice refunds | When Autlantic invoice id present (payment-link checkouts correctly block) |
+| **Runtime E2E on Magento 2.4.6+ / Mage-OS** | Required for enterprise-proven |
+
+### Magento runtime proof (2026-09-29)
+
+Environment: local Mage-OS **3.3.0** (Magento **2.4.9**), MariaDB `mageos`, OpenSearch, `http://127.0.0.1:8089`, module symlink `autlantic/module-billing` **1.1.0**.
+
+Command:
+
+```bash
+set -a && source /path/to/billing-e2e.env && set +a   # abk_* + whsec_* + API URL
+MAGE_ROOT=/path/to/mageos php -d memory_limit=2G "$MAGE_ROOT/bin/autlantic-e2e.php"
+# or: php integrations/magento/bin/e2e-mageos.php
+```
+
+Observed: `ENTERPRISE_PROVEN_MAGENTO_E2E_OK`
+
+| Check | Result |
+|---|---|
+| Test connection `listProducts` | Pass (live mode, catalog returned) |
+| Place Autlantic order | Pass (`#000000002`) |
+| Create payment link | Pass (`plink_*` on billing.autlantic.com) |
+| Bad HMAC HTTP | Pass (`401`) |
+| Good HMAC `payment.paid` HTTP | Pass (`200 {"received":true}`) |
+| Order invoiced | Pass |
+| Duplicate event safe | Pass (1 invoice) |
+| Refund without invoice id | Pass (blocked correctly for payment-link) |
+| OrderIndex + ActivityLog + JS race flag | Pass |
+
+Status: **enterprise-proven** for Magento one-time checkout + webhooks + admin operability + payment-link refund policy.
 
 ## Shopify
 
