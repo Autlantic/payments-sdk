@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Autlantic\WooCommerce;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Admin order metabox showing Autlantic IDs and checkout link.
  */
@@ -19,8 +23,8 @@ final class Admin_Order_Meta
         $screens = ['shop_order', 'woocommerce_page_wc-orders'];
         foreach ($screens as $screen) {
             add_meta_box(
-                'autlantic-billing',
-                __('Autlantic Billing', 'autlantic-billing'),
+                'autlantic-billing-for-woocommerce',
+                __('Autlantic Billing', 'autlantic-billing-for-woocommerce'),
                 [self::class, 'render'],
                 $screen,
                 'side',
@@ -39,19 +43,19 @@ final class Admin_Order_Meta
             : wc_get_order($post_or_order->ID ?? 0);
 
         if (!$order instanceof \WC_Order) {
-            echo '<p>' . esc_html__('Order not found.', 'autlantic-billing') . '</p>';
+            echo '<p>' . esc_html__('Order not found.', 'autlantic-billing-for-woocommerce') . '</p>';
 
             return;
         }
 
         $rows = [
-            __('Mode', 'autlantic-billing') => Order_Meta::get($order, Order_Meta::MODE),
-            __('Payment link', 'autlantic-billing') => Order_Meta::get($order, Order_Meta::PAYMENT_LINK_ID),
-            __('Payment', 'autlantic-billing') => Order_Meta::get($order, Order_Meta::PAYMENT_ID),
-            __('Subscription', 'autlantic-billing') => Order_Meta::get($order, Order_Meta::SUBSCRIPTION_ID),
-            __('Invoice', 'autlantic-billing') => Order_Meta::get($order, Order_Meta::INVOICE_ID),
-            __('Tx hash', 'autlantic-billing') => Order_Meta::get($order, Order_Meta::TX_HASH),
-            __('Merchant ref', 'autlantic-billing') => Order_Meta::get($order, Order_Meta::MERCHANT_REF),
+            __('Mode', 'autlantic-billing-for-woocommerce') => Order_Meta::get($order, Order_Meta::MODE),
+            __('Payment link', 'autlantic-billing-for-woocommerce') => Order_Meta::get($order, Order_Meta::PAYMENT_LINK_ID),
+            __('Payment', 'autlantic-billing-for-woocommerce') => Order_Meta::get($order, Order_Meta::PAYMENT_ID),
+            __('Subscription', 'autlantic-billing-for-woocommerce') => Order_Meta::get($order, Order_Meta::SUBSCRIPTION_ID),
+            __('Invoice', 'autlantic-billing-for-woocommerce') => Order_Meta::get($order, Order_Meta::INVOICE_ID),
+            __('Tx hash', 'autlantic-billing-for-woocommerce') => Order_Meta::get($order, Order_Meta::TX_HASH),
+            __('Merchant ref', 'autlantic-billing-for-woocommerce') => Order_Meta::get($order, Order_Meta::MERCHANT_REF),
         ];
 
         echo '<table class="widefat striped" style="margin-top:4px"><tbody>';
@@ -68,7 +72,7 @@ final class Admin_Order_Meta
         if ($checkout !== '' && !$order->is_paid()) {
             echo '<p style="margin-top:8px"><a class="button" target="_blank" rel="noopener noreferrer" href="'
                 . esc_url($checkout) . '">';
-            echo esc_html__('Open checkout', 'autlantic-billing');
+            echo esc_html__('Open checkout', 'autlantic-billing-for-woocommerce');
             echo '</a></p>';
         }
 
@@ -78,7 +82,7 @@ final class Admin_Order_Meta
                 'autlantic_sync_order_' . $order->get_id(),
             );
             echo '<p><a class="button" href="' . esc_url($sync) . '">'
-                . esc_html__('Sync from Autlantic', 'autlantic-billing') . '</a></p>';
+                . esc_html__('Sync from Autlantic', 'autlantic-billing-for-woocommerce') . '</a></p>';
         }
     }
 }

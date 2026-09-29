@@ -6,6 +6,10 @@ namespace Autlantic\WooCommerce;
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Cart & checkout blocks registration for the Autlantic gateway.
  */
@@ -45,7 +49,7 @@ final class Blocks_Payment_Method extends AbstractPaymentMethodType
     public function get_payment_method_data(): array
     {
         return [
-            'title' => $this->settings['title'] ?? __('USDC (Autlantic)', 'autlantic-billing'),
+            'title' => $this->settings['title'] ?? __('USDC (Autlantic)', 'autlantic-billing-for-woocommerce'),
             'description' => $this->settings['description'] ?? '',
             'icon' => AUTLANTIC_WC_PLUGIN_URL . 'assets/img/mark-64.png',
             'supports' => ['products', 'refunds'],

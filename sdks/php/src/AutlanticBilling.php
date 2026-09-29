@@ -17,6 +17,7 @@ final class AutlanticBilling
     public readonly float $timeoutSec;
     public readonly int $maxRetries;
     public readonly string $mode;
+    private Transport $transport;
 
     public function __construct(
         string $apiKey,
@@ -24,6 +25,7 @@ final class AutlanticBilling
         ?string $merchantId = null,
         float $timeoutSec = 30.0,
         int $maxRetries = 2,
+        ?Transport $transport = null,
     ) {
         $apiKey = trim($apiKey);
         if ($apiKey === '') {
@@ -35,6 +37,20 @@ final class AutlanticBilling
         $this->timeoutSec = $timeoutSec;
         $this->maxRetries = max(0, $maxRetries);
         $this->mode = self::billingModeFromApiKey($apiKey);
+        $this->transport = $transport ?? self::defaultTransport();
+    }
+
+    private static function defaultTransport(): Transport
+    {
+        if (function_exists('wp_remote_request')) {
+            return new WordPressTransport();
+        }
+        // CurlTransport is omitted from the WordPress.org package on purpose.
+        if (class_exists(CurlTransport::class)) {
+            return new CurlTransport();
+        }
+
+        throw new AutlanticBillingException('No HTTP transport available', 'configuration');
     }
 
     /**
@@ -195,45 +211,28 @@ final class AutlanticBilling
 
         for ($attempt = 0; $attempt < $attempts; $attempt++) {
             $headers = [
-                'Accept: application/json',
-                'User-Agent: ' . Version::USER_AGENT,
-                'X-Autlantic-Api-Key: ' . $this->apiKey,
-                'X-Autlantic-Sdk-Version: ' . Version::SDK_VERSION,
-                'X-Autlantic-Client-Request-Id: ' . $requestId,
-                'Autlantic-Version: ' . Version::AUTLANTIC_API_VERSION,
+                'Accept' => 'application/json',
+                'User-Agent' => Version::USER_AGENT,
+                'X-Autlantic-Api-Key' => $this->apiKey,
+                'X-Autlantic-Sdk-Version' => Version::SDK_VERSION,
+                'X-Autlantic-Client-Request-Id' => $requestId,
+                'Autlantic-Version' => Version::AUTLANTIC_API_VERSION,
             ];
             if ($payload !== null) {
-                $headers[] = 'Content-Type: application/json';
+                $headers['Content-Type'] = 'application/json';
             }
             if ($idemKey !== null) {
-                $headers[] = 'Idempotency-Key: ' . $idemKey;
+                $headers['Idempotency-Key'] = $idemKey;
             }
 
-            $ch = curl_init($url);
-            if ($ch === false) {
-                throw new AutlanticBillingException('Could not init curl', 'network_error', null, $requestId);
-            }
+            $result = $this->transport->request($method, $url, $headers, $payload, $this->timeoutSec);
+            $status = $result['status'];
+            $responseBody = $result['body'];
+            $transportError = $result['error'];
 
-            curl_setopt_array($ch, [
-                CURLOPT_CUSTOMREQUEST => $method,
-                CURLOPT_HTTPHEADER => $headers,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => (int) ceil($this->timeoutSec),
-                CURLOPT_HEADER => true,
-            ]);
-            if ($payload !== null) {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-            }
-
-            $raw = curl_exec($ch);
-            $errno = curl_errno($ch);
-            $error = curl_error($ch);
-            $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-            $headerSize = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-
-            if ($raw === false || $errno !== 0) {
+            if ($transportError !== null) {
                 $lastError = new AutlanticBillingException(
-                    'Network error: ' . ($error !== '' ? $error : 'curl failed'),
+                    'Network error: ' . $transportError,
                     'network_error',
                     null,
                     $requestId,
@@ -245,7 +244,6 @@ final class AutlanticBilling
                 throw $lastError;
             }
 
-            $responseBody = substr((string) $raw, $headerSize);
             $decoded = $responseBody === '' ? [] : json_decode($responseBody, true);
             if ($status >= 200 && $status < 300) {
                 if (!is_array($decoded)) {
@@ -282,7 +280,10 @@ final class AutlanticBilling
             throw $lastError;
         }
 
-        assert($lastError instanceof AutlanticBillingException);
-        throw $lastError;
+        if ($lastError instanceof AutlanticBillingException) {
+            throw $lastError;
+        }
+
+        throw new AutlanticBillingException('Request failed', 'network_error', null, $requestId);
     }
 }

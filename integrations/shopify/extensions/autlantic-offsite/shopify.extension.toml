@@ -3,9 +3,10 @@ api_version = "2025-10"
 [[extensions]]
 name = "Autlantic USDC"
 handle = "autlantic-offsite"
+uid = "137af808-cd74-3a54-2537-a5801957f097edeaf595"
 type = "payments_extension"
-payment_session_url = "/payment"
-refund_session_url = "/refund"
+payment_session_url = "https://shopify.autlantic.com/payment"
+refund_session_url = "https://shopify.autlantic.com/refund"
 merchant_label = "USDC (Autlantic)"
 supported_countries = ["US", "GB", "CA", "AU", "DE", "FR", "NL", "IE", "ES", "IT"]
 supported_payment_methods = ["offsite"]

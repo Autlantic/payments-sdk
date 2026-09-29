@@ -2,7 +2,7 @@
   <img src="https://autlantic.com/brand/autlantic-icon-1024-master.png" alt="Autlantic" width="96" height="96" />
 </p>
 
-<h1 align="center">Autlantic Billing — WooCommerce</h1>
+<h1 align="center">Autlantic Billing for WooCommerce</h1>
 
 <p align="center">
   <strong>USDC payments on Base</strong><br />
@@ -18,7 +18,7 @@
 
 ---
 
-Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Depends on [`autlantic/billing`](../../sdks/php). Distribution zip: [woocommerce-autlantic releases](https://github.com/Autlantic/woocommerce-autlantic/releases) (**1.1.1**).
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Depends on [`autlantic/billing`](../../sdks/php). Distribution zip: [woocommerce-autlantic releases](https://github.com/Autlantic/woocommerce-autlantic/releases) (**1.1.3**).
 
 USDC settles to your merchant payout wallet. Autlantic does not custody checkout funds.
 

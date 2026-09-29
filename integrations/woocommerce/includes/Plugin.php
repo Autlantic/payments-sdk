@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Autlantic\WooCommerce;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Plugin bootstrap.
  */

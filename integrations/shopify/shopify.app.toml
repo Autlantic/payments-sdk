@@ -1,7 +1,7 @@
 # https://shopify.dev/docs/apps/tools/cli/configuration
 # Payments apps: keep embedded=false. Payment session scopes come from the extension on first deploy.
 
-client_id = "REPLACE_WITH_SHOPIFY_CLIENT_ID"
+client_id = "1076e5632cf38def63683bcf3c4185f2"
 name = "Autlantic Billing"
 application_url = "https://shopify.autlantic.com"
 embedded = false

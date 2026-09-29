@@ -6,6 +6,10 @@ namespace Autlantic\WooCommerce;
 
 use Autlantic\Billing\AutlanticBillingException;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * WooCommerce payment gateway for Autlantic Billing (USDC on Base).
  */
@@ -14,10 +18,10 @@ final class Gateway extends \WC_Payment_Gateway
     public function __construct()
     {
         $this->id = 'autlantic';
-        $this->method_title = __('Autlantic Billing', 'autlantic-billing');
+        $this->method_title = __('Autlantic Billing', 'autlantic-billing-for-woocommerce');
         $this->method_description = __(
             'Accept USDC on Base. Buyers pay via hosted Autlantic checkout. Funds settle to your merchant payout wallet.',
-            'autlantic-billing',
+            'autlantic-billing-for-woocommerce',
         );
         $this->has_fields = false;
         $this->supports = ['products', 'refunds'];
@@ -29,10 +33,10 @@ final class Gateway extends \WC_Payment_Gateway
         $this->init_form_fields();
         $this->init_settings();
 
-        $this->title = $this->get_option('title', __('USDC (Autlantic)', 'autlantic-billing'));
+        $this->title = $this->get_option('title', __('USDC (Autlantic)', 'autlantic-billing-for-woocommerce'));
         $this->description = $this->get_option(
             'description',
-            __('Pay with USDC on Base. You will connect a wallet on Autlantic checkout.', 'autlantic-billing'),
+            __('Pay with USDC on Base. You will connect a wallet on Autlantic checkout.', 'autlantic-billing-for-woocommerce'),
         );
         $this->enabled = $this->get_option('enabled', 'no');
         $this->icon = AUTLANTIC_WC_PLUGIN_URL . 'assets/img/mark-64.png';
@@ -56,7 +60,7 @@ final class Gateway extends \WC_Payment_Gateway
         }
 
         return '<img src="' . esc_url(AUTLANTIC_WC_PLUGIN_URL . 'assets/img/mark-64.png')
-            . '" alt="' . esc_attr__('Autlantic', 'autlantic-billing')
+            . '" alt="' . esc_attr__('Autlantic', 'autlantic-billing-for-woocommerce')
             . '" style="height:24px;width:auto;vertical-align:middle;" />';
     }
 
@@ -67,9 +71,9 @@ final class Gateway extends \WC_Payment_Gateway
             . '" alt="Autlantic" style="height:28px;width:auto;margin:8px 0 4px;" />';
         echo '<p>' . esc_html__(
             'USDC on Base. Customers pay on hosted Autlantic checkout. Funds settle to your payout wallet.',
-            'autlantic-billing',
+            'autlantic-billing-for-woocommerce',
         ) . '</p>';
-        echo '<p><strong>' . esc_html__('Webhook URL', 'autlantic-billing') . '</strong><br /><code style="user-select:all;">'
+        echo '<p><strong>' . esc_html__('Webhook URL', 'autlantic-billing-for-woocommerce') . '</strong><br /><code style="user-select:all;">'
             . esc_html($webhook_url) . '</code></p>';
         Admin_Tools::render_panel();
         parent::admin_options();
@@ -81,86 +85,86 @@ final class Gateway extends \WC_Payment_Gateway
 
         $this->form_fields = [
             'enabled' => [
-                'title' => __('Enable / Disable', 'autlantic-billing'),
+                'title' => __('Enable / Disable', 'autlantic-billing-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Enable Autlantic Billing', 'autlantic-billing'),
+                'label' => __('Enable Autlantic Billing', 'autlantic-billing-for-woocommerce'),
                 'default' => 'no',
             ],
             'title' => [
-                'title' => __('Title', 'autlantic-billing'),
+                'title' => __('Title', 'autlantic-billing-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Shown to customers at checkout.', 'autlantic-billing'),
-                'default' => __('USDC (Autlantic)', 'autlantic-billing'),
+                'description' => __('Shown to customers at checkout.', 'autlantic-billing-for-woocommerce'),
+                'default' => __('USDC (Autlantic)', 'autlantic-billing-for-woocommerce'),
                 'desc_tip' => true,
             ],
             'description' => [
-                'title' => __('Description', 'autlantic-billing'),
+                'title' => __('Description', 'autlantic-billing-for-woocommerce'),
                 'type' => 'textarea',
                 'default' => __(
                     'Pay with USDC on Base. You will connect a wallet on Autlantic checkout.',
-                    'autlantic-billing',
+                    'autlantic-billing-for-woocommerce',
                 ),
             ],
             'api_key' => [
-                'title' => __('API key', 'autlantic-billing'),
+                'title' => __('API key', 'autlantic-billing-for-woocommerce'),
                 'type' => 'password',
                 'description' => __(
                     'From the Autlantic merchant portal. Use abk_test_… for Test or abk_live_… for Live.',
-                    'autlantic-billing',
+                    'autlantic-billing-for-woocommerce',
                 ),
                 'default' => '',
                 'desc_tip' => true,
             ],
             'webhook_secret' => [
-                'title' => __('Webhook signing secret', 'autlantic-billing'),
+                'title' => __('Webhook signing secret', 'autlantic-billing-for-woocommerce'),
                 'type' => 'password',
                 'description' => sprintf(
                     /* translators: %s: webhook URL */
                     __(
                         'Portal → Webhooks → endpoint secret for this store. Register this URL: %s',
-                        'autlantic-billing',
+                        'autlantic-billing-for-woocommerce',
                     ),
                     esc_html($webhook_url),
                 ),
                 'default' => '',
             ],
             'payout_address' => [
-                'title' => __('Payout wallet (EVM)', 'autlantic-billing'),
+                'title' => __('Payout wallet (EVM)', 'autlantic-billing-for-woocommerce'),
                 'type' => 'text',
                 'description' => __(
                     'Optional override. Leave blank to use the payout address configured on the merchant in the portal.',
-                    'autlantic-billing',
+                    'autlantic-billing-for-woocommerce',
                 ),
                 'default' => '',
                 'desc_tip' => true,
             ],
             'api_url' => [
-                'title' => __('API base URL', 'autlantic-billing'),
+                'title' => __('API base URL', 'autlantic-billing-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Default https://billing.autlantic.com. Change only for staging.', 'autlantic-billing'),
+                'description' => __('Default https://billing.autlantic.com. Change only for staging.', 'autlantic-billing-for-woocommerce'),
                 'default' => 'https://billing.autlantic.com',
                 'desc_tip' => true,
             ],
             'merchant_id' => [
-                'title' => __('Merchant ID', 'autlantic-billing'),
+                'title' => __('Merchant ID', 'autlantic-billing-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Optional. Usually inferred from the API key.', 'autlantic-billing'),
+                'description' => __('Optional. Usually inferred from the API key.', 'autlantic-billing-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
             ],
             'order_status_on_paid' => [
-                'title' => __('Order status after payment', 'autlantic-billing'),
+                'title' => __('Order status after payment', 'autlantic-billing-for-woocommerce'),
                 'type' => 'select',
                 'options' => [
-                    'processing' => __('Processing', 'autlantic-billing'),
-                    'completed' => __('Completed', 'autlantic-billing'),
+                    'processing' => __('Processing', 'autlantic-billing-for-woocommerce'),
+                    'completed' => __('Completed', 'autlantic-billing-for-woocommerce'),
                 ],
                 'default' => 'processing',
             ],
             'logging' => [
-                'title' => __('Debug log', 'autlantic-billing'),
+                'title' => __('Debug log', 'autlantic-billing-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Log Autlantic events to WooCommerce → Status → Logs', 'autlantic-billing'),
+                'label' => __('Log Autlantic events to WooCommerce → Status → Logs', 'autlantic-billing-for-woocommerce'),
                 'default' => 'no',
             ],
         ];
@@ -192,14 +196,14 @@ final class Gateway extends \WC_Payment_Gateway
     {
         $order = wc_get_order($order_id);
         if (!$order instanceof \WC_Order) {
-            wc_add_notice(__('Order not found.', 'autlantic-billing'), 'error');
+            wc_add_notice(__('Order not found.', 'autlantic-billing-for-woocommerce'), 'error');
 
             return ['result' => 'fail'];
         }
 
         if (!Order_Meta::currency_supported($order)) {
             wc_add_notice(
-                __('Autlantic Billing only supports USD or USDC store currency.', 'autlantic-billing'),
+                __('Autlantic Billing only supports USD or USDC store currency.', 'autlantic-billing-for-woocommerce'),
                 'error',
             );
 
@@ -208,7 +212,7 @@ final class Gateway extends \WC_Payment_Gateway
 
         $amount = Order_Meta::amount_usdc($order);
         if ($amount <= 0) {
-            wc_add_notice(__('Order total must be greater than zero.', 'autlantic-billing'), 'error');
+            wc_add_notice(__('Order total must be greater than zero.', 'autlantic-billing-for-woocommerce'), 'error');
 
             return ['result' => 'fail'];
         }
@@ -222,21 +226,69 @@ final class Gateway extends \WC_Payment_Gateway
         } catch (AutlanticBillingException $e) {
             $this->log('process_payment failed: ' . $e->getMessage());
             wc_add_notice(
-                sprintf(
-                    /* translators: %s: error message */
-                    __('Autlantic payment failed: %s', 'autlantic-billing'),
-                    $e->getMessage(),
-                ),
+                __('Autlantic payment failed. Please try again or contact the store.', 'autlantic-billing-for-woocommerce'),
                 'error',
             );
 
             return ['result' => 'fail'];
         } catch (\Throwable $e) {
             $this->log('process_payment unexpected: ' . $e->getMessage());
-            wc_add_notice(__('Autlantic payment failed. Please try again.', 'autlantic-billing'), 'error');
+            wc_add_notice(__('Autlantic payment failed. Please try again.', 'autlantic-billing-for-woocommerce'), 'error');
 
             return ['result' => 'fail'];
         }
+    }
+
+    /**
+     * Keep existing secret when the password field is submitted empty.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function validate_api_key_field($key, $value): string
+    {
+        $value = is_string($value) ? trim(wp_unslash($value)) : '';
+        if ($value === '') {
+            return (string) $this->get_option($key, '');
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     */
+    public function validate_webhook_secret_field($key, $value): string
+    {
+        $value = is_string($value) ? trim(wp_unslash($value)) : '';
+        if ($value === '') {
+            return (string) $this->get_option($key, '');
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     */
+    public function validate_api_url_field($key, $value): string
+    {
+        $value = is_string($value) ? trim(wp_unslash($value)) : '';
+        if ($value === '') {
+            return 'https://billing.autlantic.com';
+        }
+        $value = esc_url_raw($value);
+        if ($value === '' || !preg_match('#^https://#i', $value)) {
+            \WC_Admin_Settings::add_error(
+                __('API base URL must be a valid https URL.', 'autlantic-billing-for-woocommerce'),
+            );
+
+            return (string) $this->get_option($key, 'https://billing.autlantic.com');
+        }
+
+        return untrailingslashit($value);
     }
 
     /**
@@ -288,7 +340,7 @@ final class Gateway extends \WC_Payment_Gateway
         Order_Meta::set($order, Order_Meta::MODE, $billing->mode);
         $order->update_status(
             'pending',
-            __('Awaiting USDC payment via Autlantic checkout.', 'autlantic-billing'),
+            __('Awaiting USDC payment via Autlantic checkout.', 'autlantic-billing-for-woocommerce'),
         );
         $order->save();
 
@@ -361,7 +413,7 @@ final class Gateway extends \WC_Payment_Gateway
 
         $order->update_status(
             'pending',
-            __('Awaiting USDC subscription activation via Autlantic checkout.', 'autlantic-billing'),
+            __('Awaiting USDC subscription activation via Autlantic checkout.', 'autlantic-billing-for-woocommerce'),
         );
         $order->save();
 
@@ -382,7 +434,7 @@ final class Gateway extends \WC_Payment_Gateway
     {
         $order = wc_get_order($order_id);
         if (!$order instanceof \WC_Order) {
-            return new \WP_Error('autlantic_refund', __('Order not found.', 'autlantic-billing'));
+            return new \WP_Error('autlantic_refund', __('Order not found.', 'autlantic-billing-for-woocommerce'));
         }
 
         $invoice_id = Order_Meta::get($order, Order_Meta::INVOICE_ID);
@@ -391,7 +443,7 @@ final class Gateway extends \WC_Payment_Gateway
                 'autlantic_refund',
                 __(
                     'No Autlantic invoice on this order. One-time payment-link refunds are not available via API yet; refund from the Autlantic portal if supported.',
-                    'autlantic-billing',
+                    'autlantic-billing-for-woocommerce',
                 ),
             );
         }
@@ -406,7 +458,7 @@ final class Gateway extends \WC_Payment_Gateway
             $order->add_order_note(
                 sprintf(
                     /* translators: 1: invoice id, 2: reason */
-                    __('Autlantic refund requested for invoice %1$s. %2$s', 'autlantic-billing'),
+                    __('Autlantic refund requested for invoice %1$s. %2$s', 'autlantic-billing-for-woocommerce'),
                     $invoice_id,
                     $reason !== '' ? $reason : '',
                 ),
@@ -431,7 +483,7 @@ final class Gateway extends \WC_Payment_Gateway
         }
 
         if ($order->is_paid()) {
-            echo '<p>' . esc_html__('USDC payment received. Thank you.', 'autlantic-billing') . '</p>';
+            echo '<p>' . esc_html__('USDC payment received. Thank you.', 'autlantic-billing-for-woocommerce') . '</p>';
 
             return;
         }
@@ -443,10 +495,10 @@ final class Gateway extends \WC_Payment_Gateway
 
         echo '<p>' . esc_html__(
             'If you have not finished paying, continue to Autlantic checkout:',
-            'autlantic-billing',
+            'autlantic-billing-for-woocommerce',
         ) . '</p>';
         echo '<p><a class="button" href="' . esc_url($checkout) . '">';
-        echo esc_html__('Complete USDC payment', 'autlantic-billing');
+        echo esc_html__('Complete USDC payment', 'autlantic-billing-for-woocommerce');
         echo '</a></p>';
     }
 
