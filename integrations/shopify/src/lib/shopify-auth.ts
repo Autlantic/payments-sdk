@@ -73,6 +73,10 @@ export async function completeAuth(query: Record<string, string>): Promise<{ sho
   if (!verifyOauthState(query.state, shop)) {
     throw new Error("Invalid OAuth state");
   }
+  const { verifyShopifyQueryHmac } = await import("./shopify-security.js");
+  if (!verifyShopifyQueryHmac(query)) {
+    throw new Error("Invalid Shopify OAuth HMAC");
+  }
 
   const tokenRes = await fetch(`https://${shop}/admin/oauth/access_token`, {
     method: "POST",

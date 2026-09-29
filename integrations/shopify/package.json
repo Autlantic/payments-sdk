@@ -1,6 +1,6 @@
 {
   "name": "@autlantic/shopify-billing",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Autlantic Billing offsite payments app for Shopify (USDC on Base)",
   "type": "module",

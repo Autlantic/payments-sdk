@@ -321,6 +321,11 @@ export async function listActivity(limit = 30): Promise<ActivityRow[]> {
   }));
 }
 
+export async function deleteShop(shopDomain: string): Promise<void> {
+  await ensureSchema();
+  await getPool().query(`DELETE FROM shops WHERE shop_domain = $1`, [normalizeShop(shopDomain)]);
+}
+
 export function webhookPathForShop(shopDomain: string, appBase: string): string {
   const shop = normalizeShop(shopDomain);
   return `${appBase.replace(/\/$/, "")}/webhooks/autlantic/${encodeURIComponent(shop)}`;
