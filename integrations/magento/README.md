@@ -91,6 +91,8 @@ Handled events: `payment.paid`, `invoice.paid`, `invoice.payment_failed`, `invoi
 
 ```bash
 php integrations/magento/bin/smoke.php
+# Runtime E2E against a Mage-OS / Magento 2.4.6+ install (requires billing env):
+# MAGE_ROOT=/path/to/mageos php integrations/magento/bin/e2e-mageos.php
 ```
 
 On tag `integrations/magento/v*`, [`.github/workflows/sync-magento-mirror.yml`](../../.github/workflows/sync-magento-mirror.yml) syncs [magento-autlantic](https://github.com/Autlantic/magento-autlantic).
