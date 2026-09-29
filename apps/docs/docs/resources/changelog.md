@@ -1,5 +1,12 @@
 # Changelog
 
+## Docs - Magento Packagist, Woo 1.1.3, Shopify custom wiring
+
+- Magento install is Packagist-first: `composer require autlantic/module-billing:^1.1` ([Packagist](https://packagist.org/packages/autlantic/module-billing) **1.1.0**)
+- WooCommerce docs/examples use zip **1.1.3**
+- [Commerce plugins](/guide/commerce): Shopify **custom wiring** (SDK + payment links + Admin API) while native checkout stays **blocked (external)** on Payments Partner
+- [Languages](/guide/languages) matrix and SDK README aligned
+
 ## billing-engine 0.3.10 - Incomplete checkout reuse and expiry
 
 - `createOrReuseSubscription`: resume the same incomplete checkout for the same merchantRef (or plan + customer) instead of minting duplicates

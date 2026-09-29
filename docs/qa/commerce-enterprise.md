@@ -36,14 +36,18 @@ Current reference bar: enqueue-safe admin JS, `Requires Plugins`, clean activati
 
 ### Magento runtime proof (2026-09-29)
 
-Environment: local Mage-OS **3.3.0** (Magento **2.4.9**), MariaDB `mageos`, OpenSearch, `http://127.0.0.1:8089`, module symlink `autlantic/module-billing` **1.1.0**.
+Environment: local Mage-OS **3.3.0** (Magento **2.4.9**), MariaDB `mageos`, OpenSearch, `http://127.0.0.1:8089`.
+
+Install proofs:
+
+1. Path/symlink module **1.1.0** E2E (earlier same day)
+2. Packagist install: removed path repos, `composer update` → `autlantic/module-billing` **1.1.0** + `autlantic/billing` **0.1.0** zipballs from GitHub/Packagist, `setup:upgrade`, then E2E again → `ENTERPRISE_PROVEN_MAGENTO_E2E_OK` (order `#000000006`)
 
 Command:
 
 ```bash
 set -a && source /path/to/billing-e2e.env && set +a   # abk_* + whsec_* + API URL
-MAGE_ROOT=/path/to/mageos php -d memory_limit=2G "$MAGE_ROOT/bin/autlantic-e2e.php"
-# or: php integrations/magento/bin/e2e-mageos.php
+MAGE_ROOT=/path/to/mageos php integrations/magento/bin/e2e-mageos.php
 ```
 
 Observed: `ENTERPRISE_PROVEN_MAGENTO_E2E_OK`
@@ -51,7 +55,7 @@ Observed: `ENTERPRISE_PROVEN_MAGENTO_E2E_OK`
 | Check | Result |
 |---|---|
 | Test connection `listProducts` | Pass (live mode, catalog returned) |
-| Place Autlantic order | Pass (`#000000002`) |
+| Place Autlantic order | Pass |
 | Create payment link | Pass (`plink_*` on billing.autlantic.com) |
 | Bad HMAC HTTP | Pass (`401`) |
 | Good HMAC `payment.paid` HTTP | Pass (`200 {"received":true}`) |
@@ -59,8 +63,9 @@ Observed: `ENTERPRISE_PROVEN_MAGENTO_E2E_OK`
 | Duplicate event safe | Pass (1 invoice) |
 | Refund without invoice id | Pass (blocked correctly for payment-link) |
 | OrderIndex + ActivityLog + JS race flag | Pass |
+| Packagist vendor tree (not path symlink) | Pass |
 
-Status: **enterprise-proven** for Magento one-time checkout + webhooks + admin operability + payment-link refund policy.
+Status: **enterprise-proven** for Magento one-time checkout + webhooks + admin operability + payment-link refund policy (including Packagist install path).
 
 ## Shopify
 
@@ -69,7 +74,8 @@ Status: **enterprise-proven** for Magento one-time checkout + webhooks + admin o
 | Multi-merchant OAuth + per-shop Autlantic settings | Owned code |
 | HMAC + GDPR/uninstall webhooks | Owned code |
 | App config `embedded=false` | Owned code |
-| Payments extension live checkout | Often **blocked (external)** on Payments Partner |
+| Payments extension live checkout | **blocked (external)** on Payments Partner |
+| Custom wiring (SDK + payment links + Admin API) | Documented; not a substitute for native checkout listing |
 
 ## Reporting
 
