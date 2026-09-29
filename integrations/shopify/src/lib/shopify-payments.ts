@@ -1,7 +1,5 @@
 /**
  * Resolve / reject Shopify payment sessions via the Payments Apps GraphQL API.
- * Requires an approved Payments Partner app and a shop access token with
- * write_payment_sessions.
  */
 
 const API_VERSION = "2025-10";
@@ -42,22 +40,6 @@ export async function paymentSessionReject(input: {
         merchantMessage: input.reasonMessage ?? "Payment failed",
       },
     },
-  });
-}
-
-export async function refundSessionResolve(input: {
-  shopDomain: string;
-  accessToken: string;
-  gid: string;
-}): Promise<void> {
-  await paymentsGraphql(input.shopDomain, input.accessToken, {
-    query: `mutation RefundSessionResolve($id: ID!) {
-      refundSessionResolve(id: $id) {
-        refundSession { id }
-        userErrors { field message }
-      }
-    }`,
-    variables: { id: input.gid },
   });
 }
 
@@ -116,19 +98,4 @@ async function paymentsGraphql(
   if (userErrors.length) {
     throw new Error(userErrors.map((e) => e.message).join("; "));
   }
-}
-
-/** Dev / single-shop installs can put the offline token in env until OAuth store is wired. */
-export function shopAccessToken(shopDomain: string): string {
-  const map = process.env.SHOPIFY_SHOP_TOKENS?.trim();
-  if (map) {
-    try {
-      const parsed = JSON.parse(map) as Record<string, string>;
-      const token = parsed[shopDomain] ?? parsed[shopDomain.replace(/\.myshopify\.com$/, "")];
-      if (token) return token;
-    } catch {
-      /* fall through */
-    }
-  }
-  return (process.env.SHOPIFY_ACCESS_TOKEN ?? "").trim();
 }
