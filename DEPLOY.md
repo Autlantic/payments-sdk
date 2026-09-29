@@ -32,11 +32,14 @@ Package publishes still happen from **`main`** (or version tags on `main`). Prom
 
 ## Railway (you must set once)
 
-For each payments-sdk Railway service (`railway.docs.toml`, `railway.example-store.toml`, `railway.status.toml`):
+For each payments-sdk Railway service (`railway.docs.toml`, `railway.example-store.toml`, `railway.status.toml`, `railway.shopify.toml`):
 
 1. Settings → Source → branch = **`production`** (not `main`)
 2. Redeploy once after switching
 3. Status service: custom domain **`status.autlantic.com`**
+4. Shopify service: custom domain **`shopify.autlantic.com`**
+   - Config file: `railway.shopify.toml`
+   - Env: `SHOPIFY_APP_URL=https://shopify.autlantic.com` plus Shopify + Autlantic secrets (see toml comments)
 
 ## Related
 

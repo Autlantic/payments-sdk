@@ -1,0 +1,30 @@
+# Autlantic Shopify Billing app — shopify.autlantic.com
+# Railway: new service → Settings → Config file path → railway.shopify.toml
+# Source branch must be production (payments-sdk deploy rule).
+
+[build]
+builder = "NIXPACKS"
+nixpacksConfigPath = "nixpacks.shopify.toml"
+buildCommand = "pnpm install --frozen-lockfile && pnpm build && pnpm --filter @autlantic/shopify-billing build"
+watchPatterns = [
+  "integrations/shopify/**",
+  "packages/**",
+  "railway.shopify.toml",
+  "nixpacks.shopify.toml",
+  "pnpm-lock.yaml",
+]
+
+[deploy]
+startCommand = "pnpm --filter @autlantic/shopify-billing start"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+
+# Custom domain: shopify.autlantic.com
+# Required env (set in Railway):
+#   SHOPIFY_APP_URL=https://shopify.autlantic.com
+#   SHOPIFY_API_KEY / SHOPIFY_API_SECRET
+#   AUTLANTIC_BILLING_API_URL=https://billing.autlantic.com
+#   AUTLANTIC_BILLING_API_KEY / AUTLANTIC_BILLING_WEBHOOK_SECRET
+#   AUTLANTIC_PAYOUT_ADDRESS_EVM
+#   SHOPIFY_ACCESS_TOKEN or SHOPIFY_SHOP_TOKENS (JSON)
