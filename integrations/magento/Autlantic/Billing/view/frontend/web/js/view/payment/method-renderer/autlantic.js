@@ -1,14 +1,14 @@
 define([
     'Magento_Checkout/js/view/payment/default',
-    'Magento_Checkout/js/action/place-order',
-    'Magento_Checkout/js/action/redirect-on-success',
     'mage/url'
-], function (Component, placeOrderAction, redirectOnSuccessAction, urlBuilder) {
+], function (Component, urlBuilder) {
     'use strict';
 
     return Component.extend({
         defaults: {
-            template: 'Autlantic_Magento/payment/autlantic'
+            template: 'Autlantic_Magento/payment/autlantic',
+            // Prevent Magento success redirect from racing Autlantic hosted checkout.
+            redirectAfterPlaceOrder: false
         },
 
         getCode: function () {

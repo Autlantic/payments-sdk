@@ -2,11 +2,11 @@
   <img src="https://autlantic.com/brand/autlantic-icon-1024-master.png" alt="Autlantic" width="96" height="96" />
 </p>
 
-<h1 align="center">Autlantic Billing — Magento 2</h1>
+<h1 align="center">Autlantic Billing for Magento 2</h1>
 
 <p align="center">
   <strong>USDC payments on Base</strong><br />
-  Official Magento payment method: single-use payment links, hosted checkout, and signed webhooks.
+  Official Magento payment method: single-use payment links, hosted checkout, signed webhooks, and invoice refunds.
 </p>
 
 <p align="center">
@@ -18,13 +18,13 @@
 
 ---
 
-Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Composer package `autlantic/module-billing` **1.0.0** · Magento module `Autlantic_Magento`. Uses [`autlantic/billing`](../../sdks/php).
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Composer package `autlantic/module-billing` **1.1.0** · Magento module `Autlantic_Magento`. Uses [`autlantic/billing`](../../sdks/php).
 
 USDC settles to your merchant payout wallet. Autlantic does not custody checkout funds.
 
 ## Why this module
 
-Same hosted Billing API as WooCommerce and the PHP SDK — create a payment link, redirect the buyer to hosted checkout, verify `x-autlantic-signature`, invoice the Magento order. Secrets stay in Magento admin (encrypted).
+Same hosted Billing API as WooCommerce and the PHP SDK. Create a payment link, redirect the buyer to hosted checkout, verify `x-autlantic-signature`, invoice the Magento order. Secrets stay in Magento admin (encrypted), scoped per website.
 
 ## Install
 
@@ -33,7 +33,7 @@ Same hosted Billing API as WooCommerce and the PHP SDK — create a payment link
 ```bash
 # Magento root
 composer config repositories.autlantic-magento vcs https://github.com/Autlantic/magento-autlantic.git
-composer require autlantic/module-billing:^1.0
+composer require autlantic/module-billing:^1.1
 bin/magento module:enable Autlantic_Magento
 bin/magento setup:upgrade
 bin/magento cache:flush
@@ -58,10 +58,7 @@ Requires Magento Open Source / Adobe Commerce **2.4.6+**, PHP **8.1+** (`ext-cur
 
 1. Stores → Configuration → Sales → Payment Methods → **Autlantic Billing**
 2. Enable; paste API key (`abk_test_…` / `abk_live_…`) and webhook signing secret
-3. Portal → Webhooks → register:
-
-   `https://your-store.example/autlantic/webhook`
-
+3. Use **Test connection**, then register the shown webhook URL in the Autlantic portal
 4. Place a test order with Autlantic → pay on hosted checkout → order invoices on `payment.paid`
 
 ## What it does
@@ -69,13 +66,16 @@ Requires Magento Open Source / Adobe Commerce **2.4.6+**, PHP **8.1+** (`ext-cur
 | Feature | Behavior |
 |---------|----------|
 | One-time checkout | `POST /v1/payment-links` (`maxUses: 1`), redirect via `autlantic/payment/redirect` |
-| Webhooks | `POST /autlantic/webhook` → offline invoice + configured status |
-| Refunds | One-time payment-link refunds are **manual** (merchant sends USDC back) |
+| Webhooks | `POST /autlantic/webhook` with HMAC verify across website secrets |
+| Refunds | Magento credit memo → Autlantic `refundInvoice` when an invoice id is on the order |
+| Admin tools | Test connection, recent webhook activity, order Autlantic panel |
 | Subscriptions | Not included in this module |
 
 ## Webhooks
 
-Verify `x-autlantic-signature` with the portal endpoint secret that matches the API key mode (Test or Live). Idempotent event ids and a short activity ring use Magento `FlagManager` (no custom tables).
+Verify `x-autlantic-signature` with the portal endpoint secret that matches the API key mode (Test or Live). Multi-website installs try each configured website secret. Event ids are idempotent.
+
+Handled events: `payment.paid`, `invoice.paid`, `invoice.payment_failed`, `invoice.refunded`.
 
 ## Documentation
 
@@ -94,6 +94,18 @@ php integrations/magento/bin/smoke.php
 ```
 
 On tag `integrations/magento/v*`, [`.github/workflows/sync-magento-mirror.yml`](../../.github/workflows/sync-magento-mirror.yml) syncs [magento-autlantic](https://github.com/Autlantic/magento-autlantic).
+
+## Changelog
+
+### 1.1.0
+- Fix checkout success redirect race (`redirectAfterPlaceOrder: false`)
+- Website-scoped webhook signature verification
+- Indexed Autlantic id → order lookup
+- Admin test connection, webhook activity, order panel
+- Invoice refunds + `invoice.refunded` / `invoice.payment_failed`
+
+### 1.0.0
+- Initial one-time checkout + signed webhooks
 
 ## License
 

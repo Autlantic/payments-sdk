@@ -1,0 +1,33 @@
+<?php
+/** @var \Autlantic\Magento\Block\Adminhtml\Order\View\AutlanticInfo $block */
+$rows = $block->getRows();
+if ($rows === []) {
+    return;
+}
+$checkout = $block->getCheckoutUrl();
+?>
+<section class="admin__page-section order-autlantic-info">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Autlantic Billing')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <table class="admin__table-secondary">
+            <tbody>
+            <?php foreach ($rows as $label => $value): ?>
+                <tr>
+                    <th><?= $block->escapeHtml($label) ?></th>
+                    <td><code><?= $block->escapeHtml($value) ?></code></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php if ($checkout !== ''): ?>
+            <p style="margin-top:8px">
+                <a class="action-default" target="_blank" rel="noopener noreferrer"
+                   href="<?= $block->escapeUrl($checkout) ?>">
+                    <?= $block->escapeHtml(__('Open checkout')) ?>
+                </a>
+            </p>
+        <?php endif; ?>
+    </div>
+</section>
