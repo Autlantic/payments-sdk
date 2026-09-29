@@ -1,0 +1,27 @@
+---
+description: Keep payments-sdk main and production in sync after shippable work
+alwaysApply: true
+---
+
+# main + production
+
+When you push shippable work to **`main`** in this repo (docs, integrations, SDK source that docs/Railway should show), **also update `production` in the same session** unless the user explicitly says main-only.
+
+## Promote
+
+```bash
+git fetch origin
+git checkout production
+git merge origin/main -m "Merge main: <short why>."
+git push origin production
+git checkout main
+```
+
+Prefer a merge commit when fast-forward is not possible (this repo’s history uses `Merge main: …`).
+
+## Rules
+
+- Railway docs / example-store / status deploy from **`production` only** — never point them at `main` (see `DEPLOY.md`).
+- Package publishes and version tags still come from **`main`**.
+- Do not leave docs or public integration changes on `main` without promoting `production` when the user expects the live site updated.
+- Confirm both remotes after promote: `origin/main` is an ancestor of `origin/production` (or production tip contains the main tip).
