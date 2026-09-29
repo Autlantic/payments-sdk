@@ -6,101 +6,60 @@
 
 <p align="center">
   <strong>USDC payments on Base</strong><br />
-  Official offsite payments app: payment sessions, hosted checkout, and signed webhooks.
-</p>
-
-<p align="center">
-  <a href="https://docs.autlantic.com/guide/commerce"><img src="https://img.shields.io/badge/docs-docs.autlantic.com-5672cd?style=flat-square" alt="Docs" /></a>
-  <a href="https://github.com/Autlantic/shopify-autlantic"><img src="https://img.shields.io/badge/mirror-shopify--autlantic-111827?style=flat-square" alt="Mirror" /></a>
-  <a href="https://github.com/Autlantic/payments-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License" /></a>
-  <a href="https://autlantic.com"><img src="https://img.shields.io/badge/product-autlantic.com-111827?style=flat-square" alt="Autlantic" /></a>
+  Official offsite payments app: each Shopify store connects <strong>its own</strong> Autlantic merchant.
 </p>
 
 ---
 
-Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Uses [`@autlantic/payments-recurring`](../../packages/payments-recurring). Distribute via [shopify-autlantic](https://github.com/Autlantic/shopify-autlantic) (not npm).
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Same merchant model as WooCommerce: Store A creates a portal account, pastes API key / webhook / payout into the app. Autlantic does not put a shared company key on merchant checkouts.
 
-USDC settles to your merchant `payoutAddressEvm`. Autlantic does not custody checkout funds.
+> **Checkout listing** still requires Shopify **Payments Partner** approval for the offsite payments extension.
 
-> **Checkout listing** requires an approved **Shopify Payments Partner** app. Ordinary Partner status is not enough — until then merchants cannot enable Autlantic on production checkouts.
+## Merchant flow
 
-## Why this app
+1. Store installs Autlantic Billing (OAuth → offline token stored encrypted in Postgres).
+2. Store opens app settings and pastes Autlantic portal credentials (API key, webhook secret, payout wallet).
+3. Store registers the **per-shop webhook URL** shown in settings in the Autlantic portal.
+4. Shopify payment session → Autlantic hosted checkout (using **that store’s** key) → webhook → resolve session.
 
-Same hosted Billing API as WooCommerce — Shopify starts a payment session, the app creates a single-use payment link, the buyer pays on hosted checkout, and `payment.paid` resolves the session. API keys and webhook secrets stay on the server.
+## Host env (Railway / Autlantic ops)
 
-## Install
+| Env | Purpose |
+|-----|---------|
+| `SHOPIFY_API_KEY` / `SHOPIFY_API_SECRET` | Partner app credentials |
+| `SHOPIFY_APP_URL` | `https://shopify.autlantic.com` |
+| `TOKEN_ENCRYPTION_KEY` | Encrypt shop tokens + Autlantic secrets at rest |
+| `DATABASE_URL` | Postgres for shops + payment sessions |
+| `SCOPES` | Default `read_orders,write_orders` |
+| `PORT` | Default `3458` |
+
+Do **not** set shared `AUTLANTIC_BILLING_API_KEY` for multi-merchant. Those live per shop in settings.
+
+## Local
 
 ```bash
 cp .env.example .env
-# fill SHOPIFY_* and AUTLANTIC_* placeholders only — never commit .env
+# fill Shopify + DATABASE_URL + TOKEN_ENCRYPTION_KEY
 pnpm install
 pnpm --filter @autlantic/shopify-billing smoke
 pnpm --filter @autlantic/shopify-billing typecheck
 pnpm --filter @autlantic/shopify-billing dev
 ```
 
-Requires Node **20+**, a public HTTPS app URL, Autlantic portal credentials, and shop access token(s) for Payments Apps GraphQL. Store currency **USD** or **USDC**.
+Open `http://localhost:3458`, install with `your-store.myshopify.com`, then paste portal credentials.
 
-Set real `client_id` / `application_url` in `shopify.app.toml`. This repo ships `embedded = false` and `read_orders,write_orders` (payment scopes come from the extension on first deploy).
+## Routes
 
-## Quick start
-
-1. Set `AUTLANTIC_BILLING_API_KEY`, `AUTLANTIC_BILLING_WEBHOOK_SECRET`, and `AUTLANTIC_PAYOUT_ADDRESS_EVM`
-2. Portal → Webhooks → register:
-
-   `https://your-app-host/webhooks/autlantic`
-
-3. After Payments Partner approval: `shopify auth login`, deploy app + `extensions/autlantic-offsite/`
-4. Shopify payment session → `{ redirect_url }` → hosted pay → webhook → `paymentSessionResolve`
-
-## What it does
-
-| Piece | Route / path |
-|-------|----------------|
-| App host | `src/index.ts` (Hono) |
-| Offsite extension | `extensions/autlantic-offsite/` |
-| Payment session | `POST /payment` → Autlantic payment link → `{ redirect_url }` |
-| Autlantic webhook | `POST /webhooks/autlantic` → `paymentSessionResolve` |
-| Refund session | `POST /refund` → rejects; one-time refunds are **manual** |
-
-## Environment
-
-| Env var | Purpose |
-|---------|---------|
-| `SHOPIFY_API_KEY` / `SHOPIFY_API_SECRET` | Partner app credentials |
-| `SHOPIFY_APP_URL` | Public HTTPS base |
-| `AUTLANTIC_BILLING_API_URL` | Default `https://billing.autlantic.com` |
-| `AUTLANTIC_BILLING_API_KEY` | `abk_test_…` or `abk_live_…` |
-| `AUTLANTIC_BILLING_WEBHOOK_SECRET` | Portal endpoint secret |
-| `AUTLANTIC_PAYOUT_ADDRESS_EVM` | Merchant payout wallet (required) |
-| `SHOPIFY_ACCESS_TOKEN` or `SHOPIFY_SHOP_TOKENS` | Payments Apps GraphQL auth |
-| `PORT` | Default `3458` |
-
-## Webhooks
-
-Verify `x-autlantic-signature` with the portal endpoint secret. Session/activity state defaults to a local JSON file (atomic writes; single-instance only).
-
-## Documentation
-
-| | |
-|--|--|
-| [Commerce plugins](https://docs.autlantic.com/guide/commerce) | Woo / Magento / Shopify |
-| [Languages](https://docs.autlantic.com/guide/languages) | All SDK surfaces |
-| [Webhooks](https://docs.autlantic.com/guide/webhooks) | Signature & events |
-| [Node.js SDK](https://docs.autlantic.com/api/nodejs) | `@autlantic/payments-recurring` |
-| [Terms](https://autlantic.com/terms) · [Privacy](https://autlantic.com/privacy) · [Security](https://autlantic.com/security) | Legal |
-
-## Develop
-
-```bash
-pnpm --filter @autlantic/shopify-billing smoke
-pnpm --filter @autlantic/shopify-billing typecheck
-```
-
-On tag `integrations/shopify/v*`, [`.github/workflows/sync-shopify-mirror.yml`](../../.github/workflows/sync-shopify-mirror.yml) syncs [shopify-autlantic](https://github.com/Autlantic/shopify-autlantic).
+| Path | Role |
+|------|------|
+| `GET /auth?shop=` | Start OAuth |
+| `GET /auth/callback` | Finish OAuth, redirect to settings |
+| `GET/POST /app/settings` | Per-store Autlantic merchant credentials |
+| `POST /payment` | Shopify payment session → payment link |
+| `POST /webhooks/autlantic/:shop` | Per-store Autlantic webhook |
+| `POST /refund` | Reject (manual USDC refund) |
+| `GET /health` | Health + DB |
 
 ## License
 
-MIT · Operated by **Autlantic Limited** (UK company no. 17422039).
-
-Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk).
+MIT · Operated by **Autlantic Limited**.
