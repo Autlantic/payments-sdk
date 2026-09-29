@@ -56,30 +56,32 @@ git push origin integrations/woocommerce/v1.1.1
 
 ## Magento 2 module
 
-Source of truth: `integrations/magento`. Distribution mirror (planned): **https://github.com/Autlantic/magento-autlantic** (Composer package root = module). Package: `autlantic/module-billing`. Magento module: `Autlantic_Magento`.
+Source of truth: `integrations/magento`. Distribution mirror: **https://github.com/Autlantic/magento-autlantic** (Composer package root = module). Package: [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) on Packagist. Magento module: `Autlantic_Magento`.
 
 ### One-time
 
 1. Create the empty public repo `Autlantic/magento-autlantic`.
 2. Add GitHub Actions secret **`MAGENTO_MIRROR_TOKEN`** on payments-sdk (PAT with `contents:write` on that repo) so `.github/workflows/sync-magento-mirror.yml` can push on `integrations/magento/v*` tags.
-3. Optional: [packagist.org](https://packagist.org) → Submit → `https://github.com/Autlantic/magento-autlantic` → enable GitHub sync. Until then, merchants use a VCS Composer repository (see [`integrations/magento/README.md`](../integrations/magento/README.md)).
-4. Ensure `autlantic/billing` is installable (Packagist or [`billing-php`](https://github.com/Autlantic/billing-php)).
+3. [packagist.org](https://packagist.org) → Submit → `https://github.com/Autlantic/magento-autlantic` → enable GitHub webhook sync (done for **1.1.0**).
+4. Ensure `autlantic/billing` remains installable on Packagist ([`billing-php`](https://github.com/Autlantic/billing-php)).
+
+Merchant install: `composer require autlantic/module-billing:^1.1` (see [`integrations/magento/README.md`](../integrations/magento/README.md)).
 
 ### Re-publish
 
 ```bash
 # bump version in integrations/magento/composer.json
 php integrations/magento/bin/smoke.php
-git tag -a integrations/magento/v1.0.0 -m "autlantic/module-billing 1.0.0"
-git push origin integrations/magento/v1.0.0
-# sync workflow (when present) pushes magento-autlantic + tag v1.0.0
+git tag -a integrations/magento/v1.1.0 -m "autlantic/module-billing 1.1.0"
+git push origin integrations/magento/v1.1.0
+# sync workflow pushes magento-autlantic + tag v1.1.0; Packagist auto-updates via GitHub hook
 ```
 
 ## Shopify payments app
 
 Source of truth: `integrations/shopify`. Distribution mirror (planned): **https://github.com/Autlantic/shopify-autlantic** (app source root). Package `@autlantic/shopify-billing` stays **private** in the monorepo; merchants/deployments clone the mirror or this path — do not publish it to npm.
 
-Checkout listing requires **Shopify Payments Partner** approval for the offsite payments extension. Partner login and approval are interactive and cannot be completed by CI alone.
+Checkout listing requires **Shopify Payments Partner** approval for the offsite payments extension. Partner login and approval are interactive and cannot be completed by CI alone. Until then, merchants can use **custom wiring** (any server SDK + payment links + Shopify Admin API). See [Commerce plugins → Shopify](https://docs.autlantic.com/guide/commerce#shopify).
 
 ### One-time
 

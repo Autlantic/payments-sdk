@@ -32,10 +32,10 @@ Same hosted Billing API as Magento and the PHP SDK — create a payment link, re
 
 ```bash
 bash integrations/woocommerce/bin/package.sh
-# → integrations/woocommerce/dist/autlantic-billing-1.1.1.zip
+# → integrations/woocommerce/dist/autlantic-billing-1.1.3.zip
 ```
 
-Upload via Plugins → Add New. The zip vendors `autlantic/billing` (no Composer on the store). Or download the [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases).
+Upload via Plugins → Add New. The zip vendors `autlantic/billing` (no Composer on the store). Prefer the [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) zip (**1.1.3**) for stores.
 
 **Monorepo / development**
 

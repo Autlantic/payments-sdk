@@ -28,18 +28,24 @@ Same hosted Billing API as WooCommerce and the PHP SDK. Create a payment link, r
 
 ## Install
 
-**Production (VCS mirror)**
+**Production (Packagist)**
 
 ```bash
-# Magento root
-composer config repositories.autlantic-magento vcs https://github.com/Autlantic/magento-autlantic.git
+# Magento root (resolves autlantic/billing from Packagist automatically)
 composer require autlantic/module-billing:^1.1
 bin/magento module:enable Autlantic_Magento
 bin/magento setup:upgrade
 bin/magento cache:flush
 ```
 
-Also require [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) (Packagist or [`billing-php`](https://github.com/Autlantic/billing-php)).
+Package: [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.0** · depends on [`autlantic/billing`](https://packagist.org/packages/autlantic/billing).
+
+**Fallback (VCS mirror)** if Packagist is unavailable:
+
+```bash
+composer config repositories.autlantic-magento vcs https://github.com/Autlantic/magento-autlantic.git
+composer require autlantic/module-billing:^1.1
+```
 
 **Monorepo / development**
 

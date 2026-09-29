@@ -17,9 +17,9 @@ Autlantic Billing is **one hosted API**. Official SDKs are thin clients around t
 | **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** | **None** |
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
 | **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
-| **WooCommerce** | Available (plugin zip) | [`woocommerce-autlantic`](https://github.com/Autlantic/woocommerce-autlantic) releases | Server API key + webhook secret |
-| **Magento 2** | Available (Composer module) | [`autlantic/module-billing`](https://github.com/Autlantic/magento-autlantic) **1.0.0** | Server API key + webhook secret |
-| **Shopify** | Available (app source; Payments Partner approval for checkout) | [`shopify-autlantic`](https://github.com/Autlantic/shopify-autlantic) | Server API key + webhook secret + Shopify app credentials |
+| **WooCommerce** | Available (plugin zip **1.1.3**) | [`woocommerce-autlantic`](https://github.com/Autlantic/woocommerce-autlantic) releases | Server API key + webhook secret |
+| **Magento 2** | Available on Packagist | [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.0** | Server API key + webhook secret |
+| **Shopify** | Checkout blocked (external) on Payments Partner; custom wiring OK | [`shopify-autlantic`](https://github.com/Autlantic/shopify-autlantic) · [custom wiring](/guide/commerce#shopify) | Server API key + webhook secret (+ app credentials only for payments app) |
 
 ## Who installs what
 
@@ -28,12 +28,12 @@ Merchant backend  →  Node / Python / Go / PHP / Java / .NET SDK  →  billing-
 Merchant mobile   →  iOS / Android / Flutter / RN Checkout  →  opens hosted checkoutUrl
 WooCommerce store →  Autlantic Billing plugin  →  PHP SDK → billing-api + webhooks
 Magento store     →  Autlantic Billing module  →  PHP SDK → billing-api + webhooks
-Shopify store     →  Autlantic Billing app     →  Node SDK → billing-api + webhooks
+Shopify store     →  payments app (Partner) OR custom wiring (any server SDK + payment links + Admin API)
 ```
 
 - **Server SDKs** create subscriptions, payments, and payment links; verify webhooks; unlock access.
 - **Mobile SDKs** only present the hosted checkout URL and handle return deep links. They never accept `abk_*` keys or webhook secrets.
-- **Commerce plugins** are full gateways / payment methods (not language SDKs). See [Commerce plugins](/guide/commerce).
+- **Commerce plugins** are full gateways / payment methods (not language SDKs). Shopify native checkout needs Payments Partner; custom wiring uses a server SDK. See [Commerce plugins](/guide/commerce).
 
 ## Docs by platform
 

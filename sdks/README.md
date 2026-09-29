@@ -36,9 +36,9 @@ README layout for every package: **[README.STANDARD.md](./README.STANDARD.md)**.
 | **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** | **None** |
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
 | **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
-| **WooCommerce** | Available (plugin; mirror zip) | [`integrations/woocommerce`](../integrations/woocommerce) · [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic) | Server API key + webhook secret |
-| **Magento 2** | Available (module; Composer mirror pending) | [`integrations/magento`](../integrations/magento) | Server API key + webhook secret |
-| **Shopify** | Available (app source; Payments Partner approval for checkout) | [`integrations/shopify`](../integrations/shopify) | Server API key + webhook secret + Shopify app credentials |
+| **WooCommerce** | Available (plugin zip **1.1.3**) | [`integrations/woocommerce`](../integrations/woocommerce) · [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic) | Server API key + webhook secret |
+| **Magento 2** | Available on Packagist (**1.1.0**) | [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) · [`integrations/magento`](../integrations/magento) | Server API key + webhook secret |
+| **Shopify** | Checkout blocked (external); custom wiring OK | [`integrations/shopify`](../integrations/shopify) · [commerce docs](https://docs.autlantic.com/guide/commerce#shopify) | Server API key + webhook secret (+ app credentials for payments app) |
 
 ## Who installs what
 
@@ -47,7 +47,7 @@ Merchant backend  →  Node / Python / Go / PHP / Java / .NET SDK  →  billing-
 Merchant mobile   →  iOS / Android / Flutter / RN Checkout  →  opens hosted checkoutUrl
 WooCommerce store →  Autlantic Billing plugin  →  PHP SDK → billing-api + webhooks
 Magento store     →  Autlantic Billing module  →  PHP SDK → billing-api + webhooks
-Shopify store     →  Autlantic Billing app     →  Node SDK → billing-api + webhooks
+Shopify store     →  payments app (Partner) OR custom wiring (server SDK + payment links)
 ```
 
 - **Server SDKs** create subscriptions, payments, and payment links; verify webhooks; unlock access.

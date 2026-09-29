@@ -13,9 +13,11 @@
 
 Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Same merchant model as WooCommerce: Store A creates a portal account, pastes API key / webhook / payout into the app. Autlantic does not put a shared company key on merchant checkouts.
 
-> **Checkout listing** still requires Shopify **Payments Partner** approval for the offsite payments extension.
+> **Checkout listing** still requires Shopify **Payments Partner** approval for the offsite payments extension. Status: **blocked (external)**.
 
-## Merchant flow
+Until Partner approval, stores can still take Autlantic USDC via **custom wiring**: create a [payment link](https://docs.autlantic.com/guide/payment-links) with any server SDK, send the buyer to hosted checkout, verify the [webhook](https://docs.autlantic.com/guide/webhooks), then mark the Shopify order paid via Admin API. That is **not** Autlantic inside Shopify Checkout. Full notes: [Commerce plugins → Shopify](https://docs.autlantic.com/guide/commerce#shopify).
+
+## Merchant flow (payments app, after Partner approval)
 
 1. Store installs Autlantic Billing (OAuth → offline token stored encrypted in Postgres).
 2. Store opens app settings and pastes Autlantic portal credentials (API key, webhook secret, payout wallet).
