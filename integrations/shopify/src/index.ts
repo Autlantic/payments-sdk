@@ -9,6 +9,7 @@ import { maskSecret } from "./lib/crypto.js";
 import {
   addActivity,
   alreadyProcessed,
+  deleteShop,
   ensureSchema,
   findSessionByPaymentLink,
   getSession,
@@ -23,10 +24,19 @@ import {
 } from "./lib/db.js";
 import { beginAuthUrl, completeAuth, normalizeShopDomain } from "./lib/shopify-auth.js";
 import {
+  createCsrfToken,
+  createShopSessionCookie,
+  parseCookieHeader,
+  verifyCsrfToken,
+  verifyShopSessionCookie,
+  verifyShopifyWebhookHmac,
+} from "./lib/shopify-security.js";
+import {
   paymentSessionReject,
   paymentSessionResolve,
   refundSessionReject,
 } from "./lib/shopify-payments.js";
+import { registerAppWebhooks } from "./lib/shopify-webhooks.js";
 
 const app = new Hono();
 
@@ -83,6 +93,24 @@ app.get("/auth/callback", async (c) => {
       query[key] = value;
     });
     const { shop } = await completeAuth(query);
+    const installed = await getShop(shop);
+    if (installed?.accessToken) {
+      try {
+        await registerAppWebhooks({ shopDomain: shop, accessToken: installed.accessToken });
+      } catch (err) {
+        await addActivity({
+          ok: false,
+          type: "webhook_register",
+          message: err instanceof Error ? err.message : "register failed",
+          shopDomain: shop,
+        });
+      }
+    }
+    const cookie = createShopSessionCookie(shop);
+    c.header(
+      "Set-Cookie",
+      `autlantic_shop_session=${cookie}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=43200`,
+    );
     return c.redirect(`/app/settings?shop=${encodeURIComponent(shop)}`, 302);
   } catch (err) {
     const message = err instanceof Error ? err.message : "OAuth failed";
@@ -90,9 +118,17 @@ app.get("/auth/callback", async (c) => {
   }
 });
 
+function requireShopSession(c: { req: { header: (n: string) => string | undefined } }, shopDomain: string): boolean {
+  const cookies = parseCookieHeader(c.req.header("cookie"));
+  return verifyShopSessionCookie(cookies.autlantic_shop_session, shopDomain);
+}
+
 app.get("/app/settings", async (c) => {
   const shopDomain = normalizeShopDomain(c.req.query("shop") ?? "");
   if (!shopDomain) return c.text("Missing shop", 400);
+  if (!requireShopSession(c, shopDomain)) {
+    return c.redirect(`/auth?shop=${encodeURIComponent(shopDomain)}`, 302);
+  }
   const shop = await getShop(shopDomain);
   if (!shop) {
     return c.redirect(`/auth?shop=${encodeURIComponent(shopDomain)}`, 302);
@@ -101,6 +137,7 @@ app.get("/app/settings", async (c) => {
   const webhookUrl = webhookPathForShop(shopDomain, base);
   const configured = shopBillingConfigured(shop);
   const saved = c.req.query("saved") === "1";
+  const csrf = createCsrfToken(shopDomain);
   return c.html(`<!doctype html>
 <html><head><meta charset="utf-8"><title>Autlantic settings · ${shopDomain}</title>
 <style>
@@ -125,6 +162,7 @@ ${saved ? '<p class="ok">Saved.</p>' : ""}
 <div class="card">
 <form method="post" action="/app/settings">
 <input type="hidden" name="shop" value="${shopDomain}" />
+<input type="hidden" name="csrf" value="${csrf}" />
 <label>Autlantic API key (abk_test_… or abk_live_…)</label>
 <input name="billingApiKey" placeholder="${
     shop.billingApiKey ? maskSecret(shop.billingApiKey) : "abk_test_…"
@@ -152,6 +190,12 @@ app.post("/app/settings", async (c) => {
   const body = await c.req.parseBody();
   const shopDomain = normalizeShopDomain(String(body.shop ?? ""));
   if (!shopDomain) return c.text("Missing shop", 400);
+  if (!requireShopSession(c, shopDomain)) {
+    return c.redirect(`/auth?shop=${encodeURIComponent(shopDomain)}`, 302);
+  }
+  if (!verifyCsrfToken(String(body.csrf ?? ""), shopDomain)) {
+    return c.text("Invalid CSRF token", 403);
+  }
   try {
     await saveShopBilling({
       shopDomain,
@@ -167,7 +211,31 @@ app.post("/app/settings", async (c) => {
   }
 });
 
-app.get("/admin/activity", async (c) => c.json({ activity: await listActivity() }));
+app.get("/admin/activity", async (c) => {
+  const token = process.env.ADMIN_TOKEN?.trim();
+  const provided = c.req.header("x-admin-token") ?? c.req.query("token") ?? "";
+  if (!token || provided !== token) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return c.json({ activity: await listActivity() });
+});
+
+/** Shopify app / compliance webhooks (HMAC required). */
+app.post("/webhooks/shopify", async (c) => {
+  const raw = await c.req.text();
+  const hmac = c.req.header("x-shopify-hmac-sha256");
+  if (!verifyShopifyWebhookHmac(raw, hmac ?? null)) {
+    return c.json({ error: "Invalid HMAC" }, 401);
+  }
+  const topic = (c.req.header("x-shopify-topic") ?? "").toLowerCase();
+  const shopDomain = normalizeShopDomain(c.req.header("x-shopify-shop-domain") ?? "");
+  if (topic === "app/uninstalled" && shopDomain) {
+    await deleteShop(shopDomain);
+    await addActivity({ ok: true, type: "app_uninstalled", message: "shop deleted", shopDomain });
+  }
+  // GDPR topics: acknowledge. Payment data is not customer PII store beyond Shopify order flow.
+  return c.json({ ok: true });
+});
 
 app.post("/payment", async (c) => {
   const shopDomain = normalizeShopDomain(c.req.header("Shopify-Shop-Domain") ?? "");

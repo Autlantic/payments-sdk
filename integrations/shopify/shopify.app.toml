@@ -15,5 +15,13 @@ redirect_urls = [ "https://shopify.autlantic.com/auth/callback" ]
 [webhooks]
 api_version = "2025-10"
 
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/shopify"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
+  uri = "/webhooks/shopify"
+
 [pos]
 embedded = false
