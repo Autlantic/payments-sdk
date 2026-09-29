@@ -19,8 +19,16 @@
                 </field>
                 <field id="webhook_secret" translate="label comment" type="obscure" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Webhook signing secret</label>
-                    <comment>Portal → Webhooks → endpoint secret. Register https://your-store/autlantic/webhook</comment>
+                    <comment>Portal → Webhooks → endpoint secret for this website. Register the webhook URL shown below.</comment>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="test_connection" translate="label" type="text" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connection</label>
+                    <frontend_model>Autlantic\Magento\Block\Adminhtml\System\Config\TestConnection</frontend_model>
+                </field>
+                <field id="webhook_info" translate="label" type="text" sortOrder="46" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Webhook</label>
+                    <frontend_model>Autlantic\Magento\Block\Adminhtml\System\Config\WebhookInfo</frontend_model>
                 </field>
                 <field id="merchant_id" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Merchant ID</label>
@@ -31,7 +39,7 @@
                 </field>
                 <field id="api_url" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>API base URL</label>
-                    <comment>Default https://billing.autlantic.com</comment>
+                    <comment>Default https://billing.autlantic.com. Change only for staging.</comment>
                 </field>
                 <field id="order_status_on_paid" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Order status after payment</label>

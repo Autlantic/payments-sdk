@@ -44,9 +44,8 @@ class Index implements HttpPostActionInterface, CsrfAwareActionInterface
         $signature = (string) ($this->request->getHeader('x-autlantic-signature')
             ?: $this->request->getHeader('X-Autlantic-Signature')
             ?: '');
-        $secret = $this->config->getWebhookSecret();
-        $verified = Webhook::verifyDetailed($secret, $raw, $signature !== '' ? $signature : null);
 
+        $verified = $this->config->verifyWebhookSignature($raw, $signature !== '' ? $signature : null);
         if (($verified['ok'] ?? false) !== true) {
             $reason = (string) ($verified['reason'] ?? 'unknown');
             $this->clientFactory->log('Webhook rejected: ' . $reason);
@@ -79,7 +78,7 @@ class Index implements HttpPostActionInterface, CsrfAwareActionInterface
             $this->clientFactory->log('Webhook handler error: ' . $e->getMessage());
             $this->activityLog->add(false, $type, $e->getMessage());
 
-            return $result->setHttpResponseCode(500)->setData(['error' => $e->getMessage()]);
+            return $result->setHttpResponseCode(500)->setData(['error' => 'Webhook handler failed']);
         }
 
         return $result->setData(['received' => true]);

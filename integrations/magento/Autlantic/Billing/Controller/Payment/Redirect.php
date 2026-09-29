@@ -7,6 +7,7 @@ namespace Autlantic\Magento\Controller\Payment;
 use Autlantic\Billing\AutlanticBillingException;
 use Autlantic\Magento\Helper\ClientFactory;
 use Autlantic\Magento\Helper\Config;
+use Autlantic\Magento\Helper\OrderIndex;
 use Autlantic\Magento\Helper\OrderMeta;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Action\HttpGetActionInterface;
@@ -21,6 +22,7 @@ class Redirect implements HttpGetActionInterface
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly ClientFactory $clientFactory,
         private readonly Config $config,
+        private readonly OrderIndex $orderIndex,
         private readonly RedirectFactory $redirectFactory,
         private readonly ManagerInterface $messageManager,
     ) {
@@ -38,6 +40,11 @@ class Redirect implements HttpGetActionInterface
 
         $order = $this->orderRepository->get($orderId);
         $storeId = (int) $order->getStoreId();
+
+        $existingCheckout = OrderMeta::get($order, OrderMeta::CHECKOUT_URL);
+        if ($existingCheckout !== '' && !$order->hasInvoices()) {
+            return $redirect->setUrl($existingCheckout);
+        }
 
         if (!OrderMeta::currencySupported($order)) {
             $this->messageManager->addErrorMessage(__('Autlantic Billing only supports USD or USDC.'));
@@ -69,6 +76,7 @@ class Redirect implements HttpGetActionInterface
                 'metadata' => [
                     'm2_order_id' => (string) $order->getEntityId(),
                     'm2_increment_id' => (string) $order->getIncrementId(),
+                    'm2_store_id' => (string) $storeId,
                     'm2_store' => $order->getStore()->getBaseUrl(),
                 ],
             ];
@@ -91,17 +99,27 @@ class Redirect implements HttpGetActionInterface
             OrderMeta::set($order, OrderMeta::CHECKOUT_URL, $url);
             OrderMeta::set($order, OrderMeta::MERCHANT_REF, $merchantRefPrefix);
             OrderMeta::set($order, OrderMeta::MODE, $billing->mode);
+            $this->orderIndex->remember('payment_link', $linkId, (int) $order->getEntityId());
+
             $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
-            $order->setStatus('pending');
+            $pendingStatus = $order->getConfig()->getStateDefaultStatus(
+                \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT,
+            );
+            $order->setStatus($pendingStatus ?: 'pending');
             $order->addCommentToStatusHistory(__('Awaiting USDC payment via Autlantic checkout.'));
             $this->orderRepository->save($order);
 
-            $this->clientFactory->log(sprintf('Created payment link %s for order %s', $linkId, $order->getIncrementId()), $storeId);
+            $this->clientFactory->log(
+                sprintf('Created payment link %s for order %s', $linkId, $order->getIncrementId()),
+                $storeId,
+            );
 
             return $redirect->setUrl($url);
         } catch (\Throwable $e) {
             $this->clientFactory->log('Redirect failed: ' . $e->getMessage(), $storeId);
-            $this->messageManager->addErrorMessage(__('Autlantic payment failed: %1', $e->getMessage()));
+            $this->messageManager->addErrorMessage(
+                __('Autlantic payment failed. Please try again or contact the store.'),
+            );
 
             return $redirect->setPath('checkout/cart');
         }
