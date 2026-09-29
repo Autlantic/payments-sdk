@@ -6,6 +6,10 @@ namespace Autlantic\WooCommerce;
 
 use Autlantic\Billing\Webhook;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * REST webhook receiver for Autlantic Billing events.
  */
@@ -16,15 +20,18 @@ final class Webhook_Controller
         register_rest_route('autlantic/v1', '/webhook', [
             'methods' => 'POST',
             'callback' => [self::class, 'handle'],
-            'permission_callback' => '__return_true',
+            // Public endpoint: Autlantic servers POST signed events. Auth is HMAC below.
+            'permission_callback' => [self::class, 'permission_check'],
         ]);
     }
 
     /**
+     * Authorize webhook POSTs via Autlantic signature (not WordPress cookies).
+     *
      * @param \WP_REST_Request $request
-     * @return \WP_REST_Response|\WP_Error
+     * @return true|\WP_Error
      */
-    public static function handle(\WP_REST_Request $request)
+    public static function permission_check(\WP_REST_Request $request)
     {
         $raw = $request->get_body();
         $signature = $request->get_header('x-autlantic-signature');
@@ -34,22 +41,32 @@ final class Webhook_Controller
 
         $secret = Client_Factory::webhook_secret();
         $verified = Webhook::verifyDetailed($secret, $raw, $signature);
-        if (($verified['ok'] ?? false) !== true) {
-            $reason = (string) ($verified['reason'] ?? 'unknown');
-            self::log('Webhook rejected: ' . $reason);
-            Activity_Log::add([
-                'ok' => false,
-                'type' => '',
-                'message' => 'signature ' . $reason,
-            ]);
-
-            return new \WP_Error(
-                'autlantic_webhook_invalid',
-                'Invalid webhook signature',
-                ['status' => 401],
-            );
+        if (($verified['ok'] ?? false) === true) {
+            return true;
         }
 
+        $reason = (string) ($verified['reason'] ?? 'unknown');
+        self::log('Webhook rejected: ' . $reason);
+        Activity_Log::add([
+            'ok' => false,
+            'type' => '',
+            'message' => 'signature ' . $reason,
+        ]);
+
+        return new \WP_Error(
+            'autlantic_webhook_invalid',
+            'Invalid webhook signature',
+            ['status' => 401],
+        );
+    }
+
+    /**
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response|\WP_Error
+     */
+    public static function handle(\WP_REST_Request $request)
+    {
+        $raw = $request->get_body();
         $event = Webhook::parseEvent($raw);
         if ($event === null) {
             return new \WP_Error(

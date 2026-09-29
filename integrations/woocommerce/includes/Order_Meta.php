@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Autlantic\WooCommerce;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Order meta keys and helpers shared across gateway, webhooks, and admin.
  */

@@ -6,6 +6,11 @@ namespace Autlantic\WooCommerce;
 
 use Autlantic\Billing\AutlanticBilling;
 use Autlantic\Billing\AutlanticBillingException;
+use Autlantic\Billing\WordPressTransport;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 /**
  * Builds the PHP Billing client from gateway settings.
@@ -41,6 +46,7 @@ final class Client_Factory
             apiKey: $api_key,
             apiBaseUrl: $api_url,
             merchantId: $merchant_id !== '' ? $merchant_id : null,
+            transport: new WordPressTransport(),
         );
     }
 

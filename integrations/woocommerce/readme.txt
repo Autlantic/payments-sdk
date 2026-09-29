@@ -2,9 +2,9 @@
 Contributors: autlantic
 Tags: woocommerce, payments, usdc, crypto, subscriptions
 Requires at least: 6.2
-Tested up to: 6.8
+Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.1
+Stable tag: 1.1.3
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -25,8 +25,8 @@ Store currency must be USD or USDC. You need an Autlantic merchant API key and a
 
 == Installation ==
 
-1. Upload the plugin zip via Plugins → Add New → Upload, or copy `autlantic-billing` into `wp-content/plugins/`.
-2. Activate **Autlantic Billing for WooCommerce**. WooCommerce must already be active.
+1. Upload the plugin zip via Plugins → Add New → Upload, or copy `autlantic-billing-for-woocommerce` into `wp-content/plugins/`.
+2. Activate **Autlantic Billing for WooCommerce**. WooCommerce must already be active (Requires Plugins: woocommerce).
 3. Go to WooCommerce → Settings → Payments → Autlantic Billing.
 4. Paste your API key (`abk_test_…` or `abk_live_…`) and webhook signing secret.
 5. In the Autlantic merchant portal, register this webhook URL:
@@ -50,6 +50,17 @@ No. One-time checkout works without it. Install WooCommerce Subscriptions only i
 To the merchant payout wallet configured in the Autlantic portal, or the optional payout address in the gateway settings. Autlantic does not custody the payment.
 
 == Changelog ==
+
+= 1.1.3 =
+* Use WordPress HTTP API for billing requests (no curl in the WP.org package).
+* Enqueue admin tools script; Requires Plugins: woocommerce; clean activation.
+* HMAC permission_callback on webhook REST route; preserve empty secret fields.
+
+= 1.1.2 =
+* Enqueue admin tools script via wp_enqueue_script.
+* Add Requires Plugins: woocommerce.
+* Activate without wp_die when WooCommerce is missing.
+* Authorize webhook REST route with HMAC permission_callback.
 
 = 1.1.1 =
 * Uninstall removes the webhook activity log.

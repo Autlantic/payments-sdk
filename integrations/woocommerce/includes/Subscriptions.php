@@ -6,6 +6,10 @@ namespace Autlantic\WooCommerce;
 
 use Autlantic\Billing\AutlanticBillingException;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Soft integration with WooCommerce Subscriptions.
  * Autlantic is the renewal source of truth (vault charges).
@@ -154,7 +158,7 @@ final class Subscriptions
         }
 
         if (!$sub->has_status('active')) {
-            $sub->update_status('active', __('Activated via Autlantic Billing.', 'autlantic-billing'));
+            $sub->update_status('active', __('Activated via Autlantic Billing.', 'autlantic-billing-for-woocommerce'));
         }
         $sub->save();
     }
@@ -167,7 +171,7 @@ final class Subscriptions
         }
 
         if (!$sub->has_status('on-hold')) {
-            $sub->update_status('on-hold', __('Autlantic invoice payment failed.', 'autlantic-billing'));
+            $sub->update_status('on-hold', __('Autlantic invoice payment failed.', 'autlantic-billing-for-woocommerce'));
             $sub->save();
         }
     }
@@ -180,7 +184,7 @@ final class Subscriptions
         }
 
         if (!$sub->has_status(['cancelled', 'expired', 'trash'])) {
-            $sub->update_status('cancelled', __('Canceled via Autlantic Billing.', 'autlantic-billing'));
+            $sub->update_status('cancelled', __('Canceled via Autlantic Billing.', 'autlantic-billing-for-woocommerce'));
             $sub->save();
         }
     }
@@ -229,7 +233,7 @@ final class Subscriptions
         }
         Order_Meta::set($renewal, Order_Meta::SUBSCRIPTION_ID, $autlantic_subscription_id);
         $renewal->payment_complete($invoice_id);
-        $renewal->add_order_note(__('Renewal recorded from Autlantic invoice.paid.', 'autlantic-billing'));
+        $renewal->add_order_note(__('Renewal recorded from Autlantic invoice.paid.', 'autlantic-billing-for-woocommerce'));
         $renewal->save();
         $sub->save();
     }
@@ -249,7 +253,7 @@ final class Subscriptions
         $order->add_order_note(
             __(
                 'WooCommerce scheduled a renewal. Autlantic Billing charges on its own schedule; waiting for invoice.paid webhook.',
-                'autlantic-billing',
+                'autlantic-billing-for-woocommerce',
             ),
         );
         $order->save();
@@ -291,7 +295,7 @@ final class Subscriptions
             $subscription->add_order_note(
                 sprintf(
                     /* translators: %s: Autlantic subscription id */
-                    __('Requested Autlantic cancel for %s.', 'autlantic-billing'),
+                    __('Requested Autlantic cancel for %s.', 'autlantic-billing-for-woocommerce'),
                     $autlantic_id,
                 ),
             );
@@ -300,7 +304,7 @@ final class Subscriptions
             $subscription->add_order_note(
                 sprintf(
                     /* translators: %s: error */
-                    __('Autlantic cancel failed: %s', 'autlantic-billing'),
+                    __('Autlantic cancel failed: %s', 'autlantic-billing-for-woocommerce'),
                     $e->getMessage(),
                 ),
             );

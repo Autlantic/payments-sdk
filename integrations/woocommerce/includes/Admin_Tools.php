@@ -7,6 +7,10 @@ namespace Autlantic\WooCommerce;
 use Autlantic\Billing\AutlanticBilling;
 use Autlantic\Billing\AutlanticBillingException;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Merchant tools: connection test, webhook activity, and order status sync.
  */
@@ -16,6 +20,36 @@ final class Admin_Tools
     {
         add_action('wp_ajax_autlantic_test_connection', [self::class, 'test_connection']);
         add_action('admin_post_autlantic_sync_order', [self::class, 'sync_order']);
+        add_action('admin_enqueue_scripts', [self::class, 'enqueue_assets']);
+    }
+
+    public static function enqueue_assets(string $hook): void
+    {
+        if ($hook !== 'woocommerce_page_wc-settings') {
+            return;
+        }
+
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen gate
+        $tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen gate
+        $section = isset($_GET['section']) ? sanitize_key(wp_unslash($_GET['section'])) : '';
+        if ($tab !== 'checkout' || $section !== 'autlantic') {
+            return;
+        }
+
+        $handle = 'autlantic-admin-tools';
+        wp_enqueue_script(
+            $handle,
+            AUTLANTIC_WC_PLUGIN_URL . 'assets/js/admin-tools.js',
+            [],
+            AUTLANTIC_WC_VERSION,
+            true,
+        );
+        wp_localize_script($handle, 'autlanticAdminTools', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('autlantic_test_connection'),
+            'checking' => __('Checking…', 'autlantic-billing-for-woocommerce'),
+        ]);
     }
 
     public static function render_panel(): void
@@ -27,32 +61,28 @@ final class Admin_Tools
         $gateway = Client_Factory::gateway();
         $key = $gateway instanceof Gateway ? (string) $gateway->get_option('api_key', '') : '';
         $mode = $key === '' ? 'unconfigured' : AutlanticBilling::billingModeFromApiKey($key);
-        $nonce = wp_create_nonce('autlantic_test_connection');
 
         echo '<p><span class="button" style="pointer-events:none;">' . esc_html(strtoupper($mode)) . '</span> ';
         echo '<button type="button" class="button button-secondary" id="autlantic-test-connection">'
-            . esc_html__('Test connection', 'autlantic-billing') . '</button> ';
+            . esc_html__('Test connection', 'autlantic-billing-for-woocommerce') . '</button> ';
         echo '<span id="autlantic-test-result"></span></p>';
-        echo '<script>(function(){var b=document.getElementById("autlantic-test-connection");var o=document.getElementById("autlantic-test-result");if(!b)return;b.addEventListener("click",function(){o.textContent="'
-            . esc_js(__('Checking…', 'autlantic-billing')) . '";var body=new URLSearchParams();body.set("action","autlantic_test_connection");body.set("_ajax_nonce","'
-            . esc_js($nonce) . '");fetch(ajaxurl,{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:body.toString()}).then(function(r){return r.json()}).then(function(data){o.textContent=(data&&data.data&&data.data.message)?data.data.message:(data&&data.success?"OK":"Failed");}).catch(function(){o.textContent="Request failed";});});})();</script>';
 
         $rows = array_reverse(Activity_Log::all());
-        echo '<h3>' . esc_html__('Recent webhooks', 'autlantic-billing') . '</h3>';
+        echo '<h3>' . esc_html__('Recent webhooks', 'autlantic-billing-for-woocommerce') . '</h3>';
         if ($rows === []) {
-            echo '<p>' . esc_html__('No webhook deliveries recorded yet.', 'autlantic-billing') . '</p>';
+            echo '<p>' . esc_html__('No webhook deliveries recorded yet.', 'autlantic-billing-for-woocommerce') . '</p>';
 
             return;
         }
 
-        echo '<table class="widefat striped"><thead><tr><th>' . esc_html__('When', 'autlantic-billing')
-            . '</th><th>' . esc_html__('Result', 'autlantic-billing')
-            . '</th><th>' . esc_html__('Event', 'autlantic-billing')
-            . '</th><th>' . esc_html__('Detail', 'autlantic-billing') . '</th></tr></thead><tbody>';
+        echo '<table class="widefat striped"><thead><tr><th>' . esc_html__('When', 'autlantic-billing-for-woocommerce')
+            . '</th><th>' . esc_html__('Result', 'autlantic-billing-for-woocommerce')
+            . '</th><th>' . esc_html__('Event', 'autlantic-billing-for-woocommerce')
+            . '</th><th>' . esc_html__('Detail', 'autlantic-billing-for-woocommerce') . '</th></tr></thead><tbody>';
         foreach ($rows as $row) {
             echo '<tr><td>' . esc_html($row['at'] > 0 ? wp_date('Y-m-d H:i:s', $row['at']) : '') . '</td>';
-            echo '<td>' . esc_html($row['ok'] ? __('Accepted', 'autlantic-billing') : __('Rejected', 'autlantic-billing')) . '</td>';
-            echo '<td><code>' . esc_html($row['type'] !== '' ? $row['type'] : '—') . '</code></td>';
+            echo '<td>' . esc_html($row['ok'] ? __('Accepted', 'autlantic-billing-for-woocommerce') : __('Rejected', 'autlantic-billing-for-woocommerce')) . '</td>';
+            echo '<td><code>' . esc_html($row['type'] !== '' ? $row['type'] : '-') . '</code></td>';
             echo '<td>' . esc_html($row['message']) . '</td></tr>';
         }
         echo '</tbody></table>';
@@ -72,7 +102,7 @@ final class Admin_Tools
             wp_send_json_success([
                 'message' => sprintf(
                     /* translators: 1: test or live, 2: product count */
-                    __('Connected (%1$s). %2$d catalog products.', 'autlantic-billing'),
+                    __('Connected (%1$s). %2$d catalog products.', 'autlantic-billing-for-woocommerce'),
                     $billing->mode,
                     count($products),
                 ),
@@ -87,7 +117,7 @@ final class Admin_Tools
     public static function sync_order(): void
     {
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(esc_html__('You cannot sync this order.', 'autlantic-billing'));
+            wp_die(esc_html__('You cannot sync this order.', 'autlantic-billing-for-woocommerce'));
         }
 
         $order_id = isset($_GET['order_id']) ? absint($_GET['order_id']) : 0;
@@ -95,7 +125,7 @@ final class Admin_Tools
 
         $order = wc_get_order($order_id);
         if (!$order instanceof \WC_Order) {
-            wp_die(esc_html__('Order not found.', 'autlantic-billing'));
+            wp_die(esc_html__('Order not found.', 'autlantic-billing-for-woocommerce'));
         }
 
         $note = self::pull_remote_status($order);

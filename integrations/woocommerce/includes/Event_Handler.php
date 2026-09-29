@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Autlantic\WooCommerce;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Maps Autlantic webhook payloads onto WooCommerce orders / subscriptions.
  */
@@ -58,7 +62,7 @@ final class Event_Handler
         $order->add_order_note(
             sprintf(
                 /* translators: 1: payment id, 2: tx hash */
-                __('Autlantic payment.paid (%1$s). Tx: %2$s', 'autlantic-billing'),
+                __('Autlantic payment.paid (%1$s). Tx: %2$s', 'autlantic-billing-for-woocommerce'),
                 $payment_id !== '' ? $payment_id : 'n/a',
                 $tx !== '' ? $tx : 'n/a',
             ),
@@ -93,7 +97,7 @@ final class Event_Handler
             $order->add_order_note(
                 sprintf(
                     /* translators: %s: invoice id */
-                    __('Autlantic invoice.paid (%s).', 'autlantic-billing'),
+                    __('Autlantic invoice.paid (%s).', 'autlantic-billing-for-woocommerce'),
                     $invoice_id !== '' ? $invoice_id : 'n/a',
                 ),
             );
@@ -118,7 +122,7 @@ final class Event_Handler
             return;
         }
 
-        $order->add_order_note(__('Autlantic invoice.payment_failed.', 'autlantic-billing'));
+        $order->add_order_note(__('Autlantic invoice.payment_failed.', 'autlantic-billing-for-woocommerce'));
         $order->save();
 
         if ($subscription_id !== '') {
@@ -154,7 +158,7 @@ final class Event_Handler
         $order->add_order_note(
             sprintf(
                 /* translators: %s: invoice id */
-                __('Autlantic invoice.refunded (%s).', 'autlantic-billing'),
+                __('Autlantic invoice.refunded (%s).', 'autlantic-billing-for-woocommerce'),
                 $invoice_id !== '' ? $invoice_id : 'n/a',
             ),
         );
@@ -175,7 +179,7 @@ final class Event_Handler
         $order = Order_Meta::find_by_meta(Order_Meta::SUBSCRIPTION_ID, $subscription_id);
         if ($order instanceof \WC_Order && !$order->is_paid()) {
             $order->payment_complete($subscription_id);
-            $order->add_order_note(__('Autlantic subscription.activated.', 'autlantic-billing'));
+            $order->add_order_note(__('Autlantic subscription.activated.', 'autlantic-billing-for-woocommerce'));
             $order->save();
         }
 
