@@ -21,5 +21,7 @@ sdks/ios/.build/
 .cursor/
 !.cursor/rules/
 !.cursor/rules/public-repo-hygiene.mdc
+!.cursor/rules/main-and-production.mdc
+!.cursor/rules/enterprise-proven.mdc
 **/__pycache__/
 *.pyc

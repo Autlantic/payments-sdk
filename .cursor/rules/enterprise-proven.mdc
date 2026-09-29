@@ -1,0 +1,31 @@
+---
+description: Enterprise-proven is the only ship standard. No partial, pilot-only, or smoke-only claims.
+alwaysApply: true
+---
+
+# Enterprise-proven standard
+
+Autlantic does not ship “good enough,” “partial,” or “pilot-only” as done.
+
+## Definition
+
+A change is **enterprise-proven** only when all of these are true:
+
+1. **Parity with the strongest surface** for that product class (e.g. Woo for commerce plugins), or an explicit documented gap that is product-intentional (not unfinished work).
+2. **Automated gates pass**: lint/typecheck/unit/smoke for the touched package, plus packaging/compliance checks when distributing (WP.org zip, Composer module, npm, etc.).
+3. **Runtime proof on a real stack**: at least one end-to-end path on a real environment (local Magento/Woo/Shopify host, staging, or production-equivalent), not file greps alone.
+4. **Failure modes covered**: auth/HMAC, missing config, multi-store/multi-merchant where applicable, refunds/idempotency when claimed.
+5. **Honest status**: never tell the user it is enterprise-ready unless the above ran and passed in this work.
+
+## Do not
+
+- Call something enterprise-ready after smoke/static checks only.
+- Leave checkout races, single-store-only secrets, or scan-limited lookups as “fine for now.”
+- Ship commerce plugins without admin operability (test connection / webhook visibility / order ids) when Woo already has them.
+- Treat Shopify Payments Partner blockers as “plugin incomplete” if the blocker is external; still harden everything we own to enterprise bar.
+
+## When reporting status
+
+Use only: **enterprise-proven** | **blocked (external)** | **not proven (list missing proofs)**.
+
+No “PARTIAL,” “usable for pilot,” or soft substitutes unless the user explicitly asks for a temporary pilot.
