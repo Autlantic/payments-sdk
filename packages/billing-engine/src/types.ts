@@ -42,9 +42,28 @@ export type BillingStore = {
   savePaymentLink(link: PaymentLink): void;
   getPaymentLink(id: string): PaymentLink | null;
   listPaymentLinksByMerchant(merchantId: string): PaymentLink[];
+  /** Optional; portal/API hard-delete. Missing stores fall back to disable. */
+  deletePaymentLink?(id: string): void;
 
   snapshot(): BillingStoreSnapshot;
 };
+
+/** When present on write-through stores, awaits queued Prisma/file persists. */
+export type BillingStoreWithPersistFlush = BillingStore & {
+  flushPersist(): Promise<void>;
+};
+
+export function isBillingStoreWithPersistFlush(
+  store: BillingStore,
+): store is BillingStoreWithPersistFlush {
+  return typeof (store as BillingStoreWithPersistFlush).flushPersist === "function";
+}
+
+export async function flushBillingStorePersist(store: BillingStore): Promise<void> {
+  if (isBillingStoreWithPersistFlush(store)) {
+    await store.flushPersist();
+  }
+}
 
 export type CreateSubscriptionResult = {
   subscription: RecurringSubscription;

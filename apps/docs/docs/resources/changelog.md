@@ -1,5 +1,17 @@
 # Changelog
 
+## billing-engine 0.3.11 - Payment link disable flush, edit, delete
+
+- `flushBillingStorePersist`: await write-through Prisma/file queue so portal disable survives reload
+- `updatePaymentLink` / `deletePaymentLink` for merchant-editable fields and hard delete
+- `resolvePaymentLinkStatus` treats `disabledAt` as disabled
+- Portal: Edit / Disable / Delete on every row; PATCH awaits persist + Prisma write-through
+
+```bash
+pnpm --filter @autlantic/billing-engine publish --access public
+# bump billing-hosting pins to 0.3.11, then deploy billing-api + billing-portal
+```
+
 ## Docs - Magento Packagist, Woo 1.1.3, Shopify custom wiring
 
 - Magento install is Packagist-first: `composer require autlantic/module-billing:^1.1` ([Packagist](https://packagist.org/packages/autlantic/module-billing) **1.1.0**)

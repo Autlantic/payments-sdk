@@ -96,6 +96,9 @@ export function createMemoryBillingStore(
     listPaymentLinksByMerchant(merchantId) {
       return [...paymentLinks.values()].filter((l) => l.merchantId === merchantId);
     },
+    deletePaymentLink(id) {
+      paymentLinks.delete(id);
+    },
 
     snapshot() {
       return {
