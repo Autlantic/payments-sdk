@@ -92,6 +92,10 @@ export function createFileBillingStore(filePath: string): BillingStore {
     listPaymentLinksByMerchant(merchantId) {
       return inner.listPaymentLinksByMerchant(merchantId);
     },
+    deletePaymentLink(id) {
+      inner.deletePaymentLink?.(id);
+      persist();
+    },
     snapshot() {
       return inner.snapshot();
     },

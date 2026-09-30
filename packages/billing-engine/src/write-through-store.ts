@@ -1,5 +1,9 @@
 import { createMemoryBillingStore } from "./memory-store";
-import type { BillingStore, BillingStoreSnapshot } from "./types";
+import type {
+  BillingStore,
+  BillingStoreSnapshot,
+  BillingStoreWithPersistFlush,
+} from "./types";
 import type { OneTimePayment } from "./one-time";
 import type { PaymentLink } from "./payment-links";
 import type {
@@ -16,6 +20,7 @@ export type BillingPersistAdapter = {
   saveInvoice(invoice: RecurringInvoice): Promise<void>;
   saveOneTimePayment(payment: OneTimePayment): Promise<void>;
   savePaymentLink(link: PaymentLink): Promise<void>;
+  deletePaymentLink?(id: string): Promise<void>;
   /** Optional: load a single link when another process created it (portal ↔ API). */
   loadPaymentLink?(id: string): Promise<PaymentLink | null>;
   loadSnapshot(): Promise<BillingStoreSnapshot>;
@@ -40,7 +45,7 @@ export function createWriteThroughBillingStore(
     /** Called when a queued persist fails. Default: silent (no console). */
     onPersistError?: (label: string, err: unknown) => void;
   },
-): BillingStore {
+): BillingStoreWithPersistFlush {
   let persistQueue = Promise.resolve();
 
   const persistQueued = (label: string, fn: () => Promise<void>) => {
@@ -115,8 +120,17 @@ export function createWriteThroughBillingStore(
     listPaymentLinksByMerchant(merchantId) {
       return memory.listPaymentLinksByMerchant(merchantId);
     },
+    deletePaymentLink(id) {
+      memory.deletePaymentLink?.(id);
+      if (persist.deletePaymentLink) {
+        persistQueued("paymentLinkDelete", () => persist.deletePaymentLink!(id));
+      }
+    },
     snapshot() {
       return memory.snapshot();
+    },
+    async flushPersist() {
+      await persistQueue;
     },
   };
 }

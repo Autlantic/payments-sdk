@@ -3,9 +3,11 @@ import { describe, it } from "node:test";
 import { createMemoryBillingStore } from "./memory-store";
 import {
   createPaymentLink,
+  deletePaymentLink,
   disablePaymentLink,
   openPaymentLink,
   resolvePaymentLinkStatus,
+  updatePaymentLink,
 } from "./payment-links";
 
 describe("payment links", () => {
@@ -74,5 +76,45 @@ describe("payment links", () => {
       customerWallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
     });
     assert.ok("error" in blocked);
+  });
+
+  it("updates editable fields and deletes links", () => {
+    const store = createMemoryBillingStore();
+    const link = createPaymentLink(store, {
+      merchantId: "mer_test",
+      merchantRefPrefix: "edit",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 12,
+      chainId: 84532,
+      description: "Before",
+    });
+
+    const updated = updatePaymentLink(store, link.id, {
+      description: "After",
+      maxUses: 3,
+    });
+    assert.ok(updated);
+    assert.equal(updated!.description, "After");
+    assert.equal(updated!.maxUses, 3);
+
+    assert.equal(deletePaymentLink(store, link.id), true);
+    assert.equal(store.getPaymentLink(link.id), null);
+  });
+
+  it("treats disabledAt as disabled even when status is still active", () => {
+    const store = createMemoryBillingStore();
+    const link = createPaymentLink(store, {
+      merchantId: "mer_test",
+      merchantRefPrefix: "stale",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 1,
+      chainId: 84532,
+    });
+    store.savePaymentLink({
+      ...link,
+      status: "active",
+      disabledAt: new Date(),
+    });
+    assert.equal(resolvePaymentLinkStatus(store.getPaymentLink(link.id)!), "disabled");
   });
 });

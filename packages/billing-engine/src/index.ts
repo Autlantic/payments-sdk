@@ -15,6 +15,11 @@ export {
   type BillingPersistAdapter,
 } from "./write-through-store";
 export {
+  flushBillingStorePersist,
+  isBillingStoreWithPersistFlush,
+  type BillingStoreWithPersistFlush,
+} from "./types";
+export {
   createSubscription,
   completeMandate,
   cancelSubscription,
@@ -67,12 +72,15 @@ export {
 export {
   createPaymentLink,
   disablePaymentLink,
+  updatePaymentLink,
+  deletePaymentLink,
   openPaymentLink,
   paymentLinkIsOpen,
   resolvePaymentLinkStatus,
   type PaymentLink,
   type PaymentLinkStatus,
   type CreatePaymentLinkInput,
+  type UpdatePaymentLinkInput,
   type OpenPaymentLinkInput,
   type OpenPaymentLinkResult,
 } from "./payment-links";

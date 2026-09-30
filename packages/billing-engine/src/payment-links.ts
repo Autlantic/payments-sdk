@@ -63,6 +63,7 @@ export type OpenPaymentLinkResult = {
 };
 
 export function paymentLinkIsOpen(link: PaymentLink, now: Date = new Date()): boolean {
+  if (link.status === "disabled" || link.disabledAt) return false;
   if (link.status !== "active") return false;
   if (link.expiresAt && link.expiresAt.getTime() <= now.getTime()) return false;
   if (link.maxUses != null && link.useCount >= link.maxUses) return false;
@@ -73,7 +74,7 @@ export function resolvePaymentLinkStatus(
   link: PaymentLink,
   now: Date = new Date(),
 ): PaymentLinkStatus {
-  if (link.status === "disabled") return "disabled";
+  if (link.status === "disabled" || link.disabledAt) return "disabled";
   if (link.expiresAt && link.expiresAt.getTime() <= now.getTime()) return "expired";
   if (link.maxUses != null && link.useCount >= link.maxUses) return "expired";
   return "active";
@@ -121,7 +122,13 @@ export function disablePaymentLink(
 ): PaymentLink | null {
   const existing = store.getPaymentLink(linkId);
   if (!existing) return null;
-  if (existing.status === "disabled") return existing;
+  if (existing.status === "disabled" || existing.disabledAt) {
+    return {
+      ...existing,
+      status: "disabled",
+      disabledAt: existing.disabledAt ?? new Date(),
+    };
+  }
 
   const link: PaymentLink = {
     ...existing,
@@ -130,6 +137,67 @@ export function disablePaymentLink(
   };
   store.savePaymentLink(link);
   return link;
+}
+
+export type UpdatePaymentLinkInput = {
+  description?: string | null;
+  maxUses?: number | null;
+  expiresAt?: Date | null;
+  metadata?: Record<string, string> | null;
+};
+
+/** Patch merchant-editable fields on an active payment link. */
+export function updatePaymentLink(
+  store: BillingStore,
+  linkId: string,
+  input: UpdatePaymentLinkInput,
+): PaymentLink | null {
+  const existing = store.getPaymentLink(linkId);
+  if (!existing) return null;
+  if (resolvePaymentLinkStatus(existing) === "disabled") {
+    throw new Error("Disabled payment links cannot be edited");
+  }
+
+  if (input.maxUses != null && (!Number.isInteger(input.maxUses) || input.maxUses < 1)) {
+    throw new Error("maxUses must be a positive integer when set");
+  }
+  if (
+    input.maxUses != null &&
+    existing.useCount > 0 &&
+    input.maxUses < existing.useCount
+  ) {
+    throw new Error("maxUses cannot be less than opens already recorded");
+  }
+
+  const link: PaymentLink = {
+    ...existing,
+    description:
+      input.description === undefined
+        ? existing.description
+        : input.description?.trim() || undefined,
+    maxUses: input.maxUses === undefined ? existing.maxUses : input.maxUses,
+    expiresAt: input.expiresAt === undefined ? existing.expiresAt : input.expiresAt,
+    metadata:
+      input.metadata === undefined
+        ? existing.metadata
+        : input.metadata === null
+          ? undefined
+          : input.metadata,
+  };
+  store.savePaymentLink(link);
+  return link;
+}
+
+export function deletePaymentLink(store: BillingStore, linkId: string): boolean {
+  const existing = store.getPaymentLink(linkId);
+  if (!existing) return false;
+  if (typeof store.deletePaymentLink === "function") {
+    store.deletePaymentLink(linkId);
+    return true;
+  }
+  // Fallback stores without delete: mark disabled so checkout rejects.
+  disablePaymentLink(store, linkId);
+  return true;
 }
 
 /**
