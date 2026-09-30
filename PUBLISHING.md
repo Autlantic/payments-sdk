@@ -10,11 +10,16 @@
 ## Prerequisites
 
 - npm login as a user with access to scope `@autlantic`
-- Clean git tree recommended
+- Prefer a clean git tree for the packages you publish
 
 ```bash
 npm login
 ```
+
+## Hard rule: use pnpm publish, never bare `npm publish`
+
+`pnpm publish` rewrites `workspace:*` dependency ranges to real registry versions.
+Bare `npm publish` leaves `workspace:*` on npm and **breaks every consumer install** (see broken `billing-engine@0.3.11`; use `0.3.12+`).
 
 ## Publish
 
@@ -23,17 +28,27 @@ pnpm check
 pnpm publish:sdk
 ```
 
-Or publish one package:
+Or one package:
 
 ```bash
-pnpm --filter @autlantic/payments-recurring publish --access public
+pnpm --filter @autlantic/billing-engine publish --access public
+# if untracked files block git checks:
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
 ```
 
-## After install
+Confirm before bumping consumers:
 
 ```bash
-npm install @autlantic/payments-recurring
+npm view @autlantic/billing-engine version
+npm view @autlantic/billing-engine dependencies
+# dependencies must be numeric versions, never workspace:*
 ```
+
+## After publish
+
+1. Bump pins in **billing-hosting** (and platform if needed) → `pnpm install`
+2. Wire against published exports only
+3. Promote
 
 ## Version bumps
 

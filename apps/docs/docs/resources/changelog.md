@@ -1,16 +1,22 @@
 # Changelog
 
-## billing-engine 0.3.11 - Payment link disable flush, edit, delete
+## billing-engine 0.3.12 - Correct npm publish (pnpm)
+
+- Republish payment-link flush/edit/delete after `0.3.11` was published with `npm publish` and left broken `workspace:*` dependency ranges
+- Always use `pnpm --filter @autlantic/billing-engine publish` so peer workspace deps rewrite to registry versions
+
+```bash
+pnpm --filter @autlantic/billing-engine publish --access public
+# bump billing-hosting pins to 0.3.12
+```
+
+## billing-engine 0.3.11 - Payment link disable flush, edit, delete (do not install)
+
+Published incorrectly via `npm publish` (`workspace:*` deps). Use **0.3.12** instead.
 
 - `flushBillingStorePersist`: await write-through Prisma/file queue so portal disable survives reload
 - `updatePaymentLink` / `deletePaymentLink` for merchant-editable fields and hard delete
 - `resolvePaymentLinkStatus` treats `disabledAt` as disabled
-- Portal: Edit / Disable / Delete on every row; PATCH awaits persist + Prisma write-through
-
-```bash
-pnpm --filter @autlantic/billing-engine publish --access public
-# bump billing-hosting pins to 0.3.11, then deploy billing-api + billing-portal
-```
 
 ## Docs - Magento Packagist, Woo 1.1.3, Shopify custom wiring
 
