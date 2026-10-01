@@ -1,5 +1,16 @@
 # Changelog
 
+## billing-engine 0.3.13 - Reload must not resurrect deleted payment links
+
+- `replaceSnapshot` on memory + write-through stores: full in-memory replace **without** queuing Prisma upserts
+- `reloadPersistedBillingStore` uses `replaceSnapshot` so portal delete + concurrent reload cannot resurrect rows
+- Fixes inconsistent Payment links UI (deleted links returning on refresh; empty vs disabled flicker)
+
+```bash
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+# bump billing-hosting pins to 0.3.13
+```
+
 ## billing-engine 0.3.12 - Correct npm publish (pnpm)
 
 - Republish payment-link flush/edit/delete after `0.3.11` was published with `npm publish` and left broken `workspace:*` dependency ranges

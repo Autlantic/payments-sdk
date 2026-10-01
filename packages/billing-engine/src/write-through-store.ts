@@ -126,6 +126,15 @@ export function createWriteThroughBillingStore(
         persistQueued("paymentLinkDelete", () => persist.deletePaymentLink!(id));
       }
     },
+    replaceSnapshot(snapshot) {
+      // Memory only. Never queue upserts — reload must not resurrect deleted rows.
+      if (typeof memory.replaceSnapshot === "function") {
+        memory.replaceSnapshot(snapshot);
+        return;
+      }
+      // Legacy memory stores: best-effort hydrate without clear.
+      hydrateBillingStore(memory, snapshot);
+    },
     snapshot() {
       return memory.snapshot();
     },
@@ -148,8 +157,12 @@ export async function reloadPersistedBillingStore(
   persist: BillingPersistAdapter,
 ): Promise<void> {
   const snapshot = await persist.loadSnapshot();
+  if (typeof store.replaceSnapshot === "function") {
+    store.replaceSnapshot(snapshot);
+    return;
+  }
+  // Legacy path: hydrate may write through. Prefer replaceSnapshot on new stores.
   const fresh = createMemoryBillingStore();
   hydrateBillingStore(fresh, snapshot);
-  const next = fresh.snapshot();
-  hydrateBillingStore(store, next);
+  hydrateBillingStore(store, fresh.snapshot());
 }
