@@ -100,6 +100,21 @@ export function createMemoryBillingStore(
       paymentLinks.delete(id);
     },
 
+    replaceSnapshot(snapshot) {
+      subscriptions.clear();
+      customers.clear();
+      mandates.clear();
+      invoices.clear();
+      oneTimePayments.clear();
+      paymentLinks.clear();
+      for (const row of snapshot.subscriptions) subscriptions.set(row.id, row);
+      for (const row of snapshot.customers) customers.set(row.id, row);
+      for (const row of snapshot.mandates) mandates.set(row.id, row);
+      for (const row of snapshot.invoices) invoices.set(row.id, row);
+      for (const row of snapshot.oneTimePayments ?? []) oneTimePayments.set(row.id, row);
+      for (const row of snapshot.paymentLinks ?? []) paymentLinks.set(row.id, row);
+    },
+
     snapshot() {
       return {
         subscriptions: [...subscriptions.values()],

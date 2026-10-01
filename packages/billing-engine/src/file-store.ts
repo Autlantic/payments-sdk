@@ -96,6 +96,10 @@ export function createFileBillingStore(filePath: string): BillingStore {
       inner.deletePaymentLink?.(id);
       persist();
     },
+    replaceSnapshot(snapshot) {
+      inner.replaceSnapshot?.(snapshot);
+      persist();
+    },
     snapshot() {
       return inner.snapshot();
     },

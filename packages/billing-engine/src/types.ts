@@ -44,6 +44,11 @@ export type BillingStore = {
   listPaymentLinksByMerchant(merchantId: string): PaymentLink[];
   /** Optional; portal/API hard-delete. Missing stores fall back to disable. */
   deletePaymentLink?(id: string): void;
+  /**
+   * Replace in-memory state from a snapshot without side effects.
+   * Write-through stores must NOT queue persists (reload must not resurrect deletes).
+   */
+  replaceSnapshot?(snapshot: BillingStoreSnapshot): void;
 
   snapshot(): BillingStoreSnapshot;
 };
