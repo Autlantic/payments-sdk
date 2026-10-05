@@ -52,8 +52,8 @@ AutlanticBilling.fromEnv();
 |--------|-------------|
 | `listProducts()` | List catalog products and prices (hosted API; `includeInactive` optional) |
 | `createProduct` / `updateProduct` / `createPrice` / `updatePrice` | Catalog writes (hosted API) |
-| `listCoupons` / `createCoupon` / `updateCoupon` / `deleteCoupon` | Coupon CRUD (hosted API; optional `scopeKey` / `metadata`; **0.3.13+**, npm pending) |
-| `createPayment(input)` | Create one-time USDC payment + `/checkout/pay/:id` |
+| `listCoupons` / `createCoupon` / `updateCoupon` / `deleteCoupon` | Coupon CRUD (hosted API; optional `scopeKey` / `metadata`; **0.3.13+**) |
+| `createPayment(input)` | Create one-time USDC payment + `/checkout/pay/:id` (optional `couponCode` **0.3.15+**) |
 | `getPayment(id)` | Fetch one-time payment |
 | `confirmPayment(id, { txHash? })` | Confirm one-time payment |
 | `createPaymentLink(input)` | Create shareable payment link + `/checkout/link/:id` |
@@ -61,7 +61,7 @@ AutlanticBilling.fromEnv();
 | `getPaymentLink(id)` | Fetch a payment link |
 | `disablePaymentLink(id)` | Disable a payment link |
 | `openPaymentLink(id, { customerWallet })` | Mint a one-time payment from a link |
-| `createSubscription(input)` | Create incomplete subscription + open invoice (`priceId` or `amountUsdc` + `interval`) |
+| `createSubscription(input)` | Create incomplete subscription + open invoice (`priceId` or `amountUsdc` + `interval`; optional `couponCode` **0.3.15+**) |
 | `listSubscriptions({ status? })` | List merchant subscriptions |
 | `getSubscription(id)` | Fetch subscription |
 | `updateSubscription(id, input)` | Update amount, interval, plan, metadata |

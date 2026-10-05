@@ -1,5 +1,16 @@
 # Changelog
 
+## payments-recurring 0.3.15 - couponCode on create
+
+- `CreateSubscriptionRequest.couponCode` / `CreatePaymentRequest.couponCode` (optional)
+- Hosted API applies the coupon at create (same math as checkout apply; `duration: once` → first open invoice / payment only)
+- Local sandbox stores `couponCode` in metadata only (no coupon store)
+
+```bash
+pnpm --filter @autlantic/payments-recurring publish --access public --no-git-checks
+# bump billing-hosting + Autlantic platform pins to 0.3.15
+```
+
 ## billing-engine 0.3.13 - Reload must not resurrect deleted payment links
 
 - `replaceSnapshot` on memory + write-through stores: full in-memory replace **without** queuing Prisma upserts

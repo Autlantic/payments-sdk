@@ -168,6 +168,7 @@ export class AutlanticBilling {
         ...(input.metadata ?? {}),
         ...(input.successUrl?.trim() ? { successUrl: input.successUrl.trim() } : {}),
         ...(input.cancelUrl?.trim() ? { cancelUrl: input.cancelUrl.trim() } : {}),
+        ...(input.couponCode?.trim() ? { couponCode: input.couponCode.trim() } : {}),
       };
       const result = createSubscription(this.localStore, {
         merchantId: this.config.merchantId,
@@ -212,6 +213,7 @@ export class AutlanticBilling {
         ...(input.metadata ?? {}),
         ...(input.successUrl?.trim() ? { successUrl: input.successUrl.trim() } : {}),
         ...(input.cancelUrl?.trim() ? { cancelUrl: input.cancelUrl.trim() } : {}),
+        ...(input.couponCode?.trim() ? { couponCode: input.couponCode.trim() } : {}),
       };
       const result = createOneTimePayment(this.localStore, {
         merchantId: this.config.merchantId,
