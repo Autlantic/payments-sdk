@@ -131,6 +131,12 @@ export type CreateSubscriptionRequest = {
   /** Portal catalog price id. Resolves amount + interval on the API. */
   priceId?: string;
   planId?: string;
+  /**
+   * Optional merchant coupon code. Hosted API applies it at create (first open invoice
+   * for duration "once"; subscription amount for duration "forever"). Sandbox local
+   * stores the code in metadata only.
+   */
+  couponCode?: string;
   /** App deep link or https return after successful checkout. */
   successUrl?: string;
   /** App deep link or https return if the customer cancels. */
@@ -149,6 +155,11 @@ export type CreatePaymentRequest = {
   amountUsdc?: number;
   /** Portal catalog price id with interval "once". */
   priceId?: string;
+  /**
+   * Optional merchant coupon code. Hosted API applies it at create (discounts payment amount).
+   * Sandbox local stores the code in metadata only.
+   */
+  couponCode?: string;
   /** App deep link or https return after successful checkout. */
   successUrl?: string;
   /** App deep link or https return if the customer cancels. */
