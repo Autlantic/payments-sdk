@@ -1,11 +1,27 @@
 # Changelog
 
-## billing-engine 0.3.14 - Workspace bands (Phase 1)
+## billing-engine 0.3.14 - Workspace bands, plan-change proration, and usage metering
+
+Published on npm. Hosting pins **0.3.14** and wires portal/API/ops; Autlantic platform pin bump is optional (feature is hosting-side).
+
+### Workspace bands (Phase 1)
 
 - Exported workspace band constants: Live free **100** successful charges / UTC month, Growth **$49** USDC/month, 7-day soft overage grace, error code `workspace_plan_required`
 - Pure helpers: `isLiveFreeBandExceeded`, `workspaceEntitlementFromState`, `countsTowardLiveSuccessfulCharges`, `isWorkspaceGrowthFeeMetadata`, `utcMonthKey`
 - Test mode never enforces bands; Growth fee metadata is excluded from the free-band counter
 - No % take rate (flat workspace fee only)
+
+### Plan-change proration (Phase 4)
+
+- `previewPlanChangeProration` / `changeSubscriptionPlan` for mid-cycle upgrades and downgrades
+- Credits unused time on the old plan, charges remaining time on the new plan; net due floored at 0 with leftover credit in invoice metadata
+- Hosting: `POST /v1/subscriptions/:id/change-plan` (`priceId` or `amountUsdc`)
+
+### Usage metering (Phase 5)
+
+- `createUsageRecord`, `aggregateUsageQuantity`, `usageAmountUsdc`, `aggregateUsageIntoInvoice`, `createMemoryUsageStore`
+- Metered quantity aggregation into open invoices (idempotent keys, increment/set actions)
+- Hosting: `POST /v1/usage_records`, `GET /v1/subscriptions/:id/usage`, `POST /v1/subscriptions/:id/usage/aggregate`
 
 ```bash
 pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
