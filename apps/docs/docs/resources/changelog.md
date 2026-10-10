@@ -1,5 +1,17 @@
 # Changelog
 
+## billing-engine 0.3.14 - Workspace bands (Phase 1)
+
+- Exported workspace band constants: Live free **100** successful charges / UTC month, Growth **$49** USDC/month, 7-day soft overage grace, error code `workspace_plan_required`
+- Pure helpers: `isLiveFreeBandExceeded`, `workspaceEntitlementFromState`, `countsTowardLiveSuccessfulCharges`, `isWorkspaceGrowthFeeMetadata`, `utcMonthKey`
+- Test mode never enforces bands; Growth fee metadata is excluded from the free-band counter
+- No % take rate (flat workspace fee only)
+
+```bash
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+# bump billing-hosting pins to billing-engine 0.3.14
+```
+
 ## payments-recurring 0.3.15 - couponCode on create
 
 - `CreateSubscriptionRequest.couponCode` / `CreatePaymentRequest.couponCode` (optional)
