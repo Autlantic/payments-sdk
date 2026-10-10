@@ -5,7 +5,8 @@
 [build]
 builder = "NIXPACKS"
 nixpacksConfigPath = "nixpacks.shopify.toml"
-buildCommand = "pnpm install --frozen-lockfile && pnpm build && pnpm --filter @autlantic/shopify-billing build"
+# --prod=false: Railway NODE_ENV=production would skip workspace typescript/turbo.
+buildCommand = "pnpm install --frozen-lockfile --prod=false && pnpm build && pnpm --filter @autlantic/shopify-billing build"
 watchPatterns = [
   "integrations/shopify/**",
   "packages/**",

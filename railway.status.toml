@@ -5,7 +5,7 @@
 [build]
 builder = "NIXPACKS"
 nixpacksConfigPath = "nixpacks.status.toml"
-buildCommand = "pnpm install --frozen-lockfile"
+buildCommand = "pnpm install --frozen-lockfile --prod=false"
 watchPatterns = [
   "apps/status/**",
   "railway.status.toml",

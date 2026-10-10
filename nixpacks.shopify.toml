@@ -1,3 +1,9 @@
 # Shopify billing app only (see railway.shopify.toml → nixpacksConfigPath).
 # Without an explicit provider list, Nixpacks may detect sdks/dotnet at repo root.
 providers = ["node"]
+
+# Always install devDependencies (typescript, turbo, etc). Railway often sets
+# NODE_ENV=production during install, which would otherwise skip them and break
+# `pnpm build` / `tsc` in the Shopify service buildCommand.
+[phases.install]
+cmds = ["pnpm i --frozen-lockfile --prod=false"]

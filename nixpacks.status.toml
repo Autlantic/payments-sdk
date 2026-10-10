@@ -1,2 +1,6 @@
 # Status service only (see railway.status.toml → nixpacksConfigPath).
 providers = ["node"]
+
+# Keep workspace build tooling available when Railway sets NODE_ENV=production.
+[phases.install]
+cmds = ["pnpm i --frozen-lockfile --prod=false"]
