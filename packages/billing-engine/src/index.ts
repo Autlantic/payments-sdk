@@ -89,3 +89,41 @@ export {
   type WebhookDeliveryResult,
 } from "./webhook-dispatch";
 export { parseBillingSnapshot, serializeBillingSnapshot } from "./serialize";
+export {
+  WORKSPACE_LIVE_FREE_CHARGE_LIMIT,
+  WORKSPACE_GROWTH_PRICE_USDC,
+  WORKSPACE_FREE_OVERAGE_GRACE_DAYS,
+  WORKSPACE_PLAN_REQUIRED_ERROR_CODE,
+  WORKSPACE_GROWTH_FEE_METADATA_KEY,
+  WORKSPACE_GROWTH_FEE_METADATA_VALUE,
+  utcMonthKey,
+  isLiveFreeBandExceeded,
+  countsTowardLiveSuccessfulCharges,
+  isWorkspaceGrowthFeeMetadata,
+  workspaceEntitlementFromState,
+  type WorkspacePlan,
+  type WorkspaceStatus,
+  type WorkspaceEntitlementReason,
+  type WorkspaceEntitlementState,
+  type WorkspaceEntitlement,
+} from "./workspace-bands";
+
+export {
+  previewPlanChangeProration,
+  changeSubscriptionPlan,
+  type ProrationPreview,
+  type ChangeSubscriptionPlanInput,
+  type ChangeSubscriptionPlanResult,
+} from "./proration";
+export {
+  createUsageRecord,
+  aggregateUsageQuantity,
+  usageAmountUsdc,
+  aggregateUsageIntoInvoice,
+  createMemoryUsageStore,
+  type UsageRecord,
+  type UsageAction,
+  type UsageStore,
+  type CreateUsageRecordInput,
+  type AggregateUsageIntoInvoiceResult,
+} from "./usage";

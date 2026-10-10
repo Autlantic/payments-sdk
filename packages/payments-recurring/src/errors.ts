@@ -30,6 +30,7 @@ export type AutlanticBillingErrorCode =
   | "webhook_invalid_signature"
   | "webhook_parse_failed"
   | "idempotency_error"
+  | "workspace_plan_required"
   | (string & {});
 
 export type AutlanticBillingErrorParams = {
