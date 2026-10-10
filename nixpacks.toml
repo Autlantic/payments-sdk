@@ -1,1 +1,9 @@
+# Default Node provider for Railway services that do not set nixpacksConfigPath.
+# Without this, Nixpacks may detect sdks/dotnet at the repo root.
 providers = ["node"]
+
+# Always install devDependencies (typescript, etc). Railway often sets
+# NODE_ENV=production during install, which would otherwise skip them and break
+# package builds that run `tsc` / Next / VitePress.
+[phases.install]
+cmds = ["pnpm i --frozen-lockfile --prod=false"]

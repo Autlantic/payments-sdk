@@ -4,7 +4,8 @@
 [build]
 builder = "NIXPACKS"
 nixpacksConfigPath = "nixpacks.docs.toml"
-buildCommand = "pnpm install --frozen-lockfile && pnpm --filter @autlantic/docs build"
+# --prod=false: VitePress is a docs workspace devDependency.
+buildCommand = "pnpm install --frozen-lockfile --prod=false && pnpm --filter @autlantic/docs build"
 watchPatterns = [
   "apps/docs/**",
   "railway.docs.toml",

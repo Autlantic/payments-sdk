@@ -2,3 +2,8 @@
 # Without an explicit provider list, Nixpacks detects sdks/dotnet and runs
 # `dotnet restore` at the repo root, which fails (no solution at monorepo root).
 providers = ["node"]
+
+# VitePress lives in apps/docs devDependencies. Railway NODE_ENV=production
+# would skip them without --prod=false.
+[phases.install]
+cmds = ["pnpm i --frozen-lockfile --prod=false"]
