@@ -1,6 +1,6 @@
 {
   "name": "@autlantic/billing-engine",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "Subscription, invoice, and payment-link engine for Autlantic USDC billing on Base",
   "license": "MIT",
   "repository": {

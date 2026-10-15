@@ -160,3 +160,8 @@ Authenticated (`X-Autlantic-Api-Key` / `x-autlantic-api-key`):
 - `POST /v1/invoices/:id/charge`
 - `POST /v1/invoices/:id/refund`
 - `POST /v1/invoices/:id/void`
+
+
+## Store offboard
+
+`cancelSubscriptionsMatching({ creatorId, billingKinds?, immediate?, reason? })`

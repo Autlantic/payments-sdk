@@ -70,6 +70,7 @@ Send `Autlantic-Version: 2026-01-01` (default when omitted). See [API versioning
 | `POST` | `/v1/subscriptions/:id/complete` | Complete mandate |
 | `POST` | `/v1/subscriptions/:id/activate` | Activate |
 | `POST` | `/v1/subscriptions/:id/cancel` | Cancel |
+| `POST` | `/v1/subscriptions/cancel-matching` | Bulk cancel by `metadata.creatorId` |
 | `GET` | `/v1/invoices` | List (`?subscriptionId=`) |
 | `GET` | `/v1/invoices/:id` | Fetch |
 | `POST` | `/v1/invoices/:id/charge` | Charge |

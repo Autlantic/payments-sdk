@@ -28,6 +28,11 @@ export function attemptInvoiceCharge(
   const subscription = store.getSubscription(invoice.subscriptionId);
   if (!subscription) return null;
 
+  // Canceled (and immediate store-offboard) must never renew or collect open invoices.
+  if (subscription.status === "canceled") {
+    return null;
+  }
+
   const mandate = subscription.mandateId
     ? store.getMandate(subscription.mandateId)
     : null;
@@ -203,9 +208,10 @@ export function processDueInvoices(
   const results: ChargeInvoiceResult[] = [];
 
   for (const invoice of due) {
+    const subscription = store.getSubscription(invoice.subscriptionId);
+    if (!subscription || subscription.status === "canceled") continue;
     if (options.mode) {
-      const subscription = store.getSubscription(invoice.subscriptionId);
-      const recordMode = invoice.mode ?? subscription?.mode ?? "test";
+      const recordMode = invoice.mode ?? subscription.mode ?? "test";
       if (recordMode !== options.mode) continue;
     }
     const result = attemptInvoiceCharge(store, invoice.id, options);
@@ -235,7 +241,7 @@ export async function processDueInvoicesLive(
 
   for (const invoice of due) {
     const subscription = store.getSubscription(invoice.subscriptionId);
-    if (!subscription) continue;
+    if (!subscription || subscription.status === "canceled") continue;
     if (options.mode) {
       const recordMode = invoice.mode ?? subscription.mode ?? "test";
       if (recordMode !== options.mode) continue;

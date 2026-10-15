@@ -1,6 +1,7 @@
 import {
   attemptInvoiceCharge,
   cancelSubscription,
+  cancelSubscriptionsMatching,
   completeMandate,
   confirmOneTimePayment,
   createMemoryBillingStore,
@@ -15,6 +16,7 @@ import {
   updateSubscription,
   voidInvoice,
   type BillingStore,
+  type CancelSubscriptionsMatchingResult,
   type ChargeInvoiceResult,
   type CreateOneTimePaymentResult,
   type CreateSubscriptionResult,
@@ -625,6 +627,44 @@ export class AutlanticBilling {
       return { subscription: result.subscription };
     }
     return this.post(`/v1/subscriptions/${id}/cancel`, { immediate });
+  }
+
+  /**
+   * Cancel all merchant subscriptions for a creator (metadata.creatorId).
+   * Used for forced store offboarding. Immediate cancel voids open invoices.
+   */
+  async cancelSubscriptionsMatching(input: {
+    creatorId: string;
+    billingKinds?: string[];
+    immediate?: boolean;
+    reason?: string;
+    statuses?: string[];
+  }): Promise<CancelSubscriptionsMatchingResult> {
+    const creatorId = input.creatorId?.trim();
+    if (!creatorId) {
+      throw new AutlanticBillingError({
+        message: "creatorId is required",
+        code: "validation_error",
+        type: "validation_error",
+      });
+    }
+    if (this.localStore) {
+      return cancelSubscriptionsMatching(this.localStore, {
+        merchantId: this.config.merchantId,
+        creatorId,
+        billingKinds: input.billingKinds,
+        immediate: input.immediate,
+        reason: input.reason,
+        statuses: input.statuses,
+      });
+    }
+    return this.post(`/v1/subscriptions/cancel-matching`, {
+      creatorId,
+      billingKinds: input.billingKinds,
+      immediate: input.immediate !== false,
+      reason: input.reason,
+      statuses: input.statuses,
+    });
   }
 
   /** Undo cancel-at-period-end so renewals continue. */

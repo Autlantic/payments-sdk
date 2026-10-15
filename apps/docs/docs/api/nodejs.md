@@ -69,6 +69,7 @@ AutlanticBilling.fromEnv();
 | `completeSubscription(id)` | Mark wallet mandate active (no charge) |
 | `activateSubscription(id, { onChainSubscriptionId? })` | Complete mandate + first charge |
 | `cancelSubscription(id, immediate?)` | Cancel at period end or now |
+| `cancelSubscriptionsMatching({ creatorId, billingKinds?, immediate?, reason? })` | Bulk cancel by `metadata.creatorId` (store offboard) |
 | `listInvoices({ subscriptionId? })` | List invoices |
 | `getInvoice(id)` | Fetch invoice |
 | `chargeInvoice(id, sandboxMode?)` | Attempt invoice payment |

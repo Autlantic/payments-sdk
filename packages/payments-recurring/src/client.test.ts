@@ -55,6 +55,37 @@ describe("AutlanticBilling sandbox", () => {
     assert.equal(activated.charge?.invoice.status, "paid");
   });
 
+  it("cancels matching creator subscriptions in sandbox", async () => {
+    const billing = AutlanticBilling.sandbox({ merchantId: "mer_demo" });
+    const created = await billing.createSubscription({
+      merchantRef: "order_close_1",
+      customerWallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 19.88,
+      interval: "month",
+      metadata: {
+        creatorId: "creator_close_1",
+        billingKind: "platform",
+      },
+    });
+    await billing.activateSubscription(created.subscription.id);
+
+    const report = await billing.cancelSubscriptionsMatching({
+      creatorId: "creator_close_1",
+      immediate: true,
+      reason: "admin_close_store",
+    });
+    assert.equal(report.canceled.length, 1);
+    assert.equal(report.failed.length, 0);
+
+    const again = await billing.cancelSubscriptionsMatching({
+      creatorId: "creator_close_1",
+      immediate: true,
+    });
+    assert.equal(again.canceled.length, 0);
+    assert.equal(again.alreadyTerminal.length, 1);
+  });
+
   it("creates and confirms a one-time payment", async () => {
     const billing = AutlanticBilling.sandbox({ merchantId: "mer_demo" });
 

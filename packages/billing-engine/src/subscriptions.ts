@@ -166,10 +166,161 @@ export function cancelSubscription(
 
   store.saveSubscription(updated);
 
-  return {
-    subscription: updated,
-    events: [createWebhookEvent("subscription.canceled", { subscription: updated })],
-  };
+  const events: BillingWebhookEvent[] = [
+    createWebhookEvent("subscription.canceled", { subscription: updated }),
+  ];
+
+  // Immediate cancel must not leave open invoices chargeable by the worker.
+  if (immediate) {
+    for (const invoice of store.listInvoicesBySubscription(subscriptionId)) {
+      if (invoice.status !== "open") continue;
+      const voided: RecurringInvoice = {
+        ...invoice,
+        status: "void",
+        updatedAt: now,
+      };
+      store.saveInvoice(voided);
+      events.push(createWebhookEvent("invoice.voided", { invoice: voided }));
+    }
+  }
+
+  return { subscription: updated, events };
+}
+
+const DEFAULT_CANCEL_MATCH_STATUSES = new Set([
+  "active",
+  "past_due",
+  "incomplete",
+]);
+
+export type CancelSubscriptionsMatchingInput = {
+  merchantId: string;
+  /** Required metadata.creatorId match (Autlantic creator / store id). */
+  creatorId: string;
+  /** When set, only these metadata.billingKind values are canceled. */
+  billingKinds?: string[];
+  /** Default true for forced store offboarding. */
+  immediate?: boolean;
+  /** Stored on subscription metadata as cancelReason when provided. */
+  reason?: string;
+  /** Default: active, past_due, incomplete. */
+  statuses?: string[];
+};
+
+export type CancelSubscriptionsMatchingItem = {
+  id: string;
+  priorStatus: string;
+  status: string;
+};
+
+export type CancelSubscriptionsMatchingResult = {
+  canceled: CancelSubscriptionsMatchingItem[];
+  alreadyTerminal: CancelSubscriptionsMatchingItem[];
+  failed: Array<{ id: string; error: string }>;
+  events: BillingWebhookEvent[];
+};
+
+/**
+ * Merchant-scoped bulk cancel by metadata.creatorId (and optional billingKind).
+ * Idempotent: already-canceled rows land in alreadyTerminal.
+ */
+export function cancelSubscriptionsMatching(
+  store: BillingStore,
+  input: CancelSubscriptionsMatchingInput,
+): CancelSubscriptionsMatchingResult {
+  const creatorId = input.creatorId.trim();
+  if (!creatorId) {
+    return { canceled: [], alreadyTerminal: [], failed: [], events: [] };
+  }
+
+  const immediate = input.immediate !== false;
+  const kindAllow =
+    input.billingKinds && input.billingKinds.length > 0
+      ? new Set(input.billingKinds.map((k) => k.trim()).filter(Boolean))
+      : null;
+  const statusAllow = new Set(
+    (input.statuses?.length ? input.statuses : [...DEFAULT_CANCEL_MATCH_STATUSES]).map((s) =>
+      s.trim(),
+    ),
+  );
+  const reason = input.reason?.trim() || undefined;
+
+  const canceled: CancelSubscriptionsMatchingItem[] = [];
+  const alreadyTerminal: CancelSubscriptionsMatchingItem[] = [];
+  const failed: Array<{ id: string; error: string }> = [];
+  const events: BillingWebhookEvent[] = [];
+
+  const candidates = store
+    .listSubscriptionsByMerchant(input.merchantId)
+    .filter((sub) => sub.metadata?.creatorId === creatorId)
+    .filter((sub) => {
+      if (!kindAllow) return true;
+      const kind = sub.metadata?.billingKind?.trim() ?? "";
+      return kindAllow.has(kind);
+    });
+
+  for (const sub of candidates) {
+    if (sub.status === "canceled") {
+      alreadyTerminal.push({
+        id: sub.id,
+        priorStatus: sub.status,
+        status: sub.status,
+      });
+      continue;
+    }
+
+    if (!statusAllow.has(sub.status)) {
+      continue;
+    }
+
+    // Already scheduled to end and caller asked for period-end cancel: terminal enough.
+    if (!immediate && sub.cancelAtPeriodEnd) {
+      alreadyTerminal.push({
+        id: sub.id,
+        priorStatus: sub.status,
+        status: sub.status,
+      });
+      continue;
+    }
+
+    try {
+      if (reason) {
+        const withReason: RecurringSubscription = {
+          ...sub,
+          metadata: { ...sub.metadata, cancelReason: reason },
+          updatedAt: new Date(),
+        };
+        store.saveSubscription(withReason);
+      }
+      const result = cancelSubscription(store, sub.id, immediate);
+      if (!result) {
+        const latest = store.getSubscription(sub.id);
+        if (latest?.status === "canceled") {
+          alreadyTerminal.push({
+            id: sub.id,
+            priorStatus: sub.status,
+            status: "canceled",
+          });
+        } else {
+          failed.push({ id: sub.id, error: "cancel_failed" });
+        }
+        continue;
+      }
+      events.push(...result.events);
+      canceled.push({
+        id: result.subscription.id,
+        priorStatus: sub.status,
+        status: result.subscription.status,
+      });
+    } catch (e) {
+      failed.push({
+        id: sub.id,
+        error: e instanceof Error ? e.message : "cancel_failed",
+      });
+    }
+  }
+
+  return { canceled, alreadyTerminal, failed, events };
 }
 
 /** Clear cancel-at-period-end so renewals resume. */

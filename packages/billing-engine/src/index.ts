@@ -23,11 +23,15 @@ export {
   createSubscription,
   completeMandate,
   cancelSubscription,
+  cancelSubscriptionsMatching,
   resumeSubscription,
   createRenewalInvoice,
   createRenewalInvoiceWithEvent,
   advanceSubscriptionPeriod,
   updateSubscriptionCustomerWallet,
+  type CancelSubscriptionsMatchingInput,
+  type CancelSubscriptionsMatchingItem,
+  type CancelSubscriptionsMatchingResult,
 } from "./subscriptions";
 export {
   PENDING_CHECKOUT_WALLET,

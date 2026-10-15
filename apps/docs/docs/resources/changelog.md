@@ -1,5 +1,21 @@
 # Changelog
 
+## billing-engine 0.3.15 / payments-recurring 0.3.16 - cancelSubscriptionsMatching
+
+Enterprise store offboarding: cancel all merchant subscriptions for a `metadata.creatorId`.
+
+- Engine: `cancelSubscriptionsMatching({ merchantId, creatorId, billingKinds?, immediate?, reason?, statuses? })`
+- Immediate cancel voids open invoices; `attemptInvoiceCharge` / due processors skip `canceled` subscriptions
+- SDK: `AutlanticBilling.cancelSubscriptionsMatching(...)` → `POST /v1/subscriptions/cancel-matching`
+- Idempotent: already-canceled rows return in `alreadyTerminal`
+- Metadata: Autlantic uses `billingKind` = `platform` | `platform_lifetime` | `creator_membership` | `creator_pass` plus `creatorId`
+
+```bash
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+pnpm --filter @autlantic/payments-recurring publish --access public --no-git-checks
+# bump billing-hosting + Autlantic platform pins
+```
+
 ## billing-engine 0.3.14 - Workspace bands, plan-change proration, and usage metering
 
 Published on npm. Hosting pins **0.3.14** and wires portal/API/ops; Autlantic platform pin bump is optional (feature is hosting-side).
