@@ -27,9 +27,36 @@ describe("webhook signatures", () => {
     if (!result.ok) assert.equal(result.reason, "timestamp_expired");
   });
 
-  it("still accepts legacy raw hex", () => {
-    const legacy = createHmac("sha256", secret).update(body).digest("hex");
-    const result = verifyBillingWebhookDetailed(secret, body, legacy);
-    assert.equal(result.ok, true);
+  it("accepts legacy raw hex outside production", () => {
+    const prevNode = process.env.NODE_ENV;
+    const prevAllow = process.env.AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG;
+    process.env.NODE_ENV = "test";
+    delete process.env.AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG;
+    try {
+      const legacy = createHmac("sha256", secret).update(body).digest("hex");
+      const result = verifyBillingWebhookDetailed(secret, body, legacy);
+      assert.equal(result.ok, true);
+    } finally {
+      process.env.NODE_ENV = prevNode;
+      if (prevAllow === undefined) delete process.env.AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG;
+      else process.env.AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG = prevAllow;
+    }
+  });
+
+  it("rejects legacy raw hex in production", () => {
+    const prevNode = process.env.NODE_ENV;
+    const prevAllow = process.env.AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG;
+    process.env.NODE_ENV = "production";
+    delete process.env.AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG;
+    try {
+      const legacy = createHmac("sha256", secret).update(body).digest("hex");
+      const result = verifyBillingWebhookDetailed(secret, body, legacy);
+      assert.equal(result.ok, false);
+      if (!result.ok) assert.equal(result.reason, "legacy_signature_rejected");
+    } finally {
+      process.env.NODE_ENV = prevNode;
+      if (prevAllow === undefined) delete process.env.AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG;
+      else process.env.AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG = prevAllow;
+    }
   });
 });

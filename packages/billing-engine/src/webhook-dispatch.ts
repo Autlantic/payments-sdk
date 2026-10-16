@@ -33,6 +33,7 @@ export async function deliverBillingWebhooks(
       if (RETRY_MS[attempt]) await sleep(RETRY_MS[attempt]!);
 
       try {
+        // Never follow redirects (SSRF via 302 to metadata/internal hosts).
         const res = await fetch(url, {
           method: "POST",
           headers: {
@@ -41,8 +42,13 @@ export async function deliverBillingWebhooks(
             "X-Autlantic-Webhook-Attempt": String(attempt + 1),
           },
           body,
+          redirect: "manual",
         });
         statusCode = res.status;
+        if (res.status >= 300 && res.status < 400) {
+          lastError = `Redirect not allowed (${res.status})`;
+          continue;
+        }
         if (res.ok) {
           ok = true;
           break;

@@ -15,7 +15,8 @@ export type WebhookVerifyFailureReason =
   | "invalid_signature"
   | "compare_error"
   | "timestamp_expired"
-  | "timestamp_invalid";
+  | "timestamp_invalid"
+  | "legacy_signature_rejected";
 
 export type WebhookVerifyResult =
   | { ok: true }
@@ -111,7 +112,14 @@ export function verifyBillingWebhookDetailed(
     return { ok: true };
   }
 
-  // Legacy: raw hex of HMAC(body)
+  // Legacy raw hex (HMAC of body only, no timestamp) is rejected in production.
+  const allowLegacy =
+    process.env.AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG === "true" ||
+    process.env.NODE_ENV !== "production";
+  if (!allowLegacy) {
+    return { ok: false, reason: "legacy_signature_rejected" };
+  }
+
   const expected = hmacHex(secret, rawBody);
   try {
     const a = Buffer.from(expected, "utf8");
