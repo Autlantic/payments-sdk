@@ -6,7 +6,7 @@
 
 | Surface | Branches | What ships from where |
 |---------|----------|------------------------|
-| This repo (`payments-sdk`) | `main` + **`production`** | Packages/tags from **`main`**; docs + example-store + status Railway from **`production`** |
+| This repo (`payments-sdk`) | `main` + **`production`** | Packages/tags from **`main`**; docs + example-store + status + Shopify Railway from **`production`** |
 | PHP mirror (`billing-php`) | `main` only | No Railway |
 | Autlantic hosted apps | `main` → `staging` → `production` | Railway staging/production (private app repos) |
 
@@ -15,17 +15,25 @@
 | Branch | Purpose | Railway |
 |--------|---------|---------|
 | `main` | PRs, SDK source of truth, npm/PyPI/NuGet/pub tags | **Not** for docs/store deploy |
-| `production` | What Railway builds for docs.autlantic.com, example store, status.autlantic.com | **Yes** — docs / example-store / status |
+| `production` | What Railway builds for docs.autlantic.com, example store, status.autlantic.com, shopify.autlantic.com | **Yes** |
 
 Optional later: add `staging` if you want a docs preview env. Until then, promote `main` → `production` before docs go live.
 
-## Promotion (docs / example store)
+## Hard rules (do not break again)
+
+1. **Never commit on `production`.** All work lands on `main` first.
+2. **Promote with ff-only only.** No `Merge main: …` commits. No `--no-ff`.
+3. If `git merge --ff-only origin/main` fails, **stop**. Branches have diverged. Do not “fix” with a merge commit. Backup the tip, then realign `production` to `main` with user approval (`reset --hard` + `--force-with-lease`).
+4. After promote, prefer `origin/production` == `origin/main`.
+
+## Promotion (docs / example store / Shopify)
 
 ```bash
 git fetch origin
 git checkout production
-git merge --ff-only origin/main   # or cherry-pick specific docs commits
+git merge --ff-only origin/main
 git push origin production
+git checkout main
 ```
 
 Package publishes still happen from **`main`** (or version tags on `main`). Promoting to `production` only updates Railway sites.
@@ -43,6 +51,7 @@ For each payments-sdk Railway service (`railway.docs.toml`, `railway.example-sto
 
 ## Related
 
+- Cursor rule: `.cursor/rules/main-and-production.mdc`
 - [Deploy docs on Railway](./apps/docs/docs/resources/deploy-railway.md)
 - [sdks/PUBLISHING.md](./sdks/PUBLISHING.md)
 - Product docs: [docs.autlantic.com](https://docs.autlantic.com)

@@ -1,27 +1,42 @@
 ---
-description: Keep payments-sdk main and production in sync after shippable work
+description: payments-sdk production is ff-only from main; never merge-commit or author on production
 alwaysApply: true
 ---
 
-# main + production
+# main + production (ff-only only)
 
-When you push shippable work to **`main`** in this repo (docs, integrations, SDK source that docs/Railway should show), **also update `production` in the same session** unless the user explicitly says main-only.
+`production` is **promote-only**. It must always be a fast-forward of `main` (same tip, or `main` ahead and then ff). Never author commits on `production`. Never create `Merge main: …` commits.
 
-## Promote
+This divergence happened before because agents used non-ff merges onto `production`. That is forbidden.
+
+## Hard rules
+
+1. **Never** `git commit` on `production`.
+2. **Never** `git merge origin/main` without `--ff-only`.
+3. **Never** `git merge --no-ff`, rebase onto production, or cherry-pick onto production as the normal path.
+4. Work lands on **`main`** (or a PR into `main`). Package publishes from **`main`**.
+5. Railway docs / example-store / status / Shopify deploy from **`production` only** (never point them at `main`). See `DEPLOY.md`.
+6. After shippable work on `main` that docs/Railway should show, promote `production` in the same session unless the user says main-only.
+
+## Promote (only allowed form)
 
 ```bash
 git fetch origin
 git checkout production
-git merge origin/main -m "Merge main: <short why>."
+git merge --ff-only origin/main
 git push origin production
 git checkout main
 ```
 
-Prefer a merge commit when fast-forward is not possible (this repo’s history uses `Merge main: …`).
+If `--ff-only` fails, **stop**. Do not invent a merge commit. Tell the user branches diverged; recover with an explicit backup + `reset --hard` to `main` (force-with-lease) only with user approval.
 
-## Rules
+## After promote
 
-- Railway docs / example-store / status deploy from **`production` only** — never point them at `main` (see `DEPLOY.md`).
-- Package publishes and version tags still come from **`main`**.
-- Do not leave docs or public integration changes on `main` without promoting `production` when the user expects the live site updated.
-- Confirm both remotes after promote: `origin/main` is an ancestor of `origin/production` (or production tip contains the main tip).
+Confirm:
+
+```bash
+test "$(git rev-parse origin/main)" = "$(git rev-parse origin/production)" \
+  || git merge-base --is-ancestor origin/production origin/main
+```
+
+`origin/production` must equal `origin/main`, or be a strict ancestor of `origin/main` only momentarily before the next ff promote catches up (prefer equal tips after promote).
