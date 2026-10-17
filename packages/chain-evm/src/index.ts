@@ -63,6 +63,8 @@ export {
   readUsdcBalance,
   readVaultSubscription,
   findVaultSubscriptionForCheckout,
+  assertVaultSubscriptionMatchesCheckout,
+  matchVaultSubscriptionViewToCheckout,
   isVaultSubscriptionCharged,
   findVaultChargeTxHash,
   waitUntilVaultChargeDue,
@@ -70,4 +72,6 @@ export {
   preflightLiveCharge,
   preflightLiveRefund,
   type PreflightChargeResult,
+  type VaultCheckoutMatchResult,
+  type VaultCheckoutMatchCode,
 } from "./preflight";

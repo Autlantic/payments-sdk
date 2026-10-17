@@ -66,6 +66,9 @@ export function setOnChainSubscriptionId(
   const digits = String(onChainSubscriptionId).replace(/\D/g, "");
   if (!digits || digits === "0") return null;
 
+  const taken = findSubscriptionByOnChainId(store, digits, subscriptionId);
+  if (taken) return null;
+
   const now = new Date();
   const updated: RecurringSubscription = {
     ...subscription,

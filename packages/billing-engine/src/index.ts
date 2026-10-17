@@ -65,6 +65,7 @@ export {
   createOneTimePayment,
   confirmOneTimePayment,
   cancelOneTimePayment,
+  findOneTimePaymentByTxHash,
   buildOneTimeCheckoutSessionView,
   type OneTimePayment,
   type OneTimePaymentStatus,

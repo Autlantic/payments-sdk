@@ -110,6 +110,9 @@ export function createWriteThroughBillingStore(
     listOneTimePaymentsByMerchant(merchantId) {
       return memory.listOneTimePaymentsByMerchant(merchantId);
     },
+    listAllOneTimePayments() {
+      return memory.listAllOneTimePayments?.() ?? [];
+    },
     savePaymentLink(link) {
       memory.savePaymentLink(link);
       persistQueued("paymentLink", () => persist.savePaymentLink(link));

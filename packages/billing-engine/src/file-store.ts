@@ -82,6 +82,9 @@ export function createFileBillingStore(filePath: string): BillingStore {
     listOneTimePaymentsByMerchant(merchantId) {
       return inner.listOneTimePaymentsByMerchant(merchantId);
     },
+    listAllOneTimePayments() {
+      return inner.listAllOneTimePayments?.() ?? [];
+    },
     savePaymentLink(link) {
       inner.savePaymentLink(link);
       persist();

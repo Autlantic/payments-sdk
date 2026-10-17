@@ -5,6 +5,7 @@ import {
   buildOneTimeCheckoutSessionView,
   confirmOneTimePayment,
   createOneTimePayment,
+  findOneTimePaymentByTxHash,
 } from "./one-time";
 
 describe("one-time payments", () => {
@@ -39,6 +40,35 @@ describe("one-time payments", () => {
 
     const again = confirmOneTimePayment(store, created.payment.id);
     assert.equal(again?.alreadyPaid, true);
+  });
+
+  it("rejects confirming a live txHash already used by another payment", () => {
+    const store = createMemoryBillingStore();
+    const txHash =
+      "0x40d92ab13df6748f58ca92867c4dfafd0f8884b527da83e1f19c32b5f5af5626";
+    const first = createOneTimePayment(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_tx_a",
+      customerWallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 10,
+      chainId: 84532,
+    });
+    const confirmed = confirmOneTimePayment(store, first.payment.id, { txHash });
+    assert.ok(confirmed);
+    assert.equal(confirmed?.payment.txHash, txHash);
+    assert.equal(findOneTimePaymentByTxHash(store, txHash)?.id, first.payment.id);
+
+    const second = createOneTimePayment(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_tx_b",
+      customerWallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 10,
+      chainId: 84532,
+    });
+    assert.equal(confirmOneTimePayment(store, second.payment.id, { txHash }), null);
+    assert.equal(store.getOneTimePayment(second.payment.id)?.status, "open");
   });
 
   it("exposes coupon discount fields on checkout session", () => {

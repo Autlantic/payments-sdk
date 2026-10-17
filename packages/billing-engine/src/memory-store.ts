@@ -86,6 +86,9 @@ export function createMemoryBillingStore(
     listOneTimePaymentsByMerchant(merchantId) {
       return [...oneTimePayments.values()].filter((p) => p.merchantId === merchantId);
     },
+    listAllOneTimePayments() {
+      return [...oneTimePayments.values()];
+    },
 
     savePaymentLink(link) {
       paymentLinks.set(link.id, link);

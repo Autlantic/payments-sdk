@@ -174,6 +174,88 @@ export async function readVaultSubscription(input: {
   return parseSubscriptionsViewResult(result);
 }
 
+export type VaultCheckoutMatchCode =
+  | "NOT_FOUND"
+  | "INACTIVE"
+  | "CUSTOMER_MISMATCH"
+  | "MERCHANT_MISMATCH"
+  | "AMOUNT_MISMATCH";
+
+export type VaultCheckoutMatchResult =
+  | { ok: true; view: NonNullable<ReturnType<typeof parseSubscriptionsViewResult>> }
+  | { ok: false; code: VaultCheckoutMatchCode; message: string };
+
+/**
+ * Pure vault↔checkout bind check (no RPC). Used by assertVaultSubscriptionMatchesCheckout
+ * and unit tests.
+ */
+export function matchVaultSubscriptionViewToCheckout(
+  view: VaultSubscriptionView | null,
+  input: {
+    customerWallet: string;
+    merchantWallet: string;
+    amountUsdc: number;
+  },
+): VaultCheckoutMatchResult {
+  if (!view) {
+    return {
+      ok: false,
+      code: "NOT_FOUND",
+      message: "On-chain subscription was not found for this id.",
+    };
+  }
+  if (!view.active) {
+    return {
+      ok: false,
+      code: "INACTIVE",
+      message: "On-chain subscription is not active.",
+    };
+  }
+  if (normalizeEvmAddress(view.customer) !== normalizeEvmAddress(input.customerWallet)) {
+    return {
+      ok: false,
+      code: "CUSTOMER_MISMATCH",
+      message: "On-chain subscription customer wallet does not match this checkout.",
+    };
+  }
+  if (normalizeEvmAddress(view.merchant) !== normalizeEvmAddress(input.merchantWallet)) {
+    return {
+      ok: false,
+      code: "MERCHANT_MISMATCH",
+      message: "On-chain subscription merchant does not match this checkout.",
+    };
+  }
+  const expectedMicro = usdcToMicro(input.amountUsdc);
+  if (view.amountPerPeriodMicro !== expectedMicro) {
+    return {
+      ok: false,
+      code: "AMOUNT_MISMATCH",
+      message: "On-chain subscription amount does not match this checkout.",
+    };
+  }
+  return { ok: true, view };
+}
+
+/**
+ * Server-side bind check: the client-supplied onChainSubscriptionId must match
+ * this checkout's customer, merchant, and amount on the vault.
+ */
+export async function assertVaultSubscriptionMatchesCheckout(input: {
+  chainId: BillingChainId;
+  vaultAddress: string;
+  onChainSubscriptionId: string;
+  customerWallet: string;
+  merchantWallet: string;
+  amountUsdc: number;
+}): Promise<VaultCheckoutMatchResult> {
+  const view = await readVaultSubscription({
+    chainId: input.chainId,
+    vaultAddress: input.vaultAddress,
+    onChainSubscriptionId: input.onChainSubscriptionId,
+  });
+  return matchVaultSubscriptionViewToCheckout(view, input);
+}
+
 export type PreflightChargeResult =
   | { ok: true }
   | { ok: false; code: InvoiceFailureCode; message: string };

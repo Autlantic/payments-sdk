@@ -38,6 +38,8 @@ export type BillingStore = {
   saveOneTimePayment(payment: OneTimePayment): void;
   getOneTimePayment(id: string): OneTimePayment | null;
   listOneTimePaymentsByMerchant(merchantId: string): OneTimePayment[];
+  /** Optional; used for cross-payment txHash exclusivity. */
+  listAllOneTimePayments?(): OneTimePayment[];
 
   savePaymentLink(link: PaymentLink): void;
   getPaymentLink(id: string): PaymentLink | null;

@@ -1,5 +1,20 @@
 # Changelog
 
+## billing-engine 0.3.18 / chain-evm 0.2.14 - Checkout vault bind + one-time txHash exclusivity
+
+P0 money-finalization hardening for hosted checkout:
+
+- `setOnChainSubscriptionId` refuses an on-chain id already owned by another non-canceled subscription
+- `listAllOneTimePayments` + `findOneTimePaymentByTxHash`; `confirmOneTimePayment` rejects reused live `0x` hashes
+- `assertVaultSubscriptionMatchesCheckout` verifies vault customer / merchant / amount before activate bind
+
+```bash
+pnpm --filter @autlantic/chain-evm publish --access public --no-git-checks
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+# bump billing-hosting pins to chain-evm@0.2.14 and billing-engine@0.3.18
+```
+
+
 ## billing-engine 0.3.15 / payments-recurring 0.3.16 - cancelSubscriptionsMatching
 
 Enterprise store offboarding: cancel all merchant subscriptions for a `metadata.creatorId`.

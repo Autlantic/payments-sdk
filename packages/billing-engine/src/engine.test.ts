@@ -147,6 +147,68 @@ describe("billing-engine", () => {
     );
   });
 
+  it("refuses to bind an on-chain id already owned by another incomplete subscription", () => {
+    const store = createMemoryBillingStore();
+    const first = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_onchain_taken_a",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 10,
+      interval: "month",
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    assert.ok(setOnChainSubscriptionId(store, first.subscription.id, "99"));
+
+    const second = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_onchain_taken_b",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 10,
+      interval: "month",
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    assert.equal(setOnChainSubscriptionId(store, second.subscription.id, "99"), null);
+    assert.equal(findSubscriptionByOnChainId(store, "99")?.id, first.subscription.id);
+  });
+
+  it("activateSubscriptionLive returns null when on-chain id is already taken", () => {
+    const store = createMemoryBillingStore();
+    const first = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_activate_taken_a",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 10,
+      interval: "month",
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    assert.ok(setOnChainSubscriptionId(store, first.subscription.id, "55"));
+
+    const second = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_activate_taken_b",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 10,
+      interval: "month",
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    const txHash =
+      "0x40d92ab13df6748f58ca92867c4dfafd0f8884b527da83e1f19c32b5f5af5626";
+    assert.equal(
+      activateSubscriptionLive(store, second.subscription.id, "55", txHash),
+      null,
+    );
+    assert.equal(store.getSubscription(second.subscription.id)?.status, "incomplete");
+    assert.equal(findSubscriptionByOnChainId(store, "55")?.id, first.subscription.id);
+  });
+
   it("requires tx hash for live charges", () => {
     const store = createMemoryBillingStore();
     const { subscription, invoice } = createSubscription(store, {

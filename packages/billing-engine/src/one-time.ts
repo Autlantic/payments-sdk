@@ -115,6 +115,27 @@ export function createOneTimePayment(
   };
 }
 
+/** Find another one-time payment that already claimed this chain tx hash. */
+export function findOneTimePaymentByTxHash(
+  store: BillingStore,
+  txHash: string,
+  excludePaymentId?: string,
+): OneTimePayment | null {
+  const normalized = txHash.trim().toLowerCase();
+  if (!normalized) return null;
+  const payments =
+    typeof store.listAllOneTimePayments === "function"
+      ? store.listAllOneTimePayments()
+      : null;
+  if (!payments) return null;
+
+  for (const payment of payments) {
+    if (excludePaymentId && payment.id === excludePaymentId) continue;
+    if (payment.txHash?.trim().toLowerCase() === normalized) return payment;
+  }
+  return null;
+}
+
 export function confirmOneTimePayment(
   store: BillingStore,
   paymentId: string,
@@ -130,12 +151,19 @@ export function confirmOneTimePayment(
     return null;
   }
 
+  const txHash = input.txHash?.trim() || `sandbox_tx_${existing.id}`;
+  const liveHash = txHash.startsWith("0x") && txHash.length >= 66;
+  if (liveHash) {
+    const reused = findOneTimePaymentByTxHash(store, txHash, paymentId);
+    if (reused) return null;
+  }
+
   const now = new Date();
   const payment: OneTimePayment = {
     ...existing,
     status: "paid",
     paidAt: now,
-    txHash: input.txHash?.trim() || `sandbox_tx_${existing.id}`,
+    txHash,
   };
   store.saveOneTimePayment(payment);
 
