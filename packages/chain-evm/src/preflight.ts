@@ -360,18 +360,14 @@ export async function preflightLiveCharge(input: {
       spender: input.vaultAddress,
     });
 
+    // Charge gate is this invoice only. Rolling cap (allowanceCapUsdc) is for
+    // initial approve UX at checkout, not a hard block on renewals: if the
+    // wallet can pay this period, pull it.
     if (usdcToMicro(allowance) < usdcToMicro(input.amountUsdc)) {
       return {
         ok: false,
         code: "ALLOWANCE_REVOKED",
         message: "USDC allowance is too low for this charge",
-      };
-    }
-    if (usdcToMicro(allowance) < usdcToMicro(input.allowanceCapUsdc)) {
-      return {
-        ok: false,
-        code: "ALLOWANCE_TOO_LOW",
-        message: "USDC allowance is below the rolling cap",
       };
     }
 

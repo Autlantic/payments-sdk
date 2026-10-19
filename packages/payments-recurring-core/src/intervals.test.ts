@@ -21,13 +21,16 @@ describe("intervals", () => {
     assert.equal(next.toISOString(), "2026-03-15T00:00:00.000Z");
   });
 
-  it("defaults allowance cap to 12 months", () => {
-    assert.equal(defaultAllowanceCapUsdc(20, "month"), 240);
+  it("defaults allowance cap to 3 periods", () => {
+    assert.equal(defaultAllowanceCapUsdc(20, "month"), 60);
+    assert.equal(defaultAllowanceCapUsdc(20, "year"), 60);
+    assert.equal(defaultAllowanceCapUsdc(20, "week"), 60);
+    assert.equal(defaultAllowanceCapUsdc(20, "five_minute"), 60);
   });
 
   it("rounds fractional caps to 6 USDC decimals", () => {
-    // 0.1 * 12 is 1.2000000000000002 in IEEE float; cap must be exact 1.2
-    assert.equal(defaultAllowanceCapUsdc(0.1, "month"), 1.2);
+    // 0.1 * 3 is exact in IEEE float at 6 dp after roundUsdc
+    assert.equal(defaultAllowanceCapUsdc(0.1, "month"), 0.3);
   });
 
   it("adds five minutes for test interval", () => {

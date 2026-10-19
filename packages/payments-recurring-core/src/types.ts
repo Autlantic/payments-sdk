@@ -122,7 +122,7 @@ export type CreateSubscriptionInput = {
   chainId: BillingChainId;
   planId?: string;
   metadata?: Record<string, string>;
-  /** Rolling allowance cap in USDC (default: 12x amount). */
+  /** Rolling allowance cap in USDC (default: 3x amount). */
   allowanceCapUsdc?: number;
   /** Max single charge in USDC (default: amountUsdc). */
   maxChargeUsdc?: number;

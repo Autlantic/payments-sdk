@@ -1,5 +1,29 @@
 # Changelog
 
+## payments-recurring-core 0.2.9 - Default allowance cap 3× (was 12×)
+
+`defaultAllowanceCapUsdc` now approves **3 billing periods** of USDC (month/week/year/five_minute), not 12. New checkouts only; existing mandates keep their stored cap.
+
+```bash
+pnpm --filter @autlantic/payments-recurring-core publish --access public --no-git-checks
+# then republish chain-evm / billing-engine / payments-recurring against 0.2.9 and bump hosting pins
+```
+
+## chain-evm 0.2.17 - Charge when this period is payable (use this, not 0.2.16)
+
+Same as 0.2.16: `preflightLiveCharge` no longer hard-blocks on the rolling cap when leftover approval still covers **this** invoice.
+
+**Do not use 0.2.16.** It was published with bare `npm publish` and left a broken `workspace:*` dependency on npm. Use **0.2.17** (`pnpm publish` so deps resolve to `payments-recurring-core@0.2.9`).
+
+```bash
+pnpm --filter @autlantic/chain-evm publish --access public --no-git-checks
+# bump billing-hosting pins to chain-evm@0.2.17
+```
+
+## chain-evm 0.2.16 - BROKEN publish (workspace:* deps)
+
+Published incorrectly via `npm publish`. Use **0.2.17** instead.
+
 ## billing-engine 0.3.19 / chain-evm 0.2.15 / payments-recurring-core 0.2.8 - Quiet defer for CHARGE_NOT_DUE
 
 Renewal worker must not treat vault `NOT_DUE` (off-chain due clock ahead of on-chain `periodEnd`) as a failed customer payment.
