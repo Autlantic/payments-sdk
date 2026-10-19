@@ -60,9 +60,15 @@ export {
 export type {
   BillingInterval,
   BillingWebhookEvent,
+  InvoiceFailureCode,
   RecurringInvoice,
   RecurringSubscription,
   SubscriptionStatus,
+} from "@autlantic/payments-recurring-core";
+
+export {
+  deferRetryAtFromOnChainPeriodEnd,
+  isChargeNotDueFailure,
 } from "@autlantic/payments-recurring-core";
 
 export type {

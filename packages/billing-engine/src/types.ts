@@ -90,6 +90,11 @@ export type ChargeInvoiceResult = {
   subscription: RecurringSubscription;
   events: BillingWebhookEvent[];
   ok: boolean;
+  /**
+   * Quiet reschedule until on-chain period unlock (`CHARGE_NOT_DUE`).
+   * Not a payment failure: no `invoice.payment_failed` events, attemptCount unchanged.
+   */
+  deferred?: boolean;
 };
 
 export type CancelSubscriptionResult = {

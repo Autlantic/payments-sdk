@@ -258,7 +258,13 @@ export async function assertVaultSubscriptionMatchesCheckout(input: {
 
 export type PreflightChargeResult =
   | { ok: true }
-  | { ok: false; code: InvoiceFailureCode; message: string };
+  | {
+      ok: false;
+      code: InvoiceFailureCode;
+      message: string;
+      /** Vault periodEnd (unix seconds). Set when code is CHARGE_NOT_DUE. */
+      periodEndUnix?: number;
+    };
 
 export async function waitUntilVaultChargeDue(input: {
   chainId: BillingChainId;
@@ -339,7 +345,12 @@ export async function preflightLiveCharge(input: {
 
     const now = await readLatestBlockTimestamp(input.chainId);
     if (now < sub.periodEnd) {
-      return { ok: false, code: "RELAYER_ERROR", message: "On-chain billing period is not due yet" };
+      return {
+        ok: false,
+        code: "CHARGE_NOT_DUE",
+        message: "On-chain billing period is not due yet",
+        periodEndUnix: sub.periodEnd,
+      };
     }
 
     const allowance = await readUsdcAllowance({

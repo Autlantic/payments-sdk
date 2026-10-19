@@ -1,6 +1,8 @@
 import {
   createWebhookEvent,
+  deferRetryAtFromOnChainPeriodEnd,
   hasMoreAttempts,
+  isChargeNotDueFailure,
   nextAttemptAtAfterFailure,
   shouldMarkPastDue,
   type BillingWebhookEvent,
@@ -199,6 +201,58 @@ function failCharge(
   };
 }
 
+/**
+ * Quietly reschedule an open invoice until the vault period unlocks.
+ * Does not increment attemptCount, does not emit payment_failed, does not past_due.
+ * Aligns off-chain dueAt / currentPeriodEnd forward when on-chain periodEnd is later.
+ */
+export function deferInvoiceUntilOnChainDue(
+  store: BillingStore,
+  invoice: RecurringInvoice,
+  subscription: RecurringSubscription,
+  input: { retryAt: Date; onChainPeriodEndUnix?: number },
+): ChargeInvoiceResult {
+  const now = new Date();
+  const periodEndMs =
+    typeof input.onChainPeriodEndUnix === "number" && Number.isFinite(input.onChainPeriodEndUnix)
+      ? input.onChainPeriodEndUnix * 1000
+      : null;
+  const alignedPeriodEnd =
+    periodEndMs != null && periodEndMs > subscription.currentPeriodEnd.getTime()
+      ? new Date(periodEndMs)
+      : null;
+
+  let updatedSub = subscription;
+  if (alignedPeriodEnd) {
+    updatedSub = {
+      ...subscription,
+      currentPeriodEnd: alignedPeriodEnd,
+      updatedAt: now,
+    };
+    store.saveSubscription(updatedSub);
+  }
+
+  const deferredInvoice: RecurringInvoice = {
+    ...invoice,
+    dueAt: alignedPeriodEnd ?? invoice.dueAt,
+    nextAttemptAt: input.retryAt,
+    // Clear any prior failure stamp from older buggy workers; this is not a failure.
+    failureCode: undefined,
+    failureMessage: undefined,
+    updatedAt: now,
+    status: "open",
+  };
+  store.saveInvoice(deferredInvoice);
+
+  return {
+    ok: false,
+    deferred: true,
+    invoice: deferredInvoice,
+    subscription: updatedSub,
+    events: [],
+  };
+}
+
 export function processDueInvoices(
   store: BillingStore,
   until: Date,
@@ -223,7 +277,14 @@ export function processDueInvoices(
 
 export type LiveChargeSubmitResult =
   | { ok: true; txHash: string }
-  | { ok: false; error: string };
+  | {
+      ok: false;
+      /** Quiet defer until vault periodEnd. Prefer over failCharge for CHARGE_NOT_DUE. */
+      defer: true;
+      retryAt: Date;
+      onChainPeriodEndUnix?: number;
+    }
+  | { ok: false; error: string; code?: InvoiceFailureCode };
 
 /** Process due invoices on-chain: relayer first, then mark paid with tx hash. */
 export async function processDueInvoicesLive(
@@ -271,9 +332,36 @@ export async function processDueInvoicesLive(
 
     const relayer = await submitCharge({ subscription, invoice, onChainSubscriptionId });
     if (!relayer.ok) {
-      results.push(
-        failCharge(store, invoice, subscription, "RELAYER_ERROR", relayer.error),
-      );
+      if ("defer" in relayer && relayer.defer) {
+        results.push(
+          deferInvoiceUntilOnChainDue(store, invoice, subscription, {
+            retryAt: relayer.retryAt,
+            onChainPeriodEndUnix: relayer.onChainPeriodEndUnix,
+          }),
+        );
+        continue;
+      }
+      const error = "error" in relayer ? relayer.error : "Relayer charge failed";
+      const code =
+        "code" in relayer && relayer.code
+          ? relayer.code
+          : isChargeNotDueFailure({ message: error })
+            ? "CHARGE_NOT_DUE"
+            : "RELAYER_ERROR";
+      // Host forgot defer shape but returned not-due text: still quiet-defer.
+      if (code === "CHARGE_NOT_DUE" || isChargeNotDueFailure({ code, message: error })) {
+        const periodEndUnix = Math.floor(until.getTime() / 1000) + 60;
+        results.push(
+          deferInvoiceUntilOnChainDue(store, invoice, subscription, {
+            retryAt: deferRetryAtFromOnChainPeriodEnd(periodEndUnix, {
+              nowMs: until.getTime(),
+            }),
+            onChainPeriodEndUnix: periodEndUnix,
+          }),
+        );
+        continue;
+      }
+      results.push(failCharge(store, invoice, subscription, code, error));
       continue;
     }
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## billing-engine 0.3.19 / chain-evm 0.2.15 / payments-recurring-core 0.2.8 - Quiet defer for CHARGE_NOT_DUE
+
+Renewal worker must not treat vault `NOT_DUE` (off-chain due clock ahead of on-chain `periodEnd`) as a failed customer payment.
+
+- Core: first-class `CHARGE_NOT_DUE`, `isChargeNotDueFailure`, `deferRetryAtFromOnChainPeriodEnd`
+- chain-evm: `preflightLiveCharge` returns `CHARGE_NOT_DUE` + `periodEndUnix` (no longer `RELAYER_ERROR`)
+- Engine: `deferInvoiceUntilOnChainDue`; `processDueInvoicesLive` accepts `{ defer: true, retryAt }` and never emits `invoice.payment_failed` / burns attempts for not-due
+- Aligns off-chain `dueAt` / `currentPeriodEnd` forward to on-chain `periodEnd` when deferring
+- Hosting must bump pins and return defer from the live submit callback; platform must skip `renewal_payment_failed` email for not-due (defense in depth)
+
+```bash
+pnpm --filter @autlantic/payments-recurring-core publish --access public --no-git-checks
+pnpm --filter @autlantic/chain-evm publish --access public --no-git-checks
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+pnpm --filter @autlantic/payments-recurring publish --access public --no-git-checks
+# bump billing-hosting pins; wire worker defer; platform notify skip
+```
+
 ## billing-engine 0.3.18 / chain-evm 0.2.14 - Checkout vault bind + one-time txHash exclusivity
 
 P0 money-finalization hardening for hosted checkout:

@@ -54,7 +54,13 @@ export {
 } from "./on-chain";
 export { activateSubscriptionLive, type ActivateLiveResult } from "./activate-live";
 export { updateSubscription, voidInvoice, refundInvoice } from "./refunds";
-export { attemptInvoiceCharge, processDueInvoices, processDueInvoicesLive } from "./charge";
+export {
+  attemptInvoiceCharge,
+  deferInvoiceUntilOnChainDue,
+  processDueInvoices,
+  processDueInvoicesLive,
+  type LiveChargeSubmitResult,
+} from "./charge";
 export {
   activateSubscriptionCheckout,
   buildCheckoutSessionView,

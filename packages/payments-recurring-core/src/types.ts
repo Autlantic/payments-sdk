@@ -107,6 +107,8 @@ export type InvoiceFailureCode =
   | "ALLOWANCE_REVOKED"
   | "ALLOWANCE_TOO_LOW"
   | "MANDATE_INACTIVE"
+  /** Off-chain due clock is ahead of vault periodEnd. Defer quietly; not a customer failure. */
+  | "CHARGE_NOT_DUE"
   | "RELAYER_ERROR"
   | "SANDBOX_DECLINED";
 

@@ -8,8 +8,10 @@ import {
   cancelSubscription,
   completeMandate,
   createMemoryBillingStore,
+  createRenewalInvoice,
   createSubscription,
   findSubscriptionByOnChainId,
+  processDueInvoicesLive,
   refundInvoice,
   setOnChainSubscriptionId,
   updateSubscriptionCustomerWallet,
@@ -308,5 +310,98 @@ describe("billing-engine", () => {
     const canceled = cancelSubscription(store, subscription.id, false);
     assert.equal(canceled?.subscription.cancelAtPeriodEnd, true);
     assert.equal(canceled?.subscription.status, "incomplete");
+  });
+
+  it("defers live renewals when on-chain period is not due (no payment_failed)", async () => {
+    const store = createMemoryBillingStore();
+    const { subscription, invoice: firstInvoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_not_due",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 0.1,
+      interval: "five_minute",
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+
+    completeMandate(store, subscription.id);
+    const paid = attemptInvoiceCharge(store, firstInvoice.id, { sandbox: true });
+    assert.equal(paid?.ok, true);
+    assert.equal(paid?.subscription.status, "active");
+    assert.ok(setOnChainSubscriptionId(store, subscription.id, "77"));
+
+    const renewal = createRenewalInvoice(store, subscription.id);
+    assert.ok(renewal);
+    assert.equal(renewal!.attemptCount, 0);
+
+    const periodEndUnix = Math.floor(Date.now() / 1000) + 90;
+    const retryAt = new Date((periodEndUnix + 30) * 1000);
+    const until = new Date(renewal!.dueAt.getTime() + 60_000);
+
+    const results = await processDueInvoicesLive(
+      store,
+      until,
+      async () => ({
+        ok: false,
+        defer: true,
+        retryAt,
+        onChainPeriodEndUnix: periodEndUnix,
+      }),
+      { mode: "test" },
+    );
+
+    assert.equal(results.length, 1);
+    assert.equal(results[0]?.ok, false);
+    assert.equal(results[0]?.deferred, true);
+    assert.equal(results[0]?.events.length, 0);
+    assert.equal(results[0]?.invoice.attemptCount, 0);
+    assert.equal(results[0]?.invoice.status, "open");
+    assert.equal(results[0]?.invoice.failureCode, undefined);
+    assert.equal(results[0]?.invoice.nextAttemptAt?.toISOString(), retryAt.toISOString());
+    assert.ok(
+      (results[0]?.subscription.currentPeriodEnd.getTime() ?? 0) >= periodEndUnix * 1000,
+    );
+  });
+
+  it("defers when submit returns not-due error text without defer shape", async () => {
+    const store = createMemoryBillingStore();
+    const { subscription, invoice: firstInvoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_not_due_legacy",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 0.1,
+      interval: "five_minute",
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+
+    completeMandate(store, subscription.id);
+    assert.equal(attemptInvoiceCharge(store, firstInvoice.id, { sandbox: true })?.ok, true);
+    assert.ok(setOnChainSubscriptionId(store, subscription.id, "78"));
+    const renewal = createRenewalInvoice(store, subscription.id);
+    assert.ok(renewal);
+    const until = new Date(renewal!.dueAt.getTime() + 60_000);
+
+    const results = await processDueInvoicesLive(
+      store,
+      until,
+      async () => ({
+        ok: false,
+        error: "On-chain billing period is not due yet",
+        code: "RELAYER_ERROR",
+      }),
+      { mode: "test" },
+    );
+
+    assert.equal(results.length, 1);
+    assert.equal(results[0]?.deferred, true);
+    assert.equal(results[0]?.events.length, 0);
+    assert.equal(results[0]?.invoice.attemptCount, 0);
+    assert.equal(
+      results[0]?.events.some((e) => e.type === "invoice.payment_failed"),
+      false,
+    );
   });
 });
