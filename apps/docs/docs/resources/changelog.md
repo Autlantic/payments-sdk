@@ -8,7 +8,7 @@ Wallet mandate now, first USDC charge after `trialDays`.
 - Engine: create with `trialDays > 0` → `trialing`, first invoice `dueAt` = trial end; activate/mandate does not charge while not due; paid charge converts to `active`; cancel-in-trial voids open invoice
 - Client: optional sandbox `trialDays` on `createSubscription`
 - Docs: [Trials](/guide/trials) + lifecycle `trialing` path
-- **Enterprise status:** engine unit tests cover the bug class. Hosted charge-after-trial remains **not proven** until billing-hosting pins these packages and the E2E matrix (mandate $0 → due charge → active; cancel-in-trial $0) passes on a real stack.
+- **Enterprise status:** hosted **test** E2E matrix proven on billing.autlantic.com (mandate $0 → test-clock due charge → active; cancel-in-trial $0; trialDays=0 unchanged) with `billing-engine@0.3.23` pinned. Live-mode on-chain trial conversion and multi-merchant isolation remain **not proven**.
 
 ```bash
 pnpm --filter @autlantic/payments-recurring-core publish --access public --no-git-checks

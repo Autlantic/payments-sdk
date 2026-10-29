@@ -25,7 +25,7 @@ Optional: also configure Better Stack (or similar) to poll `https://billing.autl
 | Feature | Status | Notes |
 |---------|--------|-------|
 | USDC subscriptions (no trial) | enterprise-proven | See lifecycle guide |
-| Subscription trials (`trialDays`, charge after trial) | **not proven** | Engine implemented; requires hosted pin + E2E matrix. See [Trials](/guide/trials). |
+| Subscription trials (`trialDays`, charge after trial) | enterprise-proven (hosted test) | Hosted test matrix passed; live-mode + multi-merchant isolation still not proven. See [Trials](/guide/trials). |
 | Catalog `Price.trialDays` field | Available | Portal / API store the field |
 
 ## Related

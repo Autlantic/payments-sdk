@@ -7,11 +7,13 @@ Connect the customer wallet (mandate) up front. Grant access during a free trial
 | Capability | Status |
 |------------|--------|
 | Catalog field `Price.trialDays` | Available in portal / API |
-| Engine: `trialing` + delayed first `dueAt` | Implemented in SDK (this release) |
-| Hosted API passes `price.trialDays` into create | Requires billing-hosting pin of published engine |
-| Merchant-facing “live trial billing” claim | **not proven** until hosted E2E matrix passes |
+| Engine: `trialing` + delayed first `dueAt` | enterprise-proven (unit tests) |
+| Hosted API passes `price.trialDays` into create | enterprise-proven (billing-hosting pin + production) |
+| Hosted test E2E matrix (mandate $0 → due charge → active; cancel-in-trial $0; trialDays=0) | enterprise-proven |
+| Live-mode on-chain first charge after trial | **not proven** |
+| Multi-merchant isolation under trials | **not proven** |
 
-Until hosting + Autlantic (or your app) complete the [enterprise proof matrix](#enterprise-proof), treat charge-after-trial as **not proven** in production marketing.
+Test-mode hosted billing (`abk_test_*` + test clock) is **enterprise-proven**. Do not market live USDC trial conversion until live-mode proof lands.
 
 ## Product rules
 
@@ -60,11 +62,13 @@ Grant **trial access** when the mandate is active and status is `trialing`. Conv
 
 ## Enterprise proof
 
-Do not mark trials **enterprise-proven** until:
+**Hosted test matrix (proven on billing.autlantic.com):**
 
 1. Engine unit tests for create / mandate-without-charge / charge-after-due / cancel-in-trial
-2. Published npm packages pinned on billing-hosting
-3. Hosted E2E: trialDays=7 → mandate → $0 → due charge → active; cancel-in-trial → $0; trialDays=0 unchanged; multi-merchant isolation
+2. Published npm (`billing-engine@0.3.23`+) pinned on billing-hosting `production`
+3. Hosted E2E: `trialDays=7` → activate mandate $0 (stay `trialing`) → test clock past `dueAt` → charge → `active`; cancel-in-trial voids invoice; `trialDays=0` still incomplete→paid
+
+**Still not proven:** live-mode on-chain trial conversion; multi-merchant isolation.
 
 ## Related
 
