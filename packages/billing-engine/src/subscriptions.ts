@@ -409,14 +409,24 @@ export function advanceSubscriptionPeriod(
   };
 }
 
-/** Update customer wallet on an incomplete subscription (checkout wallet change). */
+/**
+ * Update customer wallet while checkout is still awaiting activation.
+ * Allows `incomplete`, and `trialing` while the mandate is still pending
+ * (trials create as trialing before mandate complete).
+ */
 export function updateSubscriptionCustomerWallet(
   store: BillingStore,
   subscriptionId: string,
   walletAddress: string,
 ): RecurringSubscription | null {
   const subscription = store.getSubscription(subscriptionId);
-  if (!subscription || subscription.status !== "incomplete") return null;
+  if (!subscription) return null;
+
+  const mandate = subscription.mandateId ? store.getMandate(subscription.mandateId) : null;
+  const awaitingActivation =
+    subscription.status === "incomplete" ||
+    (subscription.status === "trialing" && (!mandate || mandate.status === "pending"));
+  if (!awaitingActivation) return null;
 
   const normalized = normalizeEvmAddress(walletAddress);
   const now = new Date();
@@ -426,11 +436,8 @@ export function updateSubscriptionCustomerWallet(
     store.saveCustomer({ ...customer, walletAddress: normalized });
   }
 
-  if (subscription.mandateId) {
-    const mandate = store.getMandate(subscription.mandateId);
-    if (mandate && mandate.status === "pending") {
-      store.saveMandate({ ...mandate, walletAddress: normalized });
-    }
+  if (mandate && mandate.status === "pending") {
+    store.saveMandate({ ...mandate, walletAddress: normalized });
   }
 
   const updated: RecurringSubscription = {

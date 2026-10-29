@@ -1,5 +1,13 @@
 # Changelog
 
+## billing-engine 0.3.24 - Trial checkout wallet sync
+
+`updateSubscriptionCustomerWallet` allows `trialing` while the mandate is still pending (trials create as `trialing`, not `incomplete`). Rejects once the mandate is active.
+
+```bash
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+```
+
 ## billing-engine / payments-recurring-core / payments-recurring - Subscription trials (engine)
 
 Wallet mandate now, first USDC charge after `trialDays`.

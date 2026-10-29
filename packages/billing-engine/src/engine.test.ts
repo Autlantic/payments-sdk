@@ -115,6 +115,44 @@ describe("billing-engine", () => {
     );
   });
 
+  it("updates wallet on trialing subscription while mandate is pending", () => {
+    const store = createMemoryBillingStore();
+    const { subscription } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_trial_wallet",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 10,
+      interval: "month",
+      trialDays: 7,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    assert.equal(subscription.status, "trialing");
+    assert.equal(store.getMandate(subscription.mandateId!)?.status, "pending");
+
+    const updated = updateSubscriptionCustomerWallet(
+      store,
+      subscription.id,
+      "0x3333333333333333333333333333333333333333",
+    );
+    assert.equal(updated?.walletAddress, "0x3333333333333333333333333333333333333333");
+    assert.equal(
+      store.getMandate(subscription.mandateId!)?.walletAddress,
+      "0x3333333333333333333333333333333333333333",
+    );
+
+    activateSubscriptionCheckout(store, subscription.id, { sandbox: true });
+    assert.equal(
+      updateSubscriptionCustomerWallet(
+        store,
+        subscription.id,
+        "0x4444444444444444444444444444444444444444",
+      ),
+      null,
+    );
+  });
+
   it("ignores canceled subscriptions when resolving on-chain id owners", () => {
     const store = createMemoryBillingStore();
     const first = createSubscription(store, {
