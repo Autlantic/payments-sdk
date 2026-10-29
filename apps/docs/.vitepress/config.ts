@@ -132,6 +132,7 @@ export default withMermaid(
             { text: "One-time payments", link: "/guide/one-time-payments" },
             { text: "Payment links", link: "/guide/payment-links" },
             { text: "Coupons", link: "/guide/coupons" },
+            { text: "Trials", link: "/guide/trials" },
             { text: "Customer portal", link: "/guide/customer-portal" },
             { text: "Lifecycle", link: "/guide/lifecycle" },
             { text: "API versioning", link: "/guide/api-versioning" },

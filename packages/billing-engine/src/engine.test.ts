@@ -4,6 +4,7 @@ import { defaultSandboxChainId } from "@autlantic/chain-evm";
 import { VAULT_PLACEHOLDER_BASE_SEPOLIA } from "@autlantic/chain-evm";
 import {
   attemptInvoiceCharge,
+  activateSubscriptionCheckout,
   activateSubscriptionLive,
   cancelSubscription,
   completeMandate,
@@ -403,5 +404,103 @@ describe("billing-engine", () => {
       results[0]?.events.some((e) => e.type === "invoice.payment_failed"),
       false,
     );
+  });
+
+  it("trialDays: creates trialing sub with future-due invoice", () => {
+    const store = createMemoryBillingStore();
+    const before = Date.now();
+    const { subscription, invoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "trial_1",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 20,
+      interval: "month",
+      trialDays: 7,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+
+    assert.equal(subscription.status, "trialing");
+    assert.equal(invoice.status, "open");
+    const dueMs = invoice.dueAt.getTime();
+    assert.ok(dueMs >= before + 6.5 * 24 * 60 * 60 * 1000);
+    assert.ok(dueMs <= before + 7.5 * 24 * 60 * 60 * 1000);
+    assert.equal(subscription.currentPeriodEnd.getTime(), dueMs);
+  });
+
+  it("trialDays: activate completes mandate without charging", () => {
+    const store = createMemoryBillingStore();
+    const { subscription, invoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "trial_2",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 20,
+      interval: "month",
+      trialDays: 7,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+
+    const activated = activateSubscriptionCheckout(store, subscription.id, { sandbox: true });
+    assert.ok(activated);
+    assert.equal(activated.mandate.status, "active");
+    assert.equal(activated.subscription.status, "trialing");
+    assert.equal(activated.charge, null);
+    assert.equal(store.getInvoice(invoice.id)?.status, "open");
+    assert.equal(attemptInvoiceCharge(store, invoice.id, { sandbox: true }), null);
+  });
+
+  it("trialDays: charge after dueAt converts to active paid period", () => {
+    const store = createMemoryBillingStore();
+    const { subscription, invoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "trial_3",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 20,
+      interval: "month",
+      trialDays: 7,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    completeMandate(store, subscription.id);
+    store.saveInvoice({
+      ...invoice,
+      dueAt: new Date(Date.now() - 1000),
+    });
+
+    const trialPeriodEnd = subscription.currentPeriodEnd.getTime();
+    const charged = attemptInvoiceCharge(store, invoice.id, { sandbox: true });
+    assert.equal(charged?.ok, true);
+    assert.equal(charged?.subscription.status, "active");
+    assert.equal(charged?.invoice.status, "paid");
+    // Paid period is a billing interval from charge time, not the remaining trial window.
+    assert.notEqual(
+      charged?.subscription.currentPeriodEnd.getTime(),
+      trialPeriodEnd,
+    );
+  });
+
+  it("trialDays: cancel during trial voids invoice with zero paid", () => {
+    const store = createMemoryBillingStore();
+    const { subscription, invoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "trial_4",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 20,
+      interval: "month",
+      trialDays: 7,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    completeMandate(store, subscription.id);
+
+    const canceled = cancelSubscription(store, subscription.id, false);
+    assert.ok(canceled);
+    assert.equal(canceled.subscription.status, "canceled");
+    assert.equal(store.getInvoice(invoice.id)?.status, "void");
   });
 });

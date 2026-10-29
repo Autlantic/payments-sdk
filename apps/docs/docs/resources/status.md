@@ -20,8 +20,17 @@ Machine-readable: `GET https://status.autlantic.com/api/status` and `GET https:/
 
 Optional: also configure Better Stack (or similar) to poll `https://billing.autlantic.com/healthz` and page on-call for non-2xx or body that is not `ok: true`. Prefer the Billing API health endpoint as the primary signal for payment availability.
 
+## Product feature status
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| USDC subscriptions (no trial) | enterprise-proven | See lifecycle guide |
+| Subscription trials (`trialDays`, charge after trial) | **not proven** | Engine implemented; requires hosted pin + E2E matrix. See [Trials](/guide/trials). |
+| Catalog `Price.trialDays` field | Available | Portal / API store the field |
+
 ## Related
 
 - [Trust center](/guide/trust)
 - [SOC 2 readiness](/guide/soc2-readiness)
 - [Deploy docs on Railway](/resources/deploy-railway) (operators)
+- [Trials](/guide/trials)

@@ -1,5 +1,22 @@
 # Changelog
 
+## billing-engine / payments-recurring-core / payments-recurring - Subscription trials (engine)
+
+Wallet mandate now, first USDC charge after `trialDays`.
+
+- Core: `SubscriptionStatus` includes `trialing`; `CreateSubscriptionInput.trialDays`; `trialEndFromStart` / `normalizeTrialDays`
+- Engine: create with `trialDays > 0` → `trialing`, first invoice `dueAt` = trial end; activate/mandate does not charge while not due; paid charge converts to `active`; cancel-in-trial voids open invoice
+- Client: optional sandbox `trialDays` on `createSubscription`
+- Docs: [Trials](/guide/trials) + lifecycle `trialing` path
+- **Enterprise status:** engine unit tests cover the bug class. Hosted charge-after-trial remains **not proven** until billing-hosting pins these packages and the E2E matrix (mandate $0 → due charge → active; cancel-in-trial $0) passes on a real stack.
+
+```bash
+pnpm --filter @autlantic/payments-recurring-core publish --access public --no-git-checks
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+pnpm --filter @autlantic/payments-recurring publish --access public --no-git-checks
+# then pin billing-hosting and run hosted E2E before calling trials enterprise-proven
+```
+
 ## payments-recurring-core 0.2.9 - Default allowance cap 3× (was 12×)
 
 `defaultAllowanceCapUsdc` now approves **3 billing periods** of USDC (month/week/year/five_minute), not 12. New checkouts only; existing mandates keep their stored cap.

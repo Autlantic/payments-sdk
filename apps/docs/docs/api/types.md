@@ -39,7 +39,7 @@ The merchant SDK `createSubscription` request currently accepts `"month" | "year
 ## Status enums
 
 ```ts
-type SubscriptionStatus = "incomplete" | "active" | "past_due" | "canceled";
+type SubscriptionStatus = "incomplete" | "trialing" | "active" | "past_due" | "canceled";
 type MandateStatus = "pending" | "active" | "revoked" | "expired";
 type InvoiceStatus = "open" | "paid" | "void" | "uncollectible" | "refunded";
 ```
@@ -129,6 +129,8 @@ type CreateSubscriptionRequest = {
   payoutAddressEvm: string;
   amountUsdc?: number;
   interval?: "month" | "year";
+  /** Hosted: prefer catalog price.trialDays. Sandbox SDK may pass explicitly. */
+  trialDays?: number;
   priceId?: string;
   planId?: string;
   metadata?: Record<string, string>;

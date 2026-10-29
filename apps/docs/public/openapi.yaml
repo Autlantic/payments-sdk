@@ -396,7 +396,7 @@ paths:
           in: query
           schema:
             type: string
-            enum: [incomplete, active, past_due, canceled, paused]
+            enum: [incomplete, trialing, active, past_due, canceled, paused]
       responses:
         "200":
           description: Subscriptions for this merchant/mode
@@ -1264,6 +1264,10 @@ components:
         interval:
           type: string
           enum: [month, year]
+        trialDays:
+          type: integer
+          minimum: 0
+          description: Prefer catalog price.trialDays when priceId is set. Greater than 0 starts status trialing and delays first charge.
         priceId:
           type: string
         planId:

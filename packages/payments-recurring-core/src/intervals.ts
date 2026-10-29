@@ -37,6 +37,20 @@ export function nextPeriodEnd(currentPeriodEnd: Date, interval: BillingInterval)
   return periodEndFromStart(currentPeriodEnd, interval);
 }
 
+/** Trial window end from start (whole days). Returns start when trialDays is not positive. */
+export function trialEndFromStart(start: Date, trialDays: number): Date {
+  const days = Math.floor(Number(trialDays));
+  if (!Number.isFinite(days) || days <= 0) return new Date(start);
+  return new Date(start.getTime() + days * MS_DAY);
+}
+
+/** Normalize catalog/API trial day counts (non-finite → 0, floor, min 0). */
+export function normalizeTrialDays(value: unknown): number {
+  const n = Math.floor(Number(value));
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  return n;
+}
+
 /** Default rolling allowance cap: 3 billing periods worth (6 USDC decimals). */
 export function defaultAllowanceCapUsdc(amountUsdc: number, _interval: BillingInterval): number {
   return roundUsdc(amountUsdc * 3);

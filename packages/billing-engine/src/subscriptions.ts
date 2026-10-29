@@ -2,7 +2,9 @@ import {
   createWebhookEvent,
   defaultAllowanceCapUsdc,
   nextPeriodEnd,
+  normalizeTrialDays,
   periodEndFromStart,
+  trialEndFromStart,
   assertPositiveAmountUsdc,
   normalizeEvmAddress,
   type BillingWebhookEvent,
@@ -29,6 +31,8 @@ export function createSubscription(
   const subscriptionId = newId("sub");
   const mandateId = newId("mdt");
   const invoiceId = newId("inv");
+  const trialDays = normalizeTrialDays(input.trialDays);
+  const onTrial = trialDays > 0;
 
   const allowanceCapUsdc =
     input.allowanceCapUsdc ?? defaultAllowanceCapUsdc(input.amountUsdc, input.interval);
@@ -42,7 +46,8 @@ export function createSubscription(
   };
 
   const periodStart = now;
-  const periodEnd = periodEndFromStart(periodStart, input.interval);
+  const trialEnd = trialEndFromStart(periodStart, trialDays);
+  const periodEnd = onTrial ? trialEnd : periodEndFromStart(periodStart, input.interval);
 
   const mandate: RecurringMandate = {
     id: mandateId,
@@ -67,7 +72,7 @@ export function createSubscription(
     amountUsdc: input.amountUsdc,
     interval: input.interval,
     chainId: input.chainId,
-    status: "incomplete",
+    status: onTrial ? "trialing" : "incomplete",
     mandateId,
     currentPeriodStart: periodStart,
     currentPeriodEnd: periodEnd,
@@ -84,7 +89,7 @@ export function createSubscription(
     merchantId: input.merchantId,
     status: "open",
     amountUsdc: input.amountUsdc,
-    dueAt: now,
+    dueAt: onTrial ? trialEnd : now,
     attemptCount: 0,
     mode: input.mode,
     createdAt: now,
@@ -150,7 +155,9 @@ export function cancelSubscription(
   if (!subscription || subscription.status === "canceled") return null;
 
   const now = new Date();
-  const updated: RecurringSubscription = immediate
+  // Trials have no paid period: cancel always ends access immediately and voids the first invoice.
+  const forceImmediate = immediate || subscription.status === "trialing";
+  const updated: RecurringSubscription = forceImmediate
     ? {
         ...subscription,
         status: "canceled",
@@ -171,7 +178,7 @@ export function cancelSubscription(
   ];
 
   // Immediate cancel must not leave open invoices chargeable by the worker.
-  if (immediate) {
+  if (forceImmediate) {
     for (const invoice of store.listInvoicesBySubscription(subscriptionId)) {
       if (invoice.status !== "open") continue;
       const voided: RecurringInvoice = {
@@ -191,6 +198,7 @@ const DEFAULT_CANCEL_MATCH_STATUSES = new Set([
   "active",
   "past_due",
   "incomplete",
+  "trialing",
 ]);
 
 export type CancelSubscriptionsMatchingInput = {

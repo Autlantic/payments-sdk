@@ -181,6 +181,7 @@ export class AutlanticBilling {
         interval: input.interval,
         chainId: defaultSandboxChainId(),
         planId: input.planId ?? input.priceId,
+        trialDays: input.trialDays,
         metadata: Object.keys(metadata).length ? metadata : undefined,
         vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
       });

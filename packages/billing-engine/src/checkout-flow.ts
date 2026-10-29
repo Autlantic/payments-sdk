@@ -36,6 +36,17 @@ export function activateSubscriptionCheckout(
     };
   }
 
+  // Trial: mandate only until first invoice dueAt.
+  const dueAtMs = new Date(openInvoice.dueAt).getTime();
+  if (Number.isFinite(dueAtMs) && dueAtMs > Date.now() + 1000) {
+    return {
+      subscription: completed.subscription,
+      mandate: completed.mandate,
+      charge: null,
+      events,
+    };
+  }
+
   const charge = attemptInvoiceCharge(store, openInvoice.id, options);
   if (charge) {
     events.push(...charge.events);

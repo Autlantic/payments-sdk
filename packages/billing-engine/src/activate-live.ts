@@ -78,7 +78,13 @@ export function activateSubscriptionLive(
   }
 
   const openInvoice = invoices.find((inv) => inv.status === "open");
-  const requiresPaidCharge = Boolean(openInvoice && openInvoice.amountUsdc > 0);
+  const openInvoiceNotDue =
+    Boolean(openInvoice) &&
+    Number.isFinite(new Date(openInvoice!.dueAt).getTime()) &&
+    new Date(openInvoice!.dueAt).getTime() > Date.now() + 1000;
+  const requiresPaidCharge = Boolean(
+    openInvoice && openInvoice.amountUsdc > 0 && !openInvoiceNotDue,
+  );
 
   const normalizedTx = txHash?.trim();
   const canFinalizeInvoice =
@@ -87,6 +93,7 @@ export function activateSubscriptionLive(
     !findInvoiceByTxHash(store, normalizedTx!, openInvoice!.id);
 
   // Never mark a paid live subscription active without a finalized on-chain charge.
+  // Trial invoices that are not due yet only need an active mandate.
   if (requiresPaidCharge && !canFinalizeInvoice) {
     return null;
   }
@@ -105,9 +112,10 @@ export function activateSubscriptionLive(
     return null;
   }
 
-  if (!openInvoice) {
-    // Mandate active, no open invoice: promote incomplete → active when nothing is owed.
-    if (mandateSub.status === "incomplete") {
+  if (!openInvoice || openInvoiceNotDue) {
+    // Mandate active, nothing chargeable yet (no invoice or trial not due).
+    // Keep `trialing` as-is; only promote incomplete → active when nothing is owed.
+    if (mandateSub.status === "incomplete" && !openInvoice) {
       const now = new Date();
       const activated: RecurringSubscription = {
         ...mandateSub,

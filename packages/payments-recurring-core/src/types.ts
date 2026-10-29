@@ -6,6 +6,8 @@ export type BillingInterval = "month" | "year" | "week" | "five_minute";
 
 export type SubscriptionStatus =
   | "incomplete"
+  /** Wallet may be connected; first invoice due after trialDays. No charge yet. */
+  | "trialing"
   | "active"
   | "past_due"
   | "canceled";
@@ -122,6 +124,12 @@ export type CreateSubscriptionInput = {
   chainId: BillingChainId;
   planId?: string;
   metadata?: Record<string, string>;
+  /**
+   * Free trial length in whole days before the first charge.
+   * When greater than 0: status starts as `trialing`, first invoice `dueAt` is
+   * trial end, and activate/mandate must not charge until then.
+   */
+  trialDays?: number;
   /** Rolling allowance cap in USDC (default: 3x amount). */
   allowanceCapUsdc?: number;
   /** Max single charge in USDC (default: amountUsdc). */

@@ -4,6 +4,7 @@ import {
   hasMoreAttempts,
   isChargeNotDueFailure,
   nextAttemptAtAfterFailure,
+  periodEndFromStart,
   shouldMarkPastDue,
   type BillingWebhookEvent,
   type InvoiceFailureCode,
@@ -13,6 +14,30 @@ import {
 import { getOnChainSubscriptionId, isValidLiveChargeTxHash } from "./on-chain";
 import { advanceSubscriptionPeriod } from "./subscriptions";
 import type { BillingStore, ChargeInvoiceResult, SandboxChargeMode } from "./types";
+
+/**
+ * First successful charge: incomplete keeps the create-time period;
+ * trialing starts a new paid period from now (trial window is over).
+ */
+function activatePaidPeriod(
+  subscription: RecurringSubscription,
+  now: Date,
+): RecurringSubscription {
+  if (subscription.status === "trialing") {
+    return {
+      ...subscription,
+      status: "active",
+      currentPeriodStart: now,
+      currentPeriodEnd: periodEndFromStart(now, subscription.interval),
+      updatedAt: now,
+    };
+  }
+  return {
+    ...subscription,
+    status: "active",
+    updatedAt: now,
+  };
+}
 
 function sandboxTxHash(invoiceId: string): string {
   const hex = Buffer.from(invoiceId).toString("hex").slice(0, 62).padEnd(62, "0");
@@ -43,6 +68,12 @@ export function attemptInvoiceCharge(
     return failCharge(store, invoice, subscription, "MANDATE_INACTIVE", "Wallet mandate is not active");
   }
 
+  // Trial / scheduled first invoice: do not charge before dueAt (no payment_failed).
+  const dueAtMs = new Date(invoice.dueAt).getTime();
+  if (Number.isFinite(dueAtMs) && dueAtMs > Date.now() + 1000) {
+    return null;
+  }
+
   if (invoice.amountUsdc === 0) {
     const now = new Date();
     const paidInvoice: RecurringInvoice = {
@@ -53,10 +84,10 @@ export function attemptInvoiceCharge(
       txHash: sandboxTxHash(invoice.id),
       updatedAt: now,
     };
-    // Initial checkout pays for the current period; only renewals advance it.
+    // Initial checkout / trial conversion pays for the current period; renewals advance it.
     let updatedSub =
-      subscription.status === "incomplete"
-        ? { ...subscription, status: "active" as const, updatedAt: now }
+      subscription.status === "incomplete" || subscription.status === "trialing"
+        ? activatePaidPeriod(subscription, now)
         : advanceSubscriptionPeriod(subscription);
     if (subscription.status === "past_due") {
       updatedSub = { ...updatedSub, status: "active" };
@@ -114,10 +145,10 @@ export function attemptInvoiceCharge(
     updatedAt: now,
   };
 
-  // Initial checkout pays for the current period; only renewals advance it.
+  // Initial checkout / trial conversion pays for the current period; renewals advance it.
   let updatedSub =
-    subscription.status === "incomplete"
-      ? { ...subscription, status: "active" as const, updatedAt: now }
+    subscription.status === "incomplete" || subscription.status === "trialing"
+      ? activatePaidPeriod(subscription, now)
       : advanceSubscriptionPeriod(subscription);
   if (subscription.status === "past_due") {
     updatedSub = { ...updatedSub, status: "active" };

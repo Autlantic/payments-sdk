@@ -1,6 +1,12 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { nextPeriodEnd, periodEndFromStart, defaultAllowanceCapUsdc } from "./intervals";
+import {
+  nextPeriodEnd,
+  periodEndFromStart,
+  defaultAllowanceCapUsdc,
+  normalizeTrialDays,
+  trialEndFromStart,
+} from "./intervals";
 
 describe("intervals", () => {
   it("adds one month for monthly interval", () => {
@@ -43,5 +49,17 @@ describe("intervals", () => {
     const start = new Date("2026-01-15T00:00:00.000Z");
     const end = periodEndFromStart(start, "week");
     assert.equal(end.toISOString(), "2026-01-22T00:00:00.000Z");
+  });
+
+  it("trialEndFromStart adds whole days", () => {
+    const start = new Date("2026-01-01T00:00:00.000Z");
+    assert.equal(trialEndFromStart(start, 7).toISOString(), "2026-01-08T00:00:00.000Z");
+    assert.equal(trialEndFromStart(start, 0).getTime(), start.getTime());
+  });
+
+  it("normalizeTrialDays floors and clamps", () => {
+    assert.equal(normalizeTrialDays(7.9), 7);
+    assert.equal(normalizeTrialDays(-1), 0);
+    assert.equal(normalizeTrialDays("3"), 3);
   });
 });

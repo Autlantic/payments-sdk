@@ -128,9 +128,14 @@ export type CreateSubscriptionRequest = {
   payoutAddressEvm: string;
   amountUsdc?: number;
   interval?: "month" | "year";
-  /** Portal catalog price id. Resolves amount + interval on the API. */
+  /** Portal catalog price id. Resolves amount + interval (+ trialDays) on the API. */
   priceId?: string;
   planId?: string;
+  /**
+   * Sandbox / ad-hoc only: free trial days before first charge.
+   * Hosted mode prefers `price.trialDays` from the catalog when `priceId` is set.
+   */
+  trialDays?: number;
   /**
    * Optional merchant coupon code. Hosted API applies it at create (first open invoice
    * for duration "once"; subscription amount for duration "forever"). Sandbox local
