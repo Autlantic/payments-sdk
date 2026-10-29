@@ -44,10 +44,21 @@ function sandboxTxHash(invoiceId: string): string {
   return `0x${hex}`;
 }
 
+export type AttemptInvoiceChargeOptions = {
+  sandbox?: boolean;
+  sandboxMode?: SandboxChargeMode;
+  txHash?: string;
+  /**
+   * Effective "now" for dueAt gating and paid period timestamps.
+   * Hosts pass merchant test-clock time; default is wall clock.
+   */
+  now?: Date;
+};
+
 export function attemptInvoiceCharge(
   store: BillingStore,
   invoiceId: string,
-  options: { sandbox?: boolean; sandboxMode?: SandboxChargeMode; txHash?: string } = {},
+  options: AttemptInvoiceChargeOptions = {},
 ): ChargeInvoiceResult | null {
   const invoice = store.getInvoice(invoiceId);
   if (!invoice || invoice.status !== "open") return null;
@@ -60,22 +71,24 @@ export function attemptInvoiceCharge(
     return null;
   }
 
+  const now = options.now ?? new Date();
+  const nowMs = now.getTime();
+
   const mandate = subscription.mandateId
     ? store.getMandate(subscription.mandateId)
     : null;
 
   if (!mandate || mandate.status !== "active") {
-    return failCharge(store, invoice, subscription, "MANDATE_INACTIVE", "Wallet mandate is not active");
+    return failCharge(store, invoice, subscription, "MANDATE_INACTIVE", "Wallet mandate is not active", now);
   }
 
   // Trial / scheduled first invoice: do not charge before dueAt (no payment_failed).
   const dueAtMs = new Date(invoice.dueAt).getTime();
-  if (Number.isFinite(dueAtMs) && dueAtMs > Date.now() + 1000) {
+  if (Number.isFinite(dueAtMs) && dueAtMs > nowMs + 1000) {
     return null;
   }
 
   if (invoice.amountUsdc === 0) {
-    const now = new Date();
     const paidInvoice: RecurringInvoice = {
       ...invoice,
       status: "paid",
@@ -117,7 +130,7 @@ export function attemptInvoiceCharge(
       mode === "insufficient_balance"
         ? "Wallet has insufficient USDC for this charge"
         : "USDC allowance was revoked or is too low";
-    return failCharge(store, invoice, subscription, code, message);
+    return failCharge(store, invoice, subscription, code, message, now);
   }
 
   if (!sandbox) {
@@ -129,11 +142,11 @@ export function attemptInvoiceCharge(
         subscription,
         "RELAYER_ERROR",
         "Live charge requires an on-chain transaction hash",
+        now,
       );
     }
   }
 
-  const now = new Date();
   const paidInvoice: RecurringInvoice = {
     ...invoice,
     status: "paid",
@@ -183,8 +196,8 @@ function failCharge(
   subscription: RecurringSubscription,
   code: InvoiceFailureCode,
   message: string,
+  now: Date = new Date(),
 ): ChargeInvoiceResult {
-  const now = new Date();
   const attemptCount = invoice.attemptCount + 1;
   const nextAttempt = nextAttemptAtAfterFailure(now, attemptCount);
 

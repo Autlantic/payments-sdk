@@ -503,4 +503,31 @@ describe("billing-engine", () => {
     assert.equal(canceled.subscription.status, "canceled");
     assert.equal(store.getInvoice(invoice.id)?.status, "void");
   });
+
+  it("trialDays: attemptInvoiceCharge respects options.now (test clock)", () => {
+    const store = createMemoryBillingStore();
+    const { subscription, invoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "trial_5",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 20,
+      interval: "month",
+      trialDays: 7,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    completeMandate(store, subscription.id);
+
+    assert.equal(attemptInvoiceCharge(store, invoice.id, { sandbox: true }), null);
+
+    const afterTrial = new Date(invoice.dueAt.getTime() + 60_000);
+    const charged = attemptInvoiceCharge(store, invoice.id, {
+      sandbox: true,
+      now: afterTrial,
+    });
+    assert.equal(charged?.ok, true);
+    assert.equal(charged?.subscription.status, "active");
+    assert.equal(charged?.invoice.status, "paid");
+  });
 });

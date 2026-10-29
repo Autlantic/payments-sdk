@@ -59,6 +59,7 @@ export {
   deferInvoiceUntilOnChainDue,
   processDueInvoices,
   processDueInvoicesLive,
+  type AttemptInvoiceChargeOptions,
   type LiveChargeSubmitResult,
 } from "./charge";
 export {
