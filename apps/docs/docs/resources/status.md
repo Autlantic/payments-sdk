@@ -25,7 +25,7 @@ Optional: also configure Better Stack (or similar) to poll `https://billing.autl
 | Feature | Status | Notes |
 |---------|--------|-------|
 | USDC subscriptions (no trial) | enterprise-proven | See lifecycle guide |
-| Subscription trials (`trialDays`, charge after trial) | enterprise-proven (hosted test) | Hosted test matrix passed; live-mode + multi-merchant isolation still not proven. See [Trials](/guide/trials). |
+| Subscription trials (`trialDays`, charge after trial) | enterprise-proven (test mode) | API + hosted checkout UI proven on billing.autlantic.com ($0 due today, mandate-only, Trial started). Live-mode first charge after trial + multi-merchant isolation **not proven**. See [Trials](/guide/trials). |
 | Catalog `Price.trialDays` field | Available | Portal / API store the field |
 
 ## Related

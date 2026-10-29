@@ -9,11 +9,12 @@ Connect the customer wallet (mandate) up front. Grant access during a free trial
 | Catalog field `Price.trialDays` | Available in portal / API |
 | Engine: `trialing` + delayed first `dueAt` | enterprise-proven (unit tests) |
 | Hosted API passes `price.trialDays` into create | enterprise-proven (billing-hosting pin + production) |
-| Hosted test E2E matrix (mandate $0 → due charge → active; cancel-in-trial $0; trialDays=0) | enterprise-proven |
+| Hosted API matrix (create / activate mandate / charge-after-due / cancel-in-trial / trialDays=0) | enterprise-proven |
+| Hosted **checkout UI** ($0 due today, mandate-only path, trial success) | enterprise-proven (test mode) |
 | Live-mode on-chain first charge after trial | **not proven** |
 | Multi-merchant isolation under trials | **not proven** |
 
-Test-mode hosted billing (`abk_test_*` + test clock) is **enterprise-proven**. Do not market live USDC trial conversion until live-mode proof lands.
+Hosted test-mode checkout UI is proven ($0 due today, mandate-only activate, Trial started). Live-mode first charge after trial and multi-merchant isolation remain **not proven**.
 
 ## Product rules
 
@@ -66,7 +67,8 @@ Grant **trial access** when the mandate is active and status is `trialing`. Conv
 
 1. Engine unit tests for create / mandate-without-charge / charge-after-due / cancel-in-trial
 2. Published npm (`billing-engine@0.3.23`+) pinned on billing-hosting `production`
-3. Hosted E2E: `trialDays=7` → activate mandate $0 (stay `trialing`) → test clock past `dueAt` → charge → `active`; cancel-in-trial voids invoice; `trialDays=0` still incomplete→paid
+3. Hosted API E2E: `trialDays=7` → activate mandate $0 (stay `trialing`) → test clock past `dueAt` → charge → `active`; cancel-in-trial voids invoice; `trialDays=0` still incomplete→paid
+4. Hosted checkout UI E2E (test mode): `Total due today` = `0.00 USDC`, consent `0.00 USDC today`, sandbox CTA **Start trial in test mode**, success **Trial started** / charged today `0.00 USDC`; `/status` returns `checkoutPhase: trial_active` + `trialStarted: true` with no paid invoice
 
 **Still not proven:** live-mode on-chain trial conversion; multi-merchant isolation.
 

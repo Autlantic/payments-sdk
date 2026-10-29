@@ -17,12 +17,22 @@ A change is **enterprise-proven** only when all of these are true:
 4. **Failure modes covered**: auth/HMAC, missing config, multi-store/multi-merchant where applicable, refunds/idempotency when claimed.
 5. **Honest status**: never tell the user it is enterprise-ready unless the above ran and passed in this work.
 
+## Consumer parity (SDK features)
+
+When a billing capability ships in payments-sdk (publish → pin):
+
+1. Pin **every** consumer in the same session: billing-hosting (API/portal/worker) **and** Autlantic platform.
+2. Update SDK docs (guide + status + changelog + OpenAPI) on `main`, then ff-promote `production`.
+3. ff-promote `production` on each repo that received the pin (never leave a consumer one patch behind).
+4. Do not report “done” while portal/platform still pins an older engine/core/recurring than hosting.
+
 ## Do not
 
 - Call something enterprise-ready after smoke/static checks only.
 - Leave checkout races, single-store-only secrets, or scan-limited lookups as “fine for now.”
 - Ship commerce plugins without admin operability (test connection / webhook visibility / order ids) when Woo already has them.
 - Treat Shopify Payments Partner blockers as “plugin incomplete” if the blocker is external; still harden everything we own to enterprise bar.
+- Leave Autlantic or portal on a stale `@autlantic/billing-engine` (or core/recurring) pin after a hosting/SDK ship.
 
 ## When reporting status
 
