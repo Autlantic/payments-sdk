@@ -11,9 +11,11 @@ import {
   createMemoryBillingStore,
   createRenewalInvoice,
   createSubscription,
+  finalizeCancelAtPeriodEnd,
   findSubscriptionByOnChainId,
   processDueInvoicesLive,
   refundInvoice,
+  resumeSubscription,
   setOnChainSubscriptionId,
   updateSubscriptionCustomerWallet,
 } from "./index";
@@ -521,7 +523,7 @@ describe("billing-engine", () => {
     );
   });
 
-  it("trialDays: cancel during trial voids invoice with zero paid", () => {
+  it("trialDays: cancel during trial schedules period-end and voids conversion invoice", () => {
     const store = createMemoryBillingStore();
     const { subscription, invoice } = createSubscription(store, {
       merchantId: "mer_test",
@@ -538,7 +540,98 @@ describe("billing-engine", () => {
 
     const canceled = cancelSubscription(store, subscription.id, false);
     assert.ok(canceled);
+    assert.equal(canceled.subscription.status, "trialing");
+    assert.equal(canceled.subscription.cancelAtPeriodEnd, true);
+    assert.equal(store.getInvoice(invoice.id)?.status, "void");
+    // No charge while cancel-at-period-end voids the conversion invoice.
+    assert.equal(
+      attemptInvoiceCharge(store, invoice.id, {
+        sandbox: true,
+        now: new Date(subscription.currentPeriodEnd.getTime() + 60_000),
+      }),
+      null,
+    );
+  });
+
+  it("trialDays: resume after period-end cancel restores conversion invoice", () => {
+    const store = createMemoryBillingStore();
+    const { subscription } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "trial_resume",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 20,
+      interval: "month",
+      trialDays: 7,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    completeMandate(store, subscription.id);
+    cancelSubscription(store, subscription.id, false);
+
+    const resumed = resumeSubscription(store, subscription.id);
+    assert.ok(resumed);
+    assert.equal(resumed.subscription.cancelAtPeriodEnd, false);
+    assert.equal(resumed.subscription.status, "trialing");
+    const open = store
+      .listInvoicesBySubscription(subscription.id)
+      .filter((inv) => inv.status === "open");
+    assert.equal(open.length, 1);
+    assert.equal(open[0]?.dueAt.getTime(), subscription.currentPeriodEnd.getTime());
+  });
+
+  it("finalizeCancelAtPeriodEnd flips cancel-at-period-end trials to canceled", () => {
+    const store = createMemoryBillingStore();
+    const { subscription, invoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "trial_finalize",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 20,
+      interval: "month",
+      trialDays: 7,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    completeMandate(store, subscription.id);
+    cancelSubscription(store, subscription.id, false);
+
+    const beforeEnd = finalizeCancelAtPeriodEnd(
+      store,
+      new Date(subscription.currentPeriodEnd.getTime() - 60_000),
+    );
+    assert.equal(beforeEnd.subscriptions.length, 0);
+    assert.equal(store.getSubscription(subscription.id)?.status, "trialing");
+
+    const afterEnd = finalizeCancelAtPeriodEnd(
+      store,
+      new Date(subscription.currentPeriodEnd.getTime() + 60_000),
+    );
+    assert.equal(afterEnd.subscriptions.length, 1);
+    assert.equal(store.getSubscription(subscription.id)?.status, "canceled");
+    assert.equal(store.getSubscription(subscription.id)?.cancelAtPeriodEnd, false);
+    assert.equal(store.getInvoice(invoice.id)?.status, "void");
+  });
+
+  it("trialDays: immediate cancel still ends trial now", () => {
+    const store = createMemoryBillingStore();
+    const { subscription, invoice } = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "trial_immediate",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 20,
+      interval: "month",
+      trialDays: 7,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+    completeMandate(store, subscription.id);
+
+    const canceled = cancelSubscription(store, subscription.id, true);
+    assert.ok(canceled);
     assert.equal(canceled.subscription.status, "canceled");
+    assert.equal(canceled.subscription.cancelAtPeriodEnd, false);
     assert.equal(store.getInvoice(invoice.id)?.status, "void");
   });
 

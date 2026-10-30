@@ -23,7 +23,7 @@ Hosted test-mode checkout UI is proven ($0 due today, mandate-only activate, Tri
 3. First open invoice exists with **`dueAt = trial end`**. It is not chargeable yet.
 4. Checkout / activate completes the **mandate only** while the invoice is not due. Status stays `trialing`.
 5. When `dueAt` arrives, the worker (or `chargeInvoice`) collects the first payment → status **`active`**, paid period starts.
-6. Cancel while `trialing` ends immediately and **voids** the open invoice (no charge).
+6. Cancel while `trialing` (period-end) sets `cancelAtPeriodEnd`, **voids** the conversion invoice (no charge), and stays resumable until trial end. Immediate cancel still ends the trial now. The worker calls `finalizeCancelAtPeriodEnd` after `currentPeriodEnd`.
 7. One-time / `interval: once` prices do not use trials.
 
 ## Sequence

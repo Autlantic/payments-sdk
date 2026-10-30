@@ -25,6 +25,7 @@ export {
   cancelSubscription,
   cancelSubscriptionsMatching,
   resumeSubscription,
+  finalizeCancelAtPeriodEnd,
   createRenewalInvoice,
   createRenewalInvoiceWithEvent,
   advanceSubscriptionPeriod,

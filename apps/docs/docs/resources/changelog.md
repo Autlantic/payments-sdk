@@ -1,5 +1,13 @@
 # Changelog
 
+## billing-engine 0.3.25 - Trial cancel at period end
+
+Period-end cancel during `trialing` no longer force-cancels immediately. It sets `cancelAtPeriodEnd`, voids the conversion invoice (no first charge), and stays resumable until trial end. `finalizeCancelAtPeriodEnd(store, now)` flips those rows to `canceled` after `currentPeriodEnd` (worker must call it each cycle). Immediate cancel (`immediate: true`) still ends the trial now.
+
+```bash
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+```
+
 ## billing-engine 0.3.24 - Trial checkout wallet sync
 
 `updateSubscriptionCustomerWallet` allows `trialing` while the mandate is still pending (trials create as `trialing`, not `incomplete`). Rejects once the mandate is active.

@@ -65,7 +65,7 @@ stateDiagram-v2
   incomplete --> active: activateSubscription mandate plus first charge
   trialing --> trialing: activateSubscription mandate only
   trialing --> active: first invoice paid after dueAt
-  trialing --> canceled: cancel during trial
+  trialing --> canceled: immediate cancel or period-end finalize
   active --> past_due: retries exhausted
   active --> canceled: cancelSubscription
   past_due --> canceled: cancelSubscription

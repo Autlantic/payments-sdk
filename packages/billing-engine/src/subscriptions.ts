@@ -146,6 +146,52 @@ export function completeMandate(
   };
 }
 
+function voidOpenInvoicesForSubscription(
+  store: BillingStore,
+  subscriptionId: string,
+  now: Date,
+  events: BillingWebhookEvent[],
+): void {
+  for (const invoice of store.listInvoicesBySubscription(subscriptionId)) {
+    if (invoice.status !== "open") continue;
+    const voided: RecurringInvoice = {
+      ...invoice,
+      status: "void",
+      updatedAt: now,
+    };
+    store.saveInvoice(voided);
+    events.push(createWebhookEvent("invoice.voided", { invoice: voided }));
+  }
+}
+
+/** Recreate the trial conversion invoice after resume voids were applied. */
+function ensureTrialConversionInvoice(
+  store: BillingStore,
+  subscription: RecurringSubscription,
+  now: Date,
+): RecurringInvoice | null {
+  if (subscription.status !== "trialing") return null;
+  const hasOpen = store
+    .listInvoicesBySubscription(subscription.id)
+    .some((invoice) => invoice.status === "open");
+  if (hasOpen) return null;
+
+  const invoice: RecurringInvoice = {
+    id: newId("inv"),
+    subscriptionId: subscription.id,
+    merchantId: subscription.merchantId,
+    status: "open",
+    amountUsdc: subscription.amountUsdc,
+    dueAt: subscription.currentPeriodEnd,
+    attemptCount: 0,
+    mode: subscription.mode,
+    createdAt: now,
+    updatedAt: now,
+  };
+  store.saveInvoice(invoice);
+  return invoice;
+}
+
 export function cancelSubscription(
   store: BillingStore,
   subscriptionId: string,
@@ -155,9 +201,7 @@ export function cancelSubscription(
   if (!subscription || subscription.status === "canceled") return null;
 
   const now = new Date();
-  // Trials have no paid period: cancel always ends access immediately and voids the first invoice.
-  const forceImmediate = immediate || subscription.status === "trialing";
-  const updated: RecurringSubscription = forceImmediate
+  const updated: RecurringSubscription = immediate
     ? {
         ...subscription,
         status: "canceled",
@@ -178,20 +222,46 @@ export function cancelSubscription(
   ];
 
   // Immediate cancel must not leave open invoices chargeable by the worker.
-  if (forceImmediate) {
-    for (const invoice of store.listInvoicesBySubscription(subscriptionId)) {
-      if (invoice.status !== "open") continue;
-      const voided: RecurringInvoice = {
-        ...invoice,
-        status: "void",
-        updatedAt: now,
-      };
-      store.saveInvoice(voided);
-      events.push(createWebhookEvent("invoice.voided", { invoice: voided }));
-    }
+  // Period-end cancel during trial voids the conversion invoice so trial end
+  // does not charge; access continues until currentPeriodEnd (trial end).
+  if (immediate || subscription.status === "trialing") {
+    voidOpenInvoicesForSubscription(store, subscriptionId, now, events);
   }
 
   return { subscription: updated, events };
+}
+
+/**
+ * Flip cancel-at-period-end subscriptions to canceled once the period has ended
+ * (including trials that voided their conversion invoice and never charged).
+ */
+export function finalizeCancelAtPeriodEnd(
+  store: BillingStore,
+  now: Date = new Date(),
+): { subscriptions: RecurringSubscription[]; events: BillingWebhookEvent[] } {
+  const subscriptions: RecurringSubscription[] = [];
+  const events: BillingWebhookEvent[] = [];
+  const nowMs = now.getTime();
+
+  for (const subscription of store.listAllSubscriptions()) {
+    if (subscription.status === "canceled") continue;
+    if (!subscription.cancelAtPeriodEnd) continue;
+    if (subscription.currentPeriodEnd.getTime() > nowMs) continue;
+
+    const updated: RecurringSubscription = {
+      ...subscription,
+      status: "canceled",
+      cancelAtPeriodEnd: false,
+      canceledAt: now,
+      updatedAt: now,
+    };
+    store.saveSubscription(updated);
+    voidOpenInvoicesForSubscription(store, subscription.id, now, events);
+    events.push(createWebhookEvent("subscription.canceled", { subscription: updated }));
+    subscriptions.push(updated);
+  }
+
+  return { subscriptions, events };
 }
 
 const DEFAULT_CANCEL_MATCH_STATUSES = new Set([
@@ -348,10 +418,22 @@ export function resumeSubscription(
   };
   store.saveSubscription(updated);
 
-  return {
-    subscription: updated,
-    events: [createWebhookEvent("subscription.updated", { subscription: updated })],
-  };
+  const events: BillingWebhookEvent[] = [
+    createWebhookEvent("subscription.updated", { subscription: updated }),
+  ];
+
+  // Trial cancel-at-period-end voids the conversion invoice; restore it on resume.
+  const restoredInvoice = ensureTrialConversionInvoice(store, updated, now);
+  if (restoredInvoice) {
+    events.push(
+      createWebhookEvent("invoice.created", {
+        invoice: restoredInvoice,
+        subscription: updated,
+      }),
+    );
+  }
+
+  return { subscription: updated, events };
 }
 
 export function createRenewalInvoice(
