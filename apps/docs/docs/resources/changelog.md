@@ -1,5 +1,13 @@
 # Changelog
 
+## payments-recurring-core 0.2.11 - Derive access expired for ended trials
+
+`isSubscriptionAccessExpired(sub, now)` — shared rule for hosted portal / member UIs. Engine has no discrete `expired` status; a `trialing` row past `currentPeriodEnd` (no conversion charge yet) is treated as access expired, same as canceled / cancel-at-period-end past period end. `active` / `past_due` past period end stay not-expired (renewal or fix-payment may still run).
+
+```bash
+pnpm --filter @autlantic/payments-recurring-core publish --access public --no-git-checks
+```
+
 ## billing-engine 0.3.25 - Trial cancel at period end
 
 Period-end cancel during `trialing` no longer force-cancels immediately. It sets `cancelAtPeriodEnd`, voids the conversion invoice (no first charge), and stays resumable until trial end. `finalizeCancelAtPeriodEnd(store, now)` flips those rows to `canceled` after `currentPeriodEnd` (worker must call it each cycle). Immediate cancel (`immediate: true`) still ends the trial now.
