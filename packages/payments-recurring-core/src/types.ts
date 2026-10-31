@@ -43,6 +43,24 @@ export type RecurringCustomer = {
   walletAddress: string;
   /** test | live — matches the API key that created this customer */
   mode?: "test" | "live";
+  /** Merchant CRM notes (portal). Optional on older rows. */
+  notes?: string | null;
+  email?: string | null;
+  displayName?: string | null;
+};
+
+/** Cursor page for merchant CRM / public list APIs. */
+export type BillingListPage<T> = {
+  data: T[];
+  hasMore: boolean;
+  nextCursor: string | null;
+};
+
+export type BillingListParams = {
+  /** Default 50, max 100. */
+  limit?: number;
+  /** Opaque cursor: usually previous page’s last row id. */
+  startingAfter?: string | null;
 };
 
 export type RecurringMandate = {
