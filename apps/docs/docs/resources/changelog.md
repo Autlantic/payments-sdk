@@ -1,5 +1,14 @@
 # Changelog
 
+## billing-engine 0.3.26 - Pin payments-recurring-core 0.2.12
+
+Republish so npm `dependencies` resolve `@autlantic/payments-recurring-core` to **0.2.12** (was still **0.2.10** on 0.3.25). No API changes. Use `pnpm publish` so `workspace:*` rewrites to numeric versions.
+
+```bash
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+```
+
+
 ## Docs - Autlantic PAY / SUBSCRIBE button (merchant drop-in)
 
 Guide for the ready-to-use React start CTA from `@autlantic/billing-checkout-ui`: install, copy-paste SUBSCRIBE / PAY, link to `checkoutUrl`. Chip stays Autlantic indigo; use only on product start (not inside hosted checkout). See [Autlantic PAY button](/guide/autlantic-pay-button).
