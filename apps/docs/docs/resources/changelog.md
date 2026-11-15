@@ -1,5 +1,9 @@
 # Changelog
 
+## Docs - Autlantic PAY / SUBSCRIBE button (merchant drop-in)
+
+Guide for the ready-to-use React start CTA from `@autlantic/billing-checkout-ui`: install, copy-paste SUBSCRIBE / PAY, link to `checkoutUrl`. Chip stays Autlantic indigo; use only on product start (not inside hosted checkout). See [Autlantic PAY button](/guide/autlantic-pay-button).
+
 ## payments-recurring-core 0.2.11 - Derive access expired for ended trials
 
 `isSubscriptionAccessExpired(sub, now)` — shared rule for hosted portal / member UIs. Engine has no discrete `expired` status; a `trialing` row past `currentPeriodEnd` (no conversion charge yet) is treated as access expired, same as canceled / cancel-at-period-end past period end. `active` / `past_due` past period end stay not-expired (renewal or fix-payment may still run).

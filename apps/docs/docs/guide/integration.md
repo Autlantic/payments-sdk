@@ -49,6 +49,17 @@ const { subscription, checkoutUrl } = await billing.createSubscription({
 // Prefer hosted UI; do not invent your own mandate flow for v1.
 ```
 
+**Product start CTA (optional):** drop in the ready-made Autlantic chip on your plan card, then link to `checkoutUrl`:
+
+```tsx
+import { AutlanticPayButton } from "@autlantic/billing-checkout-ui";
+import "@autlantic/billing-checkout-ui/pay-button.css";
+
+<AutlanticPayButton word="SUBSCRIBE" size="lg" fullWidth href={checkoutUrl} />
+```
+
+See [Autlantic PAY / SUBSCRIBE button](/guide/autlantic-pay-button).
+
 When checkout finishes you get:
 
 - `subscription.activated` / `invoice.paid` webhooks  

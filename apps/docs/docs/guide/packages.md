@@ -3,11 +3,12 @@
 | Package | Role |
 |---------|------|
 | `@autlantic/payments-recurring` | Merchant SDK (subscriptions, one-time payments, payment links, webhooks) |
+| `@autlantic/billing-checkout-ui` | Ready-to-use React **PAY / SUBSCRIBE** start CTA (+ wallet helpers) |
 | `@autlantic/payments-recurring-core` | Types, intervals, retry policy |
 | `@autlantic/chain-evm` | Base + USDC + vault + preflight |
 | `@autlantic/billing-engine` | Subscriptions, invoices, payment links, refunds, webhook dispatch |
 
-Most integrators only install `@autlantic/payments-recurring`. The other packages are available if you need lower-level types or chain helpers.
+Most integrators only install `@autlantic/payments-recurring`. Add `@autlantic/billing-checkout-ui` when you want the branded [Autlantic PAY / SUBSCRIBE](/guide/autlantic-pay-button) button on your product page.
 
 Official **Python / Go / PHP / Java / .NET** server clients and **iOS / Android / Flutter / React Native** Checkout SDKs live under [`sdks/`](https://github.com/Autlantic/payments-sdk/tree/main/sdks). Published: npm (`@autlantic/payments-recurring`, `@autlantic/checkout`), PyPI (`autlantic-billing`), NuGet (`Autlantic.Billing`), Maven Central (`com.autlantic:billing`, `com.autlantic:checkout`), Packagist (`autlantic/billing`), pub.dev (`autlantic_checkout`), Go and iOS Git tags. See [Languages and SDKs](/guide/languages) and [Mobile apps](/guide/mobile).
 
