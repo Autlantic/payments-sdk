@@ -186,6 +186,19 @@ final class AutlanticBilling
         );
     }
 
+    /**
+     * @param array<string, mixed>|null $body
+     * @return array<string, mixed>
+     */
+    public function refundPayment(string $paymentId, ?array $body = null): array
+    {
+        return $this->request(
+            'POST',
+            '/v1/payments/' . rawurlencode($paymentId) . '/refund',
+            $body ?? [],
+        );
+    }
+
     /** @return array<string, mixed> */
     public function voidInvoice(string $invoiceId): array
     {

@@ -59,6 +59,7 @@ Send `Autlantic-Version: 2026-01-01` (default when omitted). See [API versioning
 | `DELETE` | `/v1/coupons/:id` | Delete coupon |
 | `POST` | `/v1/payments` | Create one-time payment (`priceId` once or `amountUsdc`) |
 | `GET` | `/v1/payments/:id` | Fetch payment |
+| `POST` | `/v1/payments/:id/refund` | Refund a paid one-time payment (ledger + `payment.refunded`) |
 | `POST` | `/v1/payment-links` | Create shareable payment link (returns `url`) |
 | `GET` | `/v1/payment-links` | List payment links |
 | `GET` | `/v1/payment-links/:id` | Fetch payment link |

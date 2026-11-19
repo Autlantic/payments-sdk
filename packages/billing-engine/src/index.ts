@@ -54,7 +54,12 @@ export {
   ON_CHAIN_SUBSCRIPTION_ID_KEY,
 } from "./on-chain";
 export { activateSubscriptionLive, type ActivateLiveResult } from "./activate-live";
-export { updateSubscription, voidInvoice, refundInvoice } from "./refunds";
+export {
+  updateSubscription,
+  voidInvoice,
+  refundInvoice,
+  refundOneTimePayment,
+} from "./refunds";
 export {
   attemptInvoiceCharge,
   deferInvoiceUntilOnChainDue,

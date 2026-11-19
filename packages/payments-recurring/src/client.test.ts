@@ -263,6 +263,8 @@ describe("AutlanticBilling sandbox", () => {
       amountUsdc: 7,
     });
     assert.equal((await billing.getPayment(pay.payment.id)).id, pay.payment.id);
+    await billing.confirmPayment(pay.payment.id);
+    assert.equal((await billing.refundPayment(pay.payment.id)).payment.status, "refunded");
     assert.ok(Array.isArray(await billing.listPaymentLinks()));
     assert.ok(Array.isArray((await billing.listProducts()).products));
   });

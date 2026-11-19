@@ -54,6 +54,17 @@ if (Webhook::verify($secret, $body, 'deadbeef', 300, $now)) {
     exit(1);
 }
 
+$legacy = hash_hmac('sha256', $body, $secret);
+$legacyResult = Webhook::verifyDetailed($secret, $body, $legacy, 300, $now);
+if (($legacyResult['ok'] ?? true) === true) {
+    fwrite(STDERR, "Webhook accepted legacy signature by default\n");
+    exit(1);
+}
+if (($legacyResult['reason'] ?? '') !== 'legacy_signature_rejected') {
+    fwrite(STDERR, "Webhook legacy reject reason unexpected: " . ($legacyResult['reason'] ?? '') . "\n");
+    exit(1);
+}
+
 $event = Webhook::parseEvent($body);
 if (($event['type'] ?? '') !== 'payment.paid') {
     fwrite(STDERR, "Webhook parse failed\n");

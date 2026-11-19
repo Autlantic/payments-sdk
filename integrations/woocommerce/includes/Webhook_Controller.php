@@ -15,6 +15,9 @@ if (!defined('ABSPATH')) {
  */
 final class Webhook_Controller
 {
+    /** @var array<string, array{ok: bool, reason?: string, logged?: bool}> */
+    private static array $verify_cache = [];
+
     public static function register_routes(): void
     {
         register_rest_route('autlantic/v1', '/webhook', [
@@ -39,8 +42,24 @@ final class Webhook_Controller
             $signature = $request->get_header('X-Autlantic-Signature');
         }
 
+        $fingerprint = hash('sha256', $raw . "\n" . (string) $signature);
+        if (isset(self::$verify_cache[$fingerprint])) {
+            $cached = self::$verify_cache[$fingerprint];
+            if (($cached['ok'] ?? false) === true) {
+                return true;
+            }
+
+            return new \WP_Error(
+                'autlantic_webhook_invalid',
+                'Invalid webhook signature',
+                ['status' => 401],
+            );
+        }
+
         $secret = Client_Factory::webhook_secret();
         $verified = Webhook::verifyDetailed($secret, $raw, $signature);
+        self::$verify_cache[$fingerprint] = $verified;
+
         if (($verified['ok'] ?? false) === true) {
             return true;
         }
@@ -52,6 +71,7 @@ final class Webhook_Controller
             'type' => '',
             'message' => 'signature ' . $reason,
         ]);
+        self::$verify_cache[$fingerprint]['logged'] = true;
 
         return new \WP_Error(
             'autlantic_webhook_invalid',
@@ -114,6 +134,29 @@ final class Webhook_Controller
         }
 
         return new \WP_REST_Response(['received' => true], 200);
+    }
+
+    /** @internal for unit tests */
+    public static function reset_verify_cache(): void
+    {
+        self::$verify_cache = [];
+    }
+
+    /**
+     * Pure helper: whether a second permission check should log again.
+     *
+     * @param array{ok: bool, reason?: string, logged?: bool}|null $cached
+     */
+    public static function should_log_reject(?array $cached): bool
+    {
+        if ($cached === null) {
+            return true;
+        }
+        if (($cached['ok'] ?? false) === true) {
+            return false;
+        }
+
+        return ($cached['logged'] ?? false) !== true;
     }
 
     private static function already_processed(string $event_id): bool

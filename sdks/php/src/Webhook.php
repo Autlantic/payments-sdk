@@ -21,6 +21,25 @@ final class Webhook
     }
 
     /**
+     * Legacy bare-body HMAC is rejected unless explicitly allowed
+     * (env AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG=true or the same WP constant).
+     */
+    public static function allowLegacySignature(): bool
+    {
+        if (defined('AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG')
+            && constant('AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG') === true) {
+            return true;
+        }
+
+        $env = getenv('AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG');
+        if ($env === false) {
+            $env = $_ENV['AUTLANTIC_BILLING_ALLOW_LEGACY_WEBHOOK_SIG'] ?? '';
+        }
+
+        return is_string($env) && strtolower(trim($env)) === 'true';
+    }
+
+    /**
      * @return array{ok: bool, reason?: string}
      */
     public static function verifyDetailed(
@@ -66,6 +85,10 @@ final class Webhook
             }
 
             return ['ok' => true];
+        }
+
+        if (!self::allowLegacySignature()) {
+            return ['ok' => false, 'reason' => 'legacy_signature_rejected'];
         }
 
         $expected = hash_hmac('sha256', $rawBody, $secret);

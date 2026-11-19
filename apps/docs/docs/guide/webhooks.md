@@ -65,7 +65,7 @@ Test events are delivered only to Test endpoints. Live events only to Live endpo
 - `invoice.payment_failed`
 - `invoice.refunded`
 - `invoice.voided`
-- `payment.created` / `payment.paid` (one-time payments and payment links)
+- `payment.created` / `payment.paid` / `payment.refunded` (one-time payments and payment links)
 
 ## Delivery in the portal
 

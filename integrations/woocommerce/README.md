@@ -18,9 +18,9 @@
 
 ---
 
-Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Depends on [`autlantic/billing`](../../sdks/php). Distribution zip: [woocommerce-autlantic releases](https://github.com/Autlantic/woocommerce-autlantic/releases) (**1.1.3**).
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Depends on [`autlantic/billing`](../../sdks/php). Distribution zip: [woocommerce-autlantic releases](https://github.com/Autlantic/woocommerce-autlantic/releases) (**1.1.5**).
 
-USDC settles to your merchant payout wallet. Autlantic does not custody checkout funds.
+USDC settles to your Billing account (payout wallet) in the Autlantic portal. Autlantic does not custody checkout funds.
 
 ## Why this plugin
 
@@ -32,10 +32,10 @@ Same hosted Billing API as Magento and the PHP SDK — create a payment link, re
 
 ```bash
 bash integrations/woocommerce/bin/package.sh
-# → integrations/woocommerce/dist/autlantic-billing-1.1.3.zip
+# → integrations/woocommerce/dist/autlantic-billing-1.1.5.zip
 ```
 
-Upload via Plugins → Add New. The zip vendors `autlantic/billing` (no Composer on the store). Prefer the [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) zip (**1.1.3**) for stores.
+Upload via Plugins → Add New. The zip vendors `autlantic/billing` (no Composer on the store). Prefer the [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) zip (**1.1.5**) for stores.
 
 **Monorepo / development**
 
@@ -64,7 +64,7 @@ Optional: [WooCommerce Subscriptions](https://woocommerce.com/products/woocommer
 |---------|----------|
 | One-time checkout | Single-use payment link → hosted Autlantic checkout |
 | Webhooks | `POST /wp-json/autlantic/v1/webhook` · activity on the settings screen |
-| Refunds | Invoice refunds when an Autlantic invoice id is on the order; one-time payment-link refunds are manual |
+| Refunds | Invoice refunds when an invoice id is on the order; one-time payments via `refundPayment` / `payment.refunded` |
 | WooCommerce Subscriptions | Soft dependency; Autlantic renewals are source of truth |
 | Blocks / HPOS | Registered payment method; HPOS compatible |
 
@@ -86,8 +86,17 @@ Verify `x-autlantic-signature` with the portal endpoint secret that matches the 
 
 ```bash
 cd integrations/woocommerce && composer install
-php bin/smoke.php
+php bin/unit.php
+bash bin/package.sh
 ```
+
+### 1.1.5
+
+One-time payment refunds from the WooCommerce Refund button (`refundPayment` / `payment.refunded`).
+
+### 1.1.4
+
+CubeWP hardening: checkout error visibility, readiness gate, safer webhook order match, payment-link reuse or disable, shorter checkout timeout, timestamped webhook signatures only, reject-log dedupe.
 
 On tag `integrations/woocommerce/v*`, [`.github/workflows/sync-woocommerce-mirror.yml`](../../.github/workflows/sync-woocommerce-mirror.yml) syncs [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic) and attaches the zip.
 

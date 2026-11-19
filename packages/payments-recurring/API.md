@@ -85,6 +85,7 @@ Env vars:
 | `getInvoice(id)` | Fetch invoice |
 | `chargeInvoice(id, sandboxMode?)` | Attempt invoice payment |
 | `refundInvoice(id, { amountUsdc? })` | Refund a paid invoice |
+| `refundPayment(id, { amountUsdc?, refundTxHash? })` | Refund a paid one-time payment (`payment.refunded`) |
 | `voidInvoice(id)` | Void an open invoice |
 
 ### Webhooks

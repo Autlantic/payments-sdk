@@ -17,7 +17,10 @@ if (!defined('ABSPATH')) {
  */
 final class Client_Factory
 {
-    public static function from_gateway(?Gateway $gateway = null): AutlanticBilling
+    /**
+     * @param 'default'|'checkout' $purpose checkout uses shorter timeout / fewer retries (B4)
+     */
+    public static function from_gateway(?Gateway $gateway = null, string $purpose = 'default'): AutlanticBilling
     {
         $gateway ??= self::gateway();
         if ($gateway === null) {
@@ -41,11 +44,19 @@ final class Client_Factory
         }
 
         $merchant_id = trim((string) $gateway->get_option('merchant_id', ''));
+        $timeout = 30.0;
+        $retries = 2;
+        if ($purpose === 'checkout') {
+            $timeout = 15.0;
+            $retries = 1;
+        }
 
         return new AutlanticBilling(
             apiKey: $api_key,
             apiBaseUrl: $api_url,
             merchantId: $merchant_id !== '' ? $merchant_id : null,
+            timeoutSec: $timeout,
+            maxRetries: $retries,
             transport: new WordPressTransport(),
         );
     }

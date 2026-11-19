@@ -121,7 +121,7 @@ final class Gateway extends \WC_Payment_Gateway
                 'description' => sprintf(
                     /* translators: %s: webhook URL */
                     __(
-                        'Portal → Webhooks → endpoint secret for this store. Register this URL: %s',
+                        'Required. Portal → Webhooks → endpoint secret for this store. Register this URL: %s',
                         'autlantic-billing-for-woocommerce',
                     ),
                     esc_html($webhook_url),
@@ -129,10 +129,10 @@ final class Gateway extends \WC_Payment_Gateway
                 'default' => '',
             ],
             'payout_address' => [
-                'title' => __('Payout wallet (EVM)', 'autlantic-billing-for-woocommerce'),
+                'title' => __('Payout wallet override (EVM)', 'autlantic-billing-for-woocommerce'),
                 'type' => 'text',
                 'description' => __(
-                    'Optional override. Leave blank to use the payout address configured on the merchant in the portal.',
+                    'Optional. Leave blank to use the Billing account (payout wallet) from Autlantic portal → Billing settings. That wallet applies to both Test and Live keys for the merchant. Fill this only to override the settlement address on checkouts from this store.',
                     'autlantic-billing-for-woocommerce',
                 ),
                 'default' => '',
@@ -164,7 +164,7 @@ final class Gateway extends \WC_Payment_Gateway
             'logging' => [
                 'title' => __('Debug log', 'autlantic-billing-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Log Autlantic events to WooCommerce → Status → Logs', 'autlantic-billing-for-woocommerce'),
+                'label' => __('Also log info-level Autlantic events to WooCommerce → Status → Logs', 'autlantic-billing-for-woocommerce'),
                 'default' => 'no',
             ],
         ];
@@ -177,6 +177,10 @@ final class Gateway extends \WC_Payment_Gateway
         }
 
         if (trim((string) $this->get_option('api_key', '')) === '') {
+            return false;
+        }
+
+        if (trim((string) $this->get_option('webhook_secret', '')) === '') {
             return false;
         }
 
@@ -224,7 +228,8 @@ final class Gateway extends \WC_Payment_Gateway
 
             return $this->process_one_time_payment($order, $amount);
         } catch (AutlanticBillingException $e) {
-            $this->log('process_payment failed: ' . $e->getMessage());
+            $this->log_error('process_payment failed: ' . $e->getMessage(), $e);
+            Checkout_Errors::record_exception($e);
             wc_add_notice(
                 __('Autlantic payment failed. Please try again or contact the store.', 'autlantic-billing-for-woocommerce'),
                 'error',
@@ -232,7 +237,8 @@ final class Gateway extends \WC_Payment_Gateway
 
             return ['result' => 'fail'];
         } catch (\Throwable $e) {
-            $this->log('process_payment unexpected: ' . $e->getMessage());
+            $this->log_error('process_payment unexpected: ' . $e->getMessage(), $e);
+            Checkout_Errors::record_exception($e);
             wc_add_notice(__('Autlantic payment failed. Please try again.', 'autlantic-billing-for-woocommerce'), 'error');
 
             return ['result' => 'fail'];
@@ -296,7 +302,35 @@ final class Gateway extends \WC_Payment_Gateway
      */
     private function process_one_time_payment(\WC_Order $order, float $amount): array
     {
-        $billing = Client_Factory::from_gateway($this);
+        $existing_link_id = Order_Meta::get($order, Order_Meta::PAYMENT_LINK_ID);
+        $existing_url = Order_Meta::get($order, Order_Meta::PAYMENT_LINK_URL);
+        if ($existing_url === '') {
+            $existing_url = Order_Meta::get($order, Order_Meta::CHECKOUT_URL);
+        }
+        $stored_amount = Order_Meta::get($order, Order_Meta::LINK_AMOUNT);
+        $amount_unchanged = $stored_amount !== ''
+            && Order_Match::amount_matches((float) $stored_amount, $amount);
+
+        if ($existing_link_id !== '' && $existing_url !== '' && $amount_unchanged && !$order->is_paid()) {
+            $this->log(sprintf('Reusing payment link %s for order %d', $existing_link_id, $order->get_id()));
+
+            return [
+                'result' => 'success',
+                'redirect' => $existing_url,
+            ];
+        }
+
+        $billing = Client_Factory::from_gateway($this, 'checkout');
+
+        if ($existing_link_id !== '') {
+            try {
+                $billing->disablePaymentLink($existing_link_id);
+                $this->log(sprintf('Disabled previous payment link %s', $existing_link_id));
+            } catch (AutlanticBillingException $e) {
+                $this->log('disablePaymentLink: ' . $e->getMessage());
+            }
+        }
+
         $merchant_ref_prefix = 'woo_' . $order->get_id();
         $success_url = $this->get_return_url($order);
         $cancel_url = $order->get_checkout_payment_url();
@@ -338,12 +372,14 @@ final class Gateway extends \WC_Payment_Gateway
         Order_Meta::set($order, Order_Meta::CHECKOUT_URL, $url);
         Order_Meta::set($order, Order_Meta::MERCHANT_REF, $merchant_ref_prefix);
         Order_Meta::set($order, Order_Meta::MODE, $billing->mode);
+        Order_Meta::set($order, Order_Meta::LINK_AMOUNT, (string) $amount);
         $order->update_status(
             'pending',
             __('Awaiting USDC payment via Autlantic checkout.', 'autlantic-billing-for-woocommerce'),
         );
         $order->save();
 
+        Checkout_Errors::clear();
         $this->log(sprintf('Created payment link %s for order %d', $link_id, $order->get_id()));
 
         return [
@@ -360,12 +396,12 @@ final class Gateway extends \WC_Payment_Gateway
         $interval = Subscriptions::billing_interval_for_order($order);
         if ($interval === null) {
             throw new AutlanticBillingException(
-                'Subscription interval must be week, month, or year for Autlantic',
+                'Subscription interval must be every 1 week, 1 month, or 1 year for Autlantic. Other intervals (for example every 3 months) are not supported yet.',
                 'validation',
             );
         }
 
-        $billing = Client_Factory::from_gateway($this);
+        $billing = Client_Factory::from_gateway($this, 'checkout');
         $merchant_ref = 'woo_sub_' . $order->get_id();
         $success_url = $this->get_return_url($order);
         $cancel_url = $order->get_checkout_payment_url();
@@ -417,6 +453,7 @@ final class Gateway extends \WC_Payment_Gateway
         );
         $order->save();
 
+        Checkout_Errors::clear();
         $this->log(sprintf('Created subscription %s for order %d', $subscription_id, $order->get_id()));
 
         return [
@@ -438,11 +475,13 @@ final class Gateway extends \WC_Payment_Gateway
         }
 
         $invoice_id = Order_Meta::get($order, Order_Meta::INVOICE_ID);
-        if ($invoice_id === '') {
+        $payment_id = Order_Meta::get($order, Order_Meta::PAYMENT_ID);
+
+        if ($invoice_id === '' && $payment_id === '') {
             return new \WP_Error(
                 'autlantic_refund',
                 __(
-                    'No Autlantic invoice on this order. One-time payment-link refunds are not available via API yet; refund from the Autlantic portal if supported.',
+                    'No Autlantic invoice or payment id on this order. Cannot refund via API.',
                     'autlantic-billing-for-woocommerce',
                 ),
             );
@@ -454,15 +493,28 @@ final class Gateway extends \WC_Payment_Gateway
             if ($amount !== null && (float) $amount > 0) {
                 $body['amountUsdc'] = (float) $amount;
             }
-            $billing->refundInvoice($invoice_id, $body !== [] ? $body : null);
-            $order->add_order_note(
-                sprintf(
-                    /* translators: 1: invoice id, 2: reason */
-                    __('Autlantic refund requested for invoice %1$s. %2$s', 'autlantic-billing-for-woocommerce'),
-                    $invoice_id,
-                    $reason !== '' ? $reason : '',
-                ),
-            );
+
+            if ($invoice_id !== '') {
+                $billing->refundInvoice($invoice_id, $body !== [] ? $body : null);
+                $order->add_order_note(
+                    sprintf(
+                        /* translators: 1: invoice id, 2: reason */
+                        __('Autlantic refund requested for invoice %1$s. %2$s', 'autlantic-billing-for-woocommerce'),
+                        $invoice_id,
+                        $reason !== '' ? $reason : '',
+                    ),
+                );
+            } else {
+                $billing->refundPayment($payment_id, $body !== [] ? $body : null);
+                $order->add_order_note(
+                    sprintf(
+                        /* translators: 1: payment id, 2: reason */
+                        __('Autlantic refund requested for payment %1$s. %2$s', 'autlantic-billing-for-woocommerce'),
+                        $payment_id,
+                        $reason !== '' ? $reason : '',
+                    ),
+                );
+            }
             $order->save();
 
             return true;
@@ -510,5 +562,18 @@ final class Gateway extends \WC_Payment_Gateway
 
         $logger = wc_get_logger();
         $logger->info($message, ['source' => 'autlantic']);
+    }
+
+    public function log_error(string $message, ?\Throwable $e = null): void
+    {
+        $logger = wc_get_logger();
+        $context = ['source' => 'autlantic'];
+        if ($e instanceof AutlanticBillingException && $e->requestId !== null) {
+            $message .= ' request_id=' . $e->requestId;
+        }
+        $logger->error($message, $context);
+        if ($this->get_option('logging') === 'yes' && $e !== null) {
+            $logger->info('detail: ' . $e->getMessage(), $context);
+        }
     }
 }

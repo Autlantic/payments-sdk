@@ -22,6 +22,7 @@ final class Order_Meta
     public const TX_HASH = '_autlantic_tx_hash';
     public const MODE = '_autlantic_mode';
     public const MERCHANT_REF = '_autlantic_merchant_ref';
+    public const LINK_AMOUNT = '_autlantic_link_amount_usdc';
 
     /**
      * Pending wallet used only until hosted checkout replaces it.

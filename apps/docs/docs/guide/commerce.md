@@ -17,7 +17,7 @@ Store currency must be **USD** or **USDC**. You need a merchant portal API key (
 3. Customer pays on hosted Autlantic checkout
 4. `payment.paid` webhook (header `x-autlantic-signature`) marks the order paid
 
-One-time payment-link **refunds are manual** (merchant sends USDC back). Invoice refunds via API apply only where an Autlantic invoice id exists (WooCommerce Subscriptions path).
+One-time payments support `POST /v1/payments/:id/refund` (ledger + `payment.refunded` webhook). Live settlement is non-custodial, so Autlantic does not pull USDC from the merchant wallet; optional `refundTxHash` when the merchant already sent funds back. Invoice refunds via API apply where an Autlantic invoice id exists (WooCommerce Subscriptions path).
 
 ## WooCommerce
 

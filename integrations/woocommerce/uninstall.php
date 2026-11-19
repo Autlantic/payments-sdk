@@ -9,3 +9,4 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 delete_option('woocommerce_autlantic_settings');
 delete_option('autlantic_wc_processed_events');
 delete_option('autlantic_wc_activity');
+delete_option('autlantic_wc_last_checkout_error');

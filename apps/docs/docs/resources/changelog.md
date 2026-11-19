@@ -1,5 +1,15 @@
 # Changelog
 
+## payments-recurring 0.3.21 / billing-engine 0.3.27 / core 0.2.13 - One-time payment refunds
+
+`refundOneTimePayment` / `refundPayment` / `POST /v1/payments/:id/refund`. Paid one-time (and payment-link) payments can be marked refunded with optional partial `amountUsdc` and `payment.refunded` webhook. Ledger only for non-custodial settlement (optional `refundTxHash` when the merchant already sent USDC back).
+
+```bash
+pnpm --filter @autlantic/payments-recurring-core publish --access public --no-git-checks
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+pnpm --filter @autlantic/payments-recurring publish --access public --no-git-checks
+```
+
 ## billing-engine 0.3.26 - Pin payments-recurring-core 0.2.12
 
 Republish so npm `dependencies` resolve `@autlantic/payments-recurring-core` to **0.2.12** (was still **0.2.10** on 0.3.25). No API changes. Use `pnpm publish` so `workspace:*` rewrites to numeric versions.

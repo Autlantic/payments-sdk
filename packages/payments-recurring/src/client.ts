@@ -11,6 +11,7 @@ import {
   disablePaymentLink,
   openPaymentLink,
   refundInvoice,
+  refundOneTimePayment,
   resolvePaymentLinkStatus,
   resumeSubscription,
   updateSubscription,
@@ -741,6 +742,29 @@ export class AutlanticBilling {
       return { invoice: result.invoice };
     }
     return this.post(`/v1/invoices/${invoiceId}/refund`, input);
+  }
+
+  async refundPayment(
+    paymentId: string,
+    input: { amountUsdc?: number; refundTxHash?: string } = {},
+  ): Promise<{ payment: OneTimePayment }> {
+    if (this.localStore) {
+      const result = refundOneTimePayment(this.localStore, paymentId, {
+        sandbox: true,
+        refundAmountUsdc: input.amountUsdc,
+        refundTxHash: input.refundTxHash,
+      });
+      if (!result) {
+        throw new AutlanticBillingError({
+          message: "Payment not refundable",
+          code: "payment_not_refundable",
+          type: "api_error",
+          details: { paymentId },
+        });
+      }
+      return { payment: result.payment };
+    }
+    return this.post(`/v1/payments/${paymentId}/refund`, input);
   }
 
   async voidInvoice(invoiceId: string): Promise<{ invoice: RecurringInvoice }> {

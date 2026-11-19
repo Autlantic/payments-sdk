@@ -21,6 +21,7 @@ final class Admin_Tools
         add_action('wp_ajax_autlantic_test_connection', [self::class, 'test_connection']);
         add_action('admin_post_autlantic_sync_order', [self::class, 'sync_order']);
         add_action('admin_enqueue_scripts', [self::class, 'enqueue_assets']);
+        add_action('admin_notices', [Checkout_Errors::class, 'maybe_admin_notice']);
     }
 
     public static function enqueue_assets(string $hook): void
@@ -48,7 +49,7 @@ final class Admin_Tools
         wp_localize_script($handle, 'autlanticAdminTools', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('autlantic_test_connection'),
-            'checking' => __('Checking…', 'autlantic-billing-for-woocommerce'),
+            'checking' => __('Checking readiness…', 'autlantic-billing-for-woocommerce'),
         ]);
     }
 
@@ -64,8 +65,10 @@ final class Admin_Tools
 
         echo '<p><span class="button" style="pointer-events:none;">' . esc_html(strtoupper($mode)) . '</span> ';
         echo '<button type="button" class="button button-secondary" id="autlantic-test-connection">'
-            . esc_html__('Test connection', 'autlantic-billing-for-woocommerce') . '</button> ';
+            . esc_html__('Test readiness', 'autlantic-billing-for-woocommerce') . '</button> ';
         echo '<span id="autlantic-test-result"></span></p>';
+
+        Checkout_Errors::render_panel();
 
         $rows = array_reverse(Activity_Log::all());
         echo '<h3>' . esc_html__('Recent webhooks', 'autlantic-billing-for-woocommerce') . '</h3>';
@@ -96,20 +99,74 @@ final class Admin_Tools
         }
 
         try {
-            $billing = Client_Factory::from_gateway();
+            $gateway = Client_Factory::gateway();
+            if ($gateway === null) {
+                wp_send_json_error(['message' => 'Gateway not available'], 400);
+            }
+
+            $secret = Client_Factory::webhook_secret($gateway);
+            if ($secret === '') {
+                wp_send_json_error([
+                    'message' => __(
+                        'Webhook signing secret is missing. Paste the portal endpoint secret, then try again.',
+                        'autlantic-billing-for-woocommerce',
+                    ),
+                ], 400);
+            }
+
+            $billing = Client_Factory::from_gateway($gateway);
             $listed = $billing->listProducts();
             $products = is_array($listed['products'] ?? null) ? $listed['products'] : [];
+
+            $body = [
+                'amountUsdc' => 1.0,
+                'merchantRefPrefix' => 'woo_readiness_' . time(),
+                'description' => 'Autlantic WooCommerce readiness check',
+                'maxUses' => 1,
+                'metadata' => [
+                    'woo_readiness' => '1',
+                    'woo_site' => home_url('/'),
+                ],
+            ];
+            $payout = Client_Factory::payout_address($gateway);
+            if ($payout !== '') {
+                $body['payoutAddressEvm'] = $payout;
+            }
+
+            $created = $billing->createPaymentLink($body);
+            $payment_link = is_array($created['paymentLink'] ?? null) ? $created['paymentLink'] : [];
+            $link_id = (string) ($payment_link['id'] ?? '');
+            if ($link_id === '') {
+                throw new AutlanticBillingException(
+                    'Readiness check: payment link response missing id',
+                    'api_error',
+                );
+            }
+
+            try {
+                $billing->disablePaymentLink($link_id);
+            } catch (AutlanticBillingException $disable_error) {
+                // Link was created; disable failure should not fail readiness.
+                unset($disable_error);
+            }
+
+            Checkout_Errors::clear();
             wp_send_json_success([
                 'message' => sprintf(
                     /* translators: 1: test or live, 2: product count */
-                    __('Connected (%1$s). %2$d catalog products.', 'autlantic-billing-for-woocommerce'),
+                    __(
+                        'Ready (%1$s). API key ok, webhook secret set, billing account (payout wallet) ok. %2$d catalog products.',
+                        'autlantic-billing-for-woocommerce',
+                    ),
                     $billing->mode,
                     count($products),
                 ),
             ]);
         } catch (AutlanticBillingException $e) {
+            Checkout_Errors::record_exception($e);
             wp_send_json_error(['message' => $e->getMessage()], 400);
         } catch (\Throwable $e) {
+            Checkout_Errors::record_exception($e);
             wp_send_json_error(['message' => $e->getMessage()], 500);
         }
     }

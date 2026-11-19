@@ -6,6 +6,7 @@ import {
   type RecurringInvoice,
   type RecurringSubscription,
 } from "@autlantic/payments-recurring-core";
+import type { OneTimePayment } from "./one-time";
 import type { BillingStore } from "./types";
 
 export function updateSubscription(
@@ -97,6 +98,45 @@ export function refundInvoice(
       createWebhookEvent("invoice.refunded", {
         invoice: updated,
         subscription,
+        refundAmountUsdc: refundAmount,
+      }),
+    ],
+  };
+}
+
+/**
+ * Ledger refund for a paid one-time payment (payment-link / POST /v1/payments).
+ * Does not move USDC; optional refundTxHash when the merchant already sent funds back.
+ */
+export function refundOneTimePayment(
+  store: BillingStore,
+  paymentId: string,
+  input: { refundTxHash?: string; refundAmountUsdc?: number; sandbox?: boolean } = {},
+): { payment: OneTimePayment; events: BillingWebhookEvent[] } | null {
+  const payment = store.getOneTimePayment(paymentId);
+  if (!payment || payment.status !== "paid") return null;
+
+  const now = new Date();
+  const refundAmount = input.refundAmountUsdc ?? payment.amountUsdc;
+  assertPositiveAmountUsdc(refundAmount);
+
+  const updated: OneTimePayment = {
+    ...payment,
+    status: "refunded",
+    refundAmountUsdc: refundAmount,
+    refundTxHash: input.sandbox
+      ? `0xrefund_${payment.id.slice(0, 20)}`
+      : input.refundTxHash,
+    refundedAt: now,
+  };
+
+  store.saveOneTimePayment(updated);
+
+  return {
+    payment: updated,
+    events: [
+      createWebhookEvent("payment.refunded", {
+        payment: updated,
         refundAmountUsdc: refundAmount,
       }),
     ],

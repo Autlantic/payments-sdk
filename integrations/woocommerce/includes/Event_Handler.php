@@ -21,6 +21,7 @@ final class Event_Handler
         match ($type) {
             'payment.paid' => self::payment_paid($data),
             'payment.created' => null,
+            'payment.refunded' => self::payment_refunded($data),
             'invoice.paid' => self::invoice_paid($data),
             'invoice.payment_failed' => self::invoice_payment_failed($data),
             'invoice.refunded' => self::invoice_refunded($data),
@@ -45,6 +46,37 @@ final class Event_Handler
             return;
         }
 
+        $metadata = is_array($payment['metadata'] ?? null) ? $payment['metadata'] : [];
+        $event_link_id = (string) ($metadata['paymentLinkId'] ?? '');
+        $stored_link_id = Order_Meta::get($order, Order_Meta::PAYMENT_LINK_ID);
+        $paid_amount = isset($payment['amountUsdc'])
+            ? (float) $payment['amountUsdc']
+            : (isset($payment['amount']) ? (float) $payment['amount'] : -1.0);
+        $order_total = Order_Meta::amount_usdc($order);
+
+        $checks = Order_Match::payment_paid_ok($paid_amount, $order_total, $event_link_id, $stored_link_id);
+        if (($checks['ok'] ?? false) !== true) {
+            $reason = (string) ($checks['reason'] ?? 'mismatch');
+            self::hold_order(
+                $order,
+                sprintf(
+                    'Autlantic payment.paid rejected (%s). Paid %s vs order %s. Link event=%s stored=%s',
+                    $reason,
+                    (string) $paid_amount,
+                    (string) $order_total,
+                    $event_link_id !== '' ? $event_link_id : 'n/a',
+                    $stored_link_id !== '' ? $stored_link_id : 'n/a',
+                ),
+            );
+            Activity_Log::add([
+                'ok' => false,
+                'type' => 'payment.paid',
+                'message' => $reason,
+            ]);
+
+            return;
+        }
+
         $payment_id = (string) ($payment['id'] ?? '');
         $tx = (string) ($payment['txHash'] ?? '');
         if ($payment_id !== '') {
@@ -65,6 +97,43 @@ final class Event_Handler
                 __('Autlantic payment.paid (%1$s). Tx: %2$s', 'autlantic-billing-for-woocommerce'),
                 $payment_id !== '' ? $payment_id : 'n/a',
                 $tx !== '' ? $tx : 'n/a',
+            ),
+        );
+        $order->save();
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private static function payment_refunded(array $data): void
+    {
+        $payment = is_array($data['payment'] ?? null) ? $data['payment'] : $data;
+        $order = self::find_order_from_payment($payment);
+        if ($order === null) {
+            return;
+        }
+
+        $payment_id = (string) ($payment['id'] ?? '');
+        $refund_amount = isset($data['refundAmountUsdc'])
+            ? (float) $data['refundAmountUsdc']
+            : (isset($payment['refundAmountUsdc'])
+                ? (float) $payment['refundAmountUsdc']
+                : (float) $order->get_total());
+
+        if ($refund_amount > 0 && $order->get_remaining_refund_amount() > 0) {
+            wc_create_refund([
+                'amount' => min($refund_amount, (float) $order->get_remaining_refund_amount()),
+                'reason' => sprintf('Autlantic payment.refunded (%s)', $payment_id !== '' ? $payment_id : 'n/a'),
+                'order_id' => $order->get_id(),
+                'refund_payment' => false,
+            ]);
+        }
+
+        $order->add_order_note(
+            sprintf(
+                /* translators: %s: payment id */
+                __('Autlantic payment.refunded (%s).', 'autlantic-billing-for-woocommerce'),
+                $payment_id !== '' ? $payment_id : 'n/a',
             ),
         );
         $order->save();
@@ -206,19 +275,20 @@ final class Event_Handler
     private static function find_order_from_payment(array $payment): ?\WC_Order
     {
         $metadata = is_array($payment['metadata'] ?? null) ? $payment['metadata'] : [];
+        $event_link_id = (string) ($metadata['paymentLinkId'] ?? '');
+
         $woo_order_id = (string) ($metadata['woo_order_id'] ?? '');
         if ($woo_order_id !== '') {
             $order = wc_get_order((int) $woo_order_id);
             if ($order instanceof \WC_Order) {
-                return $order;
+                return self::accept_matched_order($order, $metadata, $event_link_id, 'payment');
             }
         }
 
-        $link_id = (string) ($metadata['paymentLinkId'] ?? '');
-        if ($link_id !== '') {
-            $by_link = Order_Meta::find_by_meta(Order_Meta::PAYMENT_LINK_ID, $link_id);
+        if ($event_link_id !== '') {
+            $by_link = Order_Meta::find_by_meta(Order_Meta::PAYMENT_LINK_ID, $event_link_id);
             if ($by_link instanceof \WC_Order) {
-                return $by_link;
+                return self::accept_matched_order($by_link, $metadata, $event_link_id, 'payment');
             }
         }
 
@@ -226,7 +296,7 @@ final class Event_Handler
         if ($merchant_ref !== '' && preg_match('/^woo_(\d+)/', $merchant_ref, $m)) {
             $order = wc_get_order((int) $m[1]);
             if ($order instanceof \WC_Order) {
-                return $order;
+                return self::accept_matched_order($order, $metadata, $event_link_id, 'payment');
             }
         }
 
@@ -239,27 +309,91 @@ final class Event_Handler
     private static function find_order_from_invoice(array $invoice, string $subscription_id): ?\WC_Order
     {
         $metadata = is_array($invoice['metadata'] ?? null) ? $invoice['metadata'] : [];
+
         $woo_order_id = (string) ($metadata['woo_order_id'] ?? '');
         if ($woo_order_id !== '') {
             $order = wc_get_order((int) $woo_order_id);
             if ($order instanceof \WC_Order) {
-                return $order;
+                return self::accept_matched_order($order, $metadata, null, 'invoice');
             }
         }
 
         if ($subscription_id !== '') {
             $by_sub = Order_Meta::find_by_meta(Order_Meta::SUBSCRIPTION_ID, $subscription_id);
             if ($by_sub instanceof \WC_Order) {
+                // Subscription id is unique; still verify site/key when metadata is present.
+                if (isset($metadata['woo_site']) || isset($metadata['woo_order_key'])) {
+                    return self::accept_matched_order($by_sub, $metadata, null, 'invoice');
+                }
+
                 return $by_sub;
             }
         }
 
         $invoice_id = (string) ($invoice['id'] ?? '');
         if ($invoice_id !== '') {
-            return Order_Meta::find_by_meta(Order_Meta::INVOICE_ID, $invoice_id);
+            $by_invoice = Order_Meta::find_by_meta(Order_Meta::INVOICE_ID, $invoice_id);
+            if ($by_invoice instanceof \WC_Order) {
+                if (isset($metadata['woo_site']) || isset($metadata['woo_order_key'])) {
+                    return self::accept_matched_order($by_invoice, $metadata, null, 'invoice');
+                }
+
+                return $by_invoice;
+            }
         }
 
         return null;
+    }
+
+    /**
+     * @param array<string, mixed> $metadata
+     */
+    private static function accept_matched_order(
+        \WC_Order $order,
+        array $metadata,
+        ?string $event_link_id,
+        string $context,
+    ): ?\WC_Order {
+        $stored_link = Order_Meta::get($order, Order_Meta::PAYMENT_LINK_ID);
+        $identity = Order_Match::identity_ok(
+            $metadata,
+            home_url('/'),
+            $order->get_order_key(),
+            $event_link_id,
+            $context === 'payment' ? $stored_link : null,
+        );
+
+        // Invoice renewals may omit payment link; only enforce link when context is payment
+        // or when event carries a link id / order has one and context is payment.
+        if ($context === 'invoice') {
+            $identity = Order_Match::identity_ok(
+                $metadata,
+                home_url('/'),
+                $order->get_order_key(),
+                null,
+                null,
+            );
+        }
+
+        if (($identity['ok'] ?? false) !== true) {
+            $reason = (string) ($identity['reason'] ?? 'identity_mismatch');
+            Activity_Log::add([
+                'ok' => false,
+                'type' => $context,
+                'message' => 'match ' . $reason . ' order ' . $order->get_id(),
+            ]);
+            self::log('Order match rejected: ' . $reason . ' for order ' . $order->get_id());
+
+            return null;
+        }
+
+        return $order;
+    }
+
+    private static function hold_order(\WC_Order $order, string $note): void
+    {
+        $order->update_status('on-hold', $note);
+        $order->save();
     }
 
     private static function paid_status(): string
@@ -272,5 +406,17 @@ final class Event_Handler
         }
 
         return 'processing';
+    }
+
+    private static function log(string $message): void
+    {
+        $gateway = Client_Factory::gateway();
+        if ($gateway instanceof Gateway) {
+            $gateway->log($message);
+        }
+        $logger = function_exists('wc_get_logger') ? wc_get_logger() : null;
+        if ($logger !== null) {
+            $logger->error($message, ['source' => 'autlantic']);
+        }
     }
 }

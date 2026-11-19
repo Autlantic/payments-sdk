@@ -183,7 +183,8 @@ type BillingWebhookEventType =
   | "invoice.refunded"
   | "invoice.voided"
   | "payment.created"
-  | "payment.paid";
+  | "payment.paid"
+  | "payment.refunded";
 
 type BillingWebhookEvent = {
   type: BillingWebhookEventType;

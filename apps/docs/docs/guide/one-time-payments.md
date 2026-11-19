@@ -73,6 +73,7 @@ Confirmation uses `verifyUsdcPassPaymentFromTxHash` from `@autlantic/chain-evm`.
 |-------|------|
 | `payment.created` | Payment created (`open`) |
 | `payment.paid` | Payment confirmed |
+| `payment.refunded` | Payment refunded via API |
 
 ## Low-level chain helpers
 

@@ -7,6 +7,7 @@ import {
   createOneTimePayment,
   findOneTimePaymentByTxHash,
 } from "./one-time";
+import { refundOneTimePayment } from "./refunds";
 
 describe("one-time payments", () => {
   it("creates open payment and confirms in sandbox", () => {
@@ -94,5 +95,48 @@ describe("one-time payments", () => {
     assert.equal(session?.listAmountUsdc, 100);
     assert.equal(session?.couponCode, "SAVE20");
     assert.equal(session?.couponLabel, "20% off");
+  });
+
+  it("refunds a paid payment in sandbox", () => {
+    const store = createMemoryBillingStore();
+    const created = createOneTimePayment(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_refund",
+      customerWallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 26,
+      chainId: 84532,
+    });
+    confirmOneTimePayment(store, created.payment.id);
+
+    const refunded = refundOneTimePayment(store, created.payment.id, { sandbox: true });
+    assert.ok(refunded);
+    assert.equal(refunded?.payment.status, "refunded");
+    assert.equal(refunded?.payment.refundAmountUsdc, 26);
+    assert.ok(refunded?.payment.refundTxHash?.startsWith("0xrefund_"));
+    assert.equal(refunded?.events[0]?.type, "payment.refunded");
+
+    assert.equal(refundOneTimePayment(store, created.payment.id, { sandbox: true }), null);
+  });
+
+  it("rejects refund of open payment and supports partial amount", () => {
+    const store = createMemoryBillingStore();
+    const created = createOneTimePayment(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_partial",
+      customerWallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 50,
+      chainId: 84532,
+    });
+    assert.equal(refundOneTimePayment(store, created.payment.id, { sandbox: true }), null);
+
+    confirmOneTimePayment(store, created.payment.id);
+    const refunded = refundOneTimePayment(store, created.payment.id, {
+      sandbox: true,
+      refundAmountUsdc: 12.5,
+    });
+    assert.equal(refunded?.payment.refundAmountUsdc, 12.5);
+    assert.equal(refunded?.payment.status, "refunded");
   });
 });

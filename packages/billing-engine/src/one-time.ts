@@ -13,7 +13,7 @@ import {
 import { newId } from "./id";
 import type { BillingStore } from "./types";
 
-export type OneTimePaymentStatus = "open" | "paid" | "canceled";
+export type OneTimePaymentStatus = "open" | "paid" | "canceled" | "refunded";
 
 export type OneTimePayment = {
   id: string;
@@ -33,6 +33,9 @@ export type OneTimePayment = {
   paidAt?: Date;
   txHash?: string;
   canceledAt?: Date;
+  refundAmountUsdc?: number;
+  refundTxHash?: string;
+  refundedAt?: Date;
 };
 
 export type CreateOneTimePaymentInput = {

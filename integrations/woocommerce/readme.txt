@@ -4,7 +4,7 @@ Tags: woocommerce, payments, usdc, crypto, subscriptions
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.3
+Stable tag: 1.1.5
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -16,7 +16,7 @@ Autlantic Billing for WooCommerce is a payment gateway for USDC on Base.
 
 * One-time orders redirect to hosted Autlantic checkout (single-use payment link).
 * Signed webhooks mark the WooCommerce order paid. Recent deliveries are listed on the gateway settings screen.
-* Invoice refunds when an Autlantic invoice id is stored on the order. One-time checkout refunds are not offered by the billing API yet.
+* Invoice refunds when an Autlantic invoice id is stored on the order. One-time checkout refunds use the payment refund API.
 * Optional WooCommerce Subscriptions: create, cancel, and record renewals from Autlantic. Other subscription features are not claimed.
 * Test connection checks the API key against the hosted catalog.
 * Cart and Checkout blocks, and High-Performance Order Storage (HPOS).
@@ -50,6 +50,17 @@ No. One-time checkout works without it. Install WooCommerce Subscriptions only i
 To the merchant payout wallet configured in the Autlantic portal, or the optional payout address in the gateway settings. Autlantic does not custody the payment.
 
 == Changelog ==
+
+= 1.1.5 =
+* One-time payment refunds via WooCommerce Refund (POST /v1/payments/:id/refund) and payment.refunded webhooks.
+
+= 1.1.4 =
+* Always log checkout errors; show last error on the gateway settings screen.
+* Hide gateway at checkout until webhook secret is saved; Test readiness proves payout wallet.
+* Match webhooks with woo_site, woo_order_key, and payment link id; verify paid amount.
+* Reuse or disable previous payment links on retry; shorter checkout HTTP timeout.
+* Reject legacy webhook signatures without a timestamp (opt-in env to allow).
+* Deduplicate rejected webhook activity rows when WordPress re-enters permission_callback.
 
 = 1.1.3 =
 * Use WordPress HTTP API for billing requests (no curl in the WP.org package).
