@@ -32,15 +32,22 @@ import type {
   BillingCatalogPrice,
   BillingCatalogProduct,
   BillingCoupon,
+  ConnectedMerchant,
   CreateBillingCouponRequest,
   CreateCatalogPriceRequest,
   CreateCatalogProductRequest,
+  CreateConnectedApiKeyRequest,
+  CreateConnectedWebhookEndpointRequest,
   CreatePaymentLinkRequest,
   CreatePaymentRequest,
   CreateSubscriptionRequest,
+  ListConnectedMerchantsResult,
+  ProvisionConnectedMerchantRequest,
+  ProvisionConnectedMerchantResult,
   UpdateBillingCouponRequest,
   UpdateCatalogPriceRequest,
   UpdateCatalogProductRequest,
+  UpdateConnectedMerchantRequest,
 } from "./config";
 import { AutlanticBillingError } from "./errors";
 import {
@@ -50,7 +57,7 @@ import {
   type BillingLogger,
 } from "./logger";
 
-export const AUTLANTIC_BILLING_SDK_VERSION = "0.3.13";
+export const AUTLANTIC_BILLING_SDK_VERSION = "0.3.23";
 
 /** Hosted API contract pin (Stripe-style). Sent as `Autlantic-Version`. */
 export const AUTLANTIC_API_VERSION = "2026-01-01";
@@ -793,6 +800,119 @@ export class AutlanticBilling {
     }
     const res = await this.get<{ invoice: RecurringInvoice }>(`/v1/invoices/${id}`);
     return res.invoice;
+  }
+
+  /**
+   * Provision a connected store under this platform merchant (hosted only).
+   * Requires ops-granted `isPlatform` on the API key’s merchant.
+   */
+  async provisionConnectedMerchant(
+    input: ProvisionConnectedMerchantRequest,
+  ): Promise<ProvisionConnectedMerchantResult> {
+    this.requireHostedPlatform();
+    return this.post("/v1/platform/connected-merchants", input);
+  }
+
+  async listConnectedMerchants(opts?: {
+    limit?: number;
+    startingAfter?: string;
+  }): Promise<ListConnectedMerchantsResult> {
+    this.requireHostedPlatform();
+    const q = new URLSearchParams();
+    if (opts?.limit != null) q.set("limit", String(opts.limit));
+    if (opts?.startingAfter) q.set("startingAfter", opts.startingAfter);
+    const qs = q.toString();
+    return this.get(`/v1/platform/connected-merchants${qs ? `?${qs}` : ""}`);
+  }
+
+  async getConnectedMerchant(connectedId: string): Promise<ConnectedMerchant> {
+    this.requireHostedPlatform();
+    const res = await this.get<{ merchant: ConnectedMerchant }>(
+      `/v1/platform/connected-merchants/${encodeURIComponent(connectedId)}`,
+    );
+    return res.merchant;
+  }
+
+  async updateConnectedMerchant(
+    connectedId: string,
+    input: UpdateConnectedMerchantRequest,
+  ): Promise<ConnectedMerchant> {
+    this.requireHostedPlatform();
+    const res = await this.patch<{ merchant: ConnectedMerchant }>(
+      `/v1/platform/connected-merchants/${encodeURIComponent(connectedId)}`,
+      input,
+    );
+    return res.merchant;
+  }
+
+  async disableConnectedMerchant(
+    connectedId: string,
+    input: { revokeKeys?: boolean } = {},
+  ): Promise<ConnectedMerchant> {
+    this.requireHostedPlatform();
+    const res = await this.post<{ merchant: ConnectedMerchant }>(
+      `/v1/platform/connected-merchants/${encodeURIComponent(connectedId)}/disable`,
+      input,
+    );
+    return res.merchant;
+  }
+
+  async createConnectedApiKey(
+    connectedId: string,
+    input: CreateConnectedApiKeyRequest = {},
+  ): Promise<{
+    apiKey: {
+      id: string;
+      keyPrefix: string;
+      mode: "test" | "live";
+      secretKey: string;
+    };
+  }> {
+    this.requireHostedPlatform();
+    return this.post(
+      `/v1/platform/connected-merchants/${encodeURIComponent(connectedId)}/api-keys`,
+      input,
+    );
+  }
+
+  async listConnectedWebhookEndpoints(connectedId: string): Promise<{
+    endpoints: Array<{
+      id: string;
+      url: string;
+      mode: "test" | "live";
+      description?: string | null;
+    }>;
+  }> {
+    this.requireHostedPlatform();
+    return this.get(
+      `/v1/platform/connected-merchants/${encodeURIComponent(connectedId)}/webhook-endpoints`,
+    );
+  }
+
+  async createConnectedWebhookEndpoint(
+    connectedId: string,
+    input: CreateConnectedWebhookEndpointRequest,
+  ): Promise<{
+    endpoint: {
+      id: string;
+      url: string;
+      mode: "test" | "live";
+      secret: string;
+    };
+  }> {
+    this.requireHostedPlatform();
+    return this.post(
+      `/v1/platform/connected-merchants/${encodeURIComponent(connectedId)}/webhook-endpoints`,
+      input,
+    );
+  }
+
+  private requireHostedPlatform(): void {
+    if (this.localStore) {
+      throw AutlanticBillingError.configuration(
+        "Connected merchant (platform) APIs require hosted mode with a platform merchant API key",
+      );
+    }
   }
 
   private requireApiBase(): string {

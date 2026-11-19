@@ -203,3 +203,68 @@ export type CreatePaymentLinkRequest = {
   collectName?: boolean;
   metadata?: Record<string, string>;
 };
+
+/** Hosted Connect-style connected merchant (platform APIs only). */
+export type ConnectedMerchantStatus = "active" | "disabled";
+
+export type ConnectedMerchant = {
+  id: string;
+  platformMerchantId: string;
+  externalStoreRef: string;
+  displayName: string;
+  payoutAddressEvm: string | null;
+  recurringEnabled: boolean;
+  platformStatus: ConnectedMerchantStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ProvisionConnectedMerchantRequest = {
+  displayName: string;
+  /** Idempotency key for the store (host site id). */
+  externalStoreRef: string;
+  payoutAddressEvm?: string | null;
+  webhookUrl?: string | null;
+  mode?: "test" | "live";
+  /** When true (default on API), issue an API key for `mode` and return secret once. */
+  issueApiKey?: boolean;
+};
+
+export type ProvisionConnectedMerchantResult = {
+  merchant: ConnectedMerchant;
+  reused: boolean;
+  apiKey?: {
+    id: string;
+    keyPrefix: string;
+    mode: "test" | "live";
+    secretKey: string;
+  };
+  webhookEndpoint?: {
+    id: string;
+    url: string;
+    mode: "test" | "live";
+    secret: string;
+  };
+};
+
+export type ListConnectedMerchantsResult = {
+  data: ConnectedMerchant[];
+  hasMore: boolean;
+  nextCursor: string | null;
+};
+
+export type UpdateConnectedMerchantRequest = {
+  displayName?: string;
+  payoutAddressEvm?: string | null;
+};
+
+export type CreateConnectedApiKeyRequest = {
+  name?: string;
+  mode?: "test" | "live";
+};
+
+export type CreateConnectedWebhookEndpointRequest = {
+  url: string;
+  description?: string;
+  mode?: "test" | "live";
+};

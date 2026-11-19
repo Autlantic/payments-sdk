@@ -206,6 +206,112 @@ final class AutlanticBilling
     }
 
     /**
+     * Provision a connected store under this platform merchant.
+     * Requires ops-granted `isPlatform` on the API key’s merchant.
+     *
+     * @param array<string, mixed> $body
+     * @return array<string, mixed>
+     */
+    public function provisionConnectedMerchant(array $body): array
+    {
+        return $this->request('POST', '/v1/platform/connected-merchants', $body);
+    }
+
+    /**
+     * @param array{limit?: int, startingAfter?: string}|null $opts
+     * @return array<string, mixed>
+     */
+    public function listConnectedMerchants(?array $opts = null): array
+    {
+        $path = '/v1/platform/connected-merchants';
+        $q = [];
+        if ($opts !== null) {
+            if (isset($opts['limit'])) {
+                $q['limit'] = (string) $opts['limit'];
+            }
+            if (isset($opts['startingAfter']) && $opts['startingAfter'] !== '') {
+                $q['startingAfter'] = (string) $opts['startingAfter'];
+            }
+        }
+        if ($q !== []) {
+            $path .= '?' . http_build_query($q);
+        }
+
+        return $this->request('GET', $path);
+    }
+
+    /** @return array<string, mixed> */
+    public function getConnectedMerchant(string $connectedId): array
+    {
+        return $this->request(
+            'GET',
+            '/v1/platform/connected-merchants/' . rawurlencode($connectedId),
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     * @return array<string, mixed>
+     */
+    public function updateConnectedMerchant(string $connectedId, array $body): array
+    {
+        return $this->request(
+            'PATCH',
+            '/v1/platform/connected-merchants/' . rawurlencode($connectedId),
+            $body,
+            false,
+        );
+    }
+
+    /**
+     * @param array<string, mixed>|null $body
+     * @return array<string, mixed>
+     */
+    public function disableConnectedMerchant(string $connectedId, ?array $body = null): array
+    {
+        return $this->request(
+            'POST',
+            '/v1/platform/connected-merchants/' . rawurlencode($connectedId) . '/disable',
+            $body ?? [],
+        );
+    }
+
+    /**
+     * @param array<string, mixed>|null $body
+     * @return array<string, mixed>
+     */
+    public function createConnectedApiKey(string $connectedId, ?array $body = null): array
+    {
+        return $this->request(
+            'POST',
+            '/v1/platform/connected-merchants/' . rawurlencode($connectedId) . '/api-keys',
+            $body ?? [],
+        );
+    }
+
+    /** @return array<string, mixed> */
+    public function listConnectedWebhookEndpoints(string $connectedId): array
+    {
+        return $this->request(
+            'GET',
+            '/v1/platform/connected-merchants/' . rawurlencode($connectedId) . '/webhook-endpoints',
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     * @return array<string, mixed>
+     */
+    public function createConnectedWebhookEndpoint(string $connectedId, array $body): array
+    {
+        return $this->request(
+            'POST',
+            '/v1/platform/connected-merchants/' . rawurlencode($connectedId) . '/webhook-endpoints',
+            $body,
+        );
+    }
+
+    /**
      * @param array<string, mixed>|null $body
      * @return array<string, mixed>
      */

@@ -3,7 +3,7 @@
   "description": "Official Autlantic Billing server SDK for PHP (hosted API + webhook verify)",
   "type": "library",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     {
       "name": "Autlantic Limited",

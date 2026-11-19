@@ -1,5 +1,13 @@
 # Changelog
 
+## payments-recurring 0.3.23 / PHP 0.1.1 - Platform connected-merchant client
+
+Node `@autlantic/payments-recurring` and PHP `autlantic/billing` wrap `/v1/platform/connected-merchants` (provision, list, get, update, disable, api-keys, webhook-endpoints). Hosted only; sandbox throws `configuration_error`. OpenAPI + [Platform connected merchants](/guide/platform-connected-merchants) guide.
+
+```bash
+pnpm --filter @autlantic/payments-recurring publish --access public --no-git-checks
+```
+
 ## payments-recurring 0.3.22 / billing-engine 0.3.28 / core 0.2.14 - Subscription intervalCount
 
 `intervalCount` on create/subscription (week/month **1–12**; year and `five_minute` **1** only). Period math and vault `periodDurationSeconds` scale by count. WooCommerce plugin **1.1.6** maps WCS billing interval into `interval` + `intervalCount`.

@@ -19,7 +19,7 @@
 
 ## Why this SDK
 
-Same Billing API as Node — create subscriptions, one-time payments, and shareable payment links; verify webhooks. Non-custodial USDC on Base settles to your merchant `payoutAddressEvm`. API keys and webhook secrets stay on the server.
+Same Billing API as Node: create subscriptions, one-time payments, shareable payment links, and (for platform merchants) connected stores via `/v1/platform/connected-merchants`; verify webhooks. Non-custodial USDC on Base settles to your merchant `payoutAddressEvm`. API keys and webhook secrets stay on the server.
 
 ## Install
 

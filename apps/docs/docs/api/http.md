@@ -77,6 +77,16 @@ Send `Autlantic-Version: 2026-01-01` (default when omitted). See [API versioning
 | `POST` | `/v1/invoices/:id/charge` | Charge |
 | `POST` | `/v1/invoices/:id/refund` | Refund |
 | `POST` | `/v1/invoices/:id/void` | Void |
+| `GET` | `/v1/platform/connected-merchants` | List connected stores (platform key) |
+| `POST` | `/v1/platform/connected-merchants` | Provision connected store (idempotent `externalStoreRef`) |
+| `GET` | `/v1/platform/connected-merchants/:id` | Fetch connected store |
+| `PATCH` | `/v1/platform/connected-merchants/:id` | Update display / payout |
+| `POST` | `/v1/platform/connected-merchants/:id/disable` | Disable (revokes keys by default) |
+| `POST` | `/v1/platform/connected-merchants/:id/api-keys` | Issue child API key (secret once) |
+| `GET` | `/v1/platform/connected-merchants/:id/webhook-endpoints` | List child webhook endpoints |
+| `POST` | `/v1/platform/connected-merchants/:id/webhook-endpoints` | Create child webhook endpoint (secret once) |
+
+Platform routes require ops-granted `isPlatform` on the API key’s merchant. See [Platform connected merchants](/guide/platform-connected-merchants).
 
 Billing is the coupon source of truth for portal and Autlantic creator UI. Hosted checkout resolves codes from the same store (`scopeKey` prefers scoped, then merchant-wide). See [Coupons](/guide/coupons).
 

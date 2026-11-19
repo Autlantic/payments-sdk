@@ -27,7 +27,7 @@ final class ClientTest extends TestCase
     {
         $client = new AutlanticBilling('abk_test_demo');
         self::assertSame('test', $client->mode);
-        self::assertSame('0.1.0', Version::SDK_VERSION);
+        self::assertSame('0.1.1', Version::SDK_VERSION);
         self::assertSame('2026-01-01', Version::AUTLANTIC_API_VERSION);
         self::assertStringContainsString('autlantic-php/', Version::USER_AGENT);
     }

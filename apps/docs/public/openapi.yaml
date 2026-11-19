@@ -34,6 +34,7 @@ tags:
   - name: Invoices
   - name: Payments
   - name: Payment links
+  - name: Platform
   - name: Checkout
 security:
   - ApiKeyAuth: []
@@ -765,6 +766,208 @@ paths:
         "200":
           description: Disabled link
 
+  /v1/platform/connected-merchants:
+    get:
+      tags: [Platform]
+      summary: List connected merchants
+      operationId: listConnectedMerchants
+      description: |
+        Requires the API key’s merchant to have Connect capability (`isPlatform`).
+        Child / connected merchant keys receive 403.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: startingAfter
+          in: query
+          schema:
+            type: string
+          description: Cursor (connected merchant id) for the next page
+      responses:
+        "200":
+          description: Page of connected merchants
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectedMerchantPage"
+        "403":
+          description: Platform capability required
+    post:
+      tags: [Platform]
+      summary: Provision a connected merchant
+      operationId: provisionConnectedMerchant
+      description: |
+        Idempotent on `externalStoreRef` under this platform. Optional first
+        webhook endpoint and API key secrets are returned once.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProvisionConnectedMerchantRequest"
+      responses:
+        "201":
+          description: Created connected merchant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisionConnectedMerchantResult"
+        "200":
+          description: Reused existing connected merchant for externalStoreRef
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisionConnectedMerchantResult"
+        "403":
+          description: Platform capability required
+
+  /v1/platform/connected-merchants/{id}:
+    get:
+      tags: [Platform]
+      summary: Get a connected merchant
+      operationId: getConnectedMerchant
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        "200":
+          description: Connected merchant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  merchant:
+                    $ref: "#/components/schemas/ConnectedMerchant"
+        "404":
+          description: Not found or not owned by this platform
+    patch:
+      tags: [Platform]
+      summary: Update a connected merchant
+      operationId: updateConnectedMerchant
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                payoutAddressEvm:
+                  type: [string, "null"]
+      responses:
+        "200":
+          description: Updated merchant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  merchant:
+                    $ref: "#/components/schemas/ConnectedMerchant"
+
+  /v1/platform/connected-merchants/{id}/disable:
+    post:
+      tags: [Platform]
+      summary: Disable a connected merchant
+      operationId: disableConnectedMerchant
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revokeKeys:
+                  type: boolean
+                  default: true
+      responses:
+        "200":
+          description: Disabled merchant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  merchant:
+                    $ref: "#/components/schemas/ConnectedMerchant"
+
+  /v1/platform/connected-merchants/{id}/api-keys:
+    post:
+      tags: [Platform]
+      summary: Issue an API key for a connected merchant
+      operationId: createConnectedApiKey
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                mode:
+                  type: string
+                  enum: [test, live]
+      responses:
+        "201":
+          description: API key (secret once)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKey:
+                    $ref: "#/components/schemas/ConnectedApiKey"
+
+  /v1/platform/connected-merchants/{id}/webhook-endpoints:
+    get:
+      tags: [Platform]
+      summary: List webhook endpoints for a connected merchant
+      operationId: listConnectedWebhookEndpoints
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        "200":
+          description: Endpoints (secrets never re-listed)
+    post:
+      tags: [Platform]
+      summary: Create a webhook endpoint for a connected merchant
+      operationId: createConnectedWebhookEndpoint
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url:
+                  type: string
+                  format: uri
+                description:
+                  type: string
+                mode:
+                  type: string
+                  enum: [test, live]
+      responses:
+        "201":
+          description: Endpoint (secret once)
+
   /checkout/subscribe/{id}:
     get:
       tags: [Checkout]
@@ -1263,7 +1466,12 @@ components:
           type: number
         interval:
           type: string
-          enum: [month, year]
+          enum: [month, year, week, five_minute]
+        intervalCount:
+          type: integer
+          minimum: 1
+          maximum: 12
+          description: Billing steps per period (week/month 1–12; year and five_minute must be 1)
         trialDays:
           type: integer
           minimum: 0
@@ -1282,6 +1490,100 @@ components:
           type: object
           additionalProperties:
             type: string
+
+    ConnectedMerchant:
+      type: object
+      properties:
+        id:
+          type: string
+        platformMerchantId:
+          type: string
+        externalStoreRef:
+          type: string
+        displayName:
+          type: string
+        payoutAddressEvm:
+          type: [string, "null"]
+        recurringEnabled:
+          type: boolean
+        platformStatus:
+          type: string
+          enum: [active, disabled]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ConnectedMerchantPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConnectedMerchant"
+        hasMore:
+          type: boolean
+        nextCursor:
+          type: [string, "null"]
+
+    ProvisionConnectedMerchantRequest:
+      type: object
+      required: [displayName, externalStoreRef]
+      properties:
+        displayName:
+          type: string
+        externalStoreRef:
+          type: string
+          description: Host store id (idempotency key under this platform)
+        payoutAddressEvm:
+          type: [string, "null"]
+        webhookUrl:
+          type: [string, "null"]
+          format: uri
+        mode:
+          type: string
+          enum: [test, live]
+        issueApiKey:
+          type: boolean
+
+    ConnectedApiKey:
+      type: object
+      properties:
+        id:
+          type: string
+        keyPrefix:
+          type: string
+        mode:
+          type: string
+          enum: [test, live]
+        secretKey:
+          type: string
+          description: Returned once at create time
+
+    ProvisionConnectedMerchantResult:
+      type: object
+      properties:
+        merchant:
+          $ref: "#/components/schemas/ConnectedMerchant"
+        reused:
+          type: boolean
+        apiKey:
+          $ref: "#/components/schemas/ConnectedApiKey"
+        webhookEndpoint:
+          type: object
+          properties:
+            id:
+              type: string
+            url:
+              type: string
+            mode:
+              type: string
+              enum: [test, live]
+            secret:
+              type: string
+              description: Returned once at create time
 
     CreatePaymentRequest:
       type: object

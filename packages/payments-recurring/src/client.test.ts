@@ -282,4 +282,22 @@ describe("AutlanticBilling sandbox", () => {
     assert.ok(Array.isArray(await billing.listPaymentLinks()));
     assert.ok(Array.isArray((await billing.listProducts()).products));
   });
+
+  it("rejects platform connected-merchant APIs in sandbox", async () => {
+    const billing = AutlanticBilling.sandbox({ merchantId: "mer_demo" });
+    await assert.rejects(
+      () =>
+        billing.provisionConnectedMerchant({
+          displayName: "Store A",
+          externalStoreRef: "store_a",
+        }),
+      (err: unknown) =>
+        err instanceof AutlanticBillingError && err.type === "configuration_error",
+    );
+    await assert.rejects(
+      () => billing.listConnectedMerchants(),
+      (err: unknown) =>
+        err instanceof AutlanticBillingError && err.type === "configuration_error",
+    );
+  });
 });

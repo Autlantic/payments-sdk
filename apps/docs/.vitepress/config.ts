@@ -131,6 +131,7 @@ export default withMermaid(
             { text: "Device smoke test", link: "/guide/device-smoke" },
             { text: "One-time payments", link: "/guide/one-time-payments" },
             { text: "Payment links", link: "/guide/payment-links" },
+            { text: "Platform connected merchants", link: "/guide/platform-connected-merchants" },
             { text: "Autlantic PAY button", link: "/guide/autlantic-pay-button" },
             { text: "Coupons", link: "/guide/coupons" },
             { text: "Trials", link: "/guide/trials" },
