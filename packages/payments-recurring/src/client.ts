@@ -57,7 +57,7 @@ import {
   type BillingLogger,
 } from "./logger";
 
-export const AUTLANTIC_BILLING_SDK_VERSION = "0.3.23";
+export const AUTLANTIC_BILLING_SDK_VERSION = "0.3.24";
 
 /** Hosted API contract pin (Stripe-style). Sent as `Autlantic-Version`. */
 export const AUTLANTIC_API_VERSION = "2026-01-01";

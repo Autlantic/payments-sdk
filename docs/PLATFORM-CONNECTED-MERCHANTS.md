@@ -27,7 +27,7 @@ Child merchant keys cannot call `/v1/platform/*` (403). Disabled connected merch
 
 ## SDKs
 
-- Node `@autlantic/payments-recurring` **0.3.23+**: `provisionConnectedMerchant`, `listConnectedMerchants`, `getConnectedMerchant`, `updateConnectedMerchant`, `disableConnectedMerchant`, `createConnectedApiKey`, `listConnectedWebhookEndpoints`, `createConnectedWebhookEndpoint`
+- Node `@autlantic/payments-recurring` **0.3.24+**: `provisionConnectedMerchant`, `listConnectedMerchants`, `getConnectedMerchant`, `updateConnectedMerchant`, `disableConnectedMerchant`, `createConnectedApiKey`, `listConnectedWebhookEndpoints`, `createConnectedWebhookEndpoint`
 - PHP `autlantic/billing` **0.1.1+**: same method names
 - Guide: https://docs.autlantic.com/guide/platform-connected-merchants
 

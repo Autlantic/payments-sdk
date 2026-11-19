@@ -52,7 +52,7 @@ const { merchant, apiKey, webhookEndpoint, reused } =
 const page = await platform.listConnectedMerchants({ limit: 50 });
 ```
 
-Requires `@autlantic/payments-recurring` **0.3.23+**. Sandbox / in-process mode rejects these methods (hosted only).
+Requires `@autlantic/payments-recurring` **0.3.24+**. Sandbox / in-process mode rejects these methods (hosted only).
 
 ## PHP SDK
 
