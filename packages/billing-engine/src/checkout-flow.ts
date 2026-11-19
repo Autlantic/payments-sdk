@@ -67,6 +67,8 @@ export type CheckoutSessionView = {
   /** Pre-discount list price when a coupon is applied. */
   listAmountUsdc?: number | null;
   interval: string;
+  /** Billing steps per period (default 1). */
+  intervalCount?: number;
   chainId: number;
   network: string;
   usdcAddress: string;
@@ -114,7 +116,10 @@ export function buildCheckoutSessionView(
   });
 
   const planRef = planRefBytes32(subscription.planId ?? subscription.id);
-  const periodDurationSeconds = intervalPeriodSeconds(subscription.interval);
+  const periodDurationSeconds = intervalPeriodSeconds(
+    subscription.interval,
+    subscription.intervalCount ?? 1,
+  );
   const subscribe = buildSubscribeTransaction({
     chainId: subscription.chainId,
     vaultAddress: input.vaultAddress,
@@ -145,6 +150,7 @@ export function buildCheckoutSessionView(
     amountUsdc,
     listAmountUsdc,
     interval: subscription.interval,
+    intervalCount: subscription.intervalCount ?? 1,
     chainId: subscription.chainId,
     network: chain.name,
     usdcAddress: chain.usdcAddress,

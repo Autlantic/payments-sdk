@@ -6,6 +6,8 @@ import {
   periodEndFromStart,
   trialEndFromStart,
   assertPositiveAmountUsdc,
+  assertValidIntervalCount,
+  normalizeIntervalCount,
   normalizeEvmAddress,
   type BillingWebhookEvent,
   type CreateSubscriptionInput,
@@ -45,9 +47,14 @@ export function createSubscription(
     mode: input.mode,
   };
 
+  const intervalCount = normalizeIntervalCount(input.intervalCount);
+  assertValidIntervalCount(input.interval, intervalCount);
+
   const periodStart = now;
   const trialEnd = trialEndFromStart(periodStart, trialDays);
-  const periodEnd = onTrial ? trialEnd : periodEndFromStart(periodStart, input.interval);
+  const periodEnd = onTrial
+    ? trialEnd
+    : periodEndFromStart(periodStart, input.interval, intervalCount);
 
   const mandate: RecurringMandate = {
     id: mandateId,
@@ -71,6 +78,7 @@ export function createSubscription(
     walletAddress,
     amountUsdc: input.amountUsdc,
     interval: input.interval,
+    intervalCount,
     chainId: input.chainId,
     status: onTrial ? "trialing" : "incomplete",
     mandateId,
@@ -482,7 +490,12 @@ export function createRenewalInvoiceWithEvent(
 export function advanceSubscriptionPeriod(
   subscription: RecurringSubscription,
 ): RecurringSubscription {
-  const nextEnd = nextPeriodEnd(subscription.currentPeriodEnd, subscription.interval);
+  const intervalCount = normalizeIntervalCount(subscription.intervalCount);
+  const nextEnd = nextPeriodEnd(
+    subscription.currentPeriodEnd,
+    subscription.interval,
+    intervalCount,
+  );
   return {
     ...subscription,
     currentPeriodStart: subscription.currentPeriodEnd,

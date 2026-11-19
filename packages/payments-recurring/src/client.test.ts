@@ -47,7 +47,21 @@ describe("AutlanticBilling sandbox", () => {
     });
 
     assert.equal(created.subscription.status, "incomplete");
+    assert.equal(created.subscription.intervalCount, 1);
     assert.ok(created.checkoutUrl?.includes(created.subscription.id));
+
+    const quarterly = await billing.createSubscription({
+      merchantRef: "order_sdk_quarterly",
+      customerWallet: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 75,
+      interval: "month",
+      intervalCount: 3,
+    });
+    assert.equal(quarterly.subscription.intervalCount, 3);
+    const qStart = quarterly.subscription.currentPeriodStart.getTime();
+    const qEnd = quarterly.subscription.currentPeriodEnd.getTime();
+    assert.ok(qEnd - qStart > 60 * 24 * 60 * 60 * 1000, "quarterly period longer than ~60 days");
 
     const activated = await billing.activateSubscription(created.subscription.id);
     assert.equal(activated.subscription.status, "active");

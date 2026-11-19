@@ -78,25 +78,39 @@ final class Subscriptions
     }
 
     /**
-     * Map Woo subscription period to Autlantic BillingInterval.
+     * Map Woo subscription period to Autlantic interval + intervalCount.
+     *
+     * @return array{interval: string, intervalCount: int}|null
      */
-    public static function billing_interval_for_order(\WC_Order $order): ?string
+    public static function billing_period_for_order(\WC_Order $order): ?array
     {
         if (!function_exists('wcs_get_subscriptions_for_order')) {
-            return null;
+            return self::period_from_order_items($order);
         }
 
         $subs = wcs_get_subscriptions_for_order($order, ['order_type' => 'any']);
         $sub = reset($subs);
         if (!$sub instanceof \WC_Subscription) {
             // Parent order may not have created WCS objects yet; read cart/product.
-            return self::interval_from_order_items($order);
+            return self::period_from_order_items($order);
         }
 
-        return self::map_period((string) $sub->get_billing_period(), (int) $sub->get_billing_interval());
+        return self::map_billing_period((string) $sub->get_billing_period(), (int) $sub->get_billing_interval());
     }
 
-    private static function interval_from_order_items(\WC_Order $order): ?string
+    /**
+     * @deprecated Use billing_period_for_order(); returns interval string only.
+     */
+    public static function billing_interval_for_order(\WC_Order $order): ?string
+    {
+        $period = self::billing_period_for_order($order);
+        return $period['interval'] ?? null;
+    }
+
+    /**
+     * @return array{interval: string, intervalCount: int}|null
+     */
+    private static function period_from_order_items(\WC_Order $order): ?array
     {
         foreach ($order->get_items() as $item) {
             $product = $item->get_product();
@@ -106,27 +120,45 @@ final class Subscriptions
             $period = (string) $product->get_meta('_subscription_period', true);
             $interval = (int) $product->get_meta('_subscription_period_interval', true);
             if ($period !== '') {
-                return self::map_period($period, $interval > 0 ? $interval : 1);
+                return self::map_billing_period($period, $interval > 0 ? $interval : 1);
             }
         }
 
         return null;
     }
 
-    private static function map_period(string $period, int $interval): ?string
+    /**
+     * week/month: intervalCount 1–12; year: 1 only.
+     * Pure helper (no WordPress) for unit tests and order mapping.
+     *
+     * @return array{interval: string, intervalCount: int}|null
+     */
+    public static function map_billing_period(string $period, int $interval): ?array
     {
         $period = strtolower($period);
-        if ($interval !== 1) {
-            // Autlantic supports single-step week/month/year only.
-            return null;
-        }
-
-        return match ($period) {
+        $mapped = match ($period) {
             'week' => 'week',
             'month' => 'month',
             'year' => 'year',
             default => null,
         };
+        if ($mapped === null) {
+            return null;
+        }
+        if ($interval < 1) {
+            return null;
+        }
+        if ($mapped === 'year' && $interval !== 1) {
+            return null;
+        }
+        if (($mapped === 'week' || $mapped === 'month') && $interval > 12) {
+            return null;
+        }
+
+        return [
+            'interval' => $mapped,
+            'intervalCount' => $interval,
+        ];
     }
 
     public static function attach_ids_to_wcs_subscriptions(\WC_Order $order, string $autlantic_subscription_id): void

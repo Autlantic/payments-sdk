@@ -37,6 +37,47 @@ describe("billing-engine", () => {
     assert.equal(result.subscription.status, "incomplete");
     assert.equal(result.invoice.status, "open");
     assert.equal(result.events.length, 2);
+    assert.equal(result.subscription.intervalCount, 1);
+  });
+
+  it("honors intervalCount for period end and advance", () => {
+    const store = createMemoryBillingStore();
+    const result = createSubscription(store, {
+      merchantId: "mer_test",
+      merchantRef: "order_interval_count",
+      walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+      payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+      amountUsdc: 30,
+      interval: "month",
+      intervalCount: 3,
+      chainId: defaultSandboxChainId(),
+      vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+    });
+
+    assert.equal(result.subscription.intervalCount, 3);
+    const start = result.subscription.currentPeriodStart;
+    const expectedEnd = new Date(start);
+    expectedEnd.setUTCMonth(expectedEnd.getUTCMonth() + 3);
+    assert.equal(
+      result.subscription.currentPeriodEnd.toISOString().slice(0, 10),
+      expectedEnd.toISOString().slice(0, 10),
+    );
+
+    assert.throws(
+      () =>
+        createSubscription(store, {
+          merchantId: "mer_test",
+          merchantRef: "order_bad_year",
+          walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+          payoutAddressEvm: "0x1111111111111111111111111111111111111111",
+          amountUsdc: 10,
+          interval: "year",
+          intervalCount: 2,
+          chainId: defaultSandboxChainId(),
+          vaultAddress: VAULT_PLACEHOLDER_BASE_SEPOLIA,
+        }),
+      /intervalCount must be 1/,
+    );
   });
 
   it("activates subscription after mandate complete and pays invoice", () => {

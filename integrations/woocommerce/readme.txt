@@ -4,7 +4,7 @@ Tags: woocommerce, payments, usdc, crypto, subscriptions
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -50,6 +50,9 @@ No. One-time checkout works without it. Install WooCommerce Subscriptions only i
 To the merchant payout wallet configured in the Autlantic portal, or the optional payout address in the gateway settings. Autlantic does not custody the payment.
 
 == Changelog ==
+
+= 1.1.6 =
+* Subscription intervalCount: every 1–12 weeks or months (and every 1 year). Maps Woo billing interval into Autlantic createSubscription.
 
 = 1.1.5 =
 * One-time payment refunds via WooCommerce Refund (POST /v1/payments/:id/refund) and payment.refunded webhooks.

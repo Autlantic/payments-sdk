@@ -1,7 +1,10 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  assertValidIntervalCount,
+  intervalPeriodSeconds,
   nextPeriodEnd,
+  normalizeIntervalCount,
   periodEndFromStart,
   defaultAllowanceCapUsdc,
   normalizeTrialDays,
@@ -49,6 +52,47 @@ describe("intervals", () => {
     const start = new Date("2026-01-15T00:00:00.000Z");
     const end = periodEndFromStart(start, "week");
     assert.equal(end.toISOString(), "2026-01-22T00:00:00.000Z");
+  });
+
+  it("adds three months when intervalCount is 3", () => {
+    const start = new Date("2026-01-15T00:00:00.000Z");
+    const end = periodEndFromStart(start, "month", 3);
+    assert.equal(end.toISOString(), "2026-04-15T00:00:00.000Z");
+  });
+
+  it("adds two weeks when intervalCount is 2", () => {
+    const start = new Date("2026-01-15T00:00:00.000Z");
+    const end = periodEndFromStart(start, "week", 2);
+    assert.equal(end.toISOString(), "2026-01-29T00:00:00.000Z");
+  });
+
+  it("advances nextPeriodEnd by intervalCount", () => {
+    const end = new Date("2026-01-15T00:00:00.000Z");
+    const next = nextPeriodEnd(end, "month", 3);
+    assert.equal(next.toISOString(), "2026-04-15T00:00:00.000Z");
+  });
+
+  it("scales vault periodDurationSeconds by intervalCount", () => {
+    assert.equal(intervalPeriodSeconds("week", 1), 7 * 24 * 60 * 60);
+    assert.equal(intervalPeriodSeconds("week", 2), 14 * 24 * 60 * 60);
+    assert.equal(intervalPeriodSeconds("month", 3), 90 * 24 * 60 * 60);
+    assert.equal(intervalPeriodSeconds("year", 1), 365 * 24 * 60 * 60);
+  });
+
+  it("rejects year with intervalCount other than 1", () => {
+    assert.throws(() => periodEndFromStart(new Date(), "year", 2), /intervalCount must be 1/);
+    assert.throws(() => assertValidIntervalCount("year", 2), /intervalCount must be 1/);
+  });
+
+  it("rejects week/month intervalCount above 12", () => {
+    assert.throws(() => assertValidIntervalCount("month", 13), /between 1 and 12/);
+    assert.throws(() => assertValidIntervalCount("week", 0), /positive integer/);
+  });
+
+  it("normalizeIntervalCount defaults invalid to 1", () => {
+    assert.equal(normalizeIntervalCount(undefined), 1);
+    assert.equal(normalizeIntervalCount(2.9), 2);
+    assert.equal(normalizeIntervalCount(-1), 1);
   });
 
   it("trialEndFromStart adds whole days", () => {

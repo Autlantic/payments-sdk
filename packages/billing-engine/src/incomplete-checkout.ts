@@ -226,6 +226,7 @@ export function createOrReuseSubscription(
     payoutAddressEvm: normalizeEvmAddress(input.payoutAddressEvm),
     amountUsdc: input.amountUsdc,
     interval: input.interval,
+    intervalCount: input.intervalCount ?? existing.intervalCount ?? 1,
     planId: input.planId ?? existing.planId,
     metadata: mergeMetadata(existing.metadata, input.metadata),
     updatedAt: now,

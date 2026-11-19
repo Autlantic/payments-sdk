@@ -393,10 +393,10 @@ final class Gateway extends \WC_Payment_Gateway
      */
     private function process_subscription_payment(\WC_Order $order, float $amount): array
     {
-        $interval = Subscriptions::billing_interval_for_order($order);
-        if ($interval === null) {
+        $period = Subscriptions::billing_period_for_order($order);
+        if ($period === null) {
             throw new AutlanticBillingException(
-                'Subscription interval must be every 1 week, 1 month, or 1 year for Autlantic. Other intervals (for example every 3 months) are not supported yet.',
+                'Subscription interval must be every 1–12 weeks or months, or every 1 year for Autlantic.',
                 'validation',
             );
         }
@@ -410,7 +410,8 @@ final class Gateway extends \WC_Payment_Gateway
             'merchantRef' => $merchant_ref,
             'customerWallet' => Order_Meta::PENDING_CUSTOMER_WALLET,
             'amountUsdc' => $amount,
-            'interval' => $interval,
+            'interval' => $period['interval'],
+            'intervalCount' => $period['intervalCount'],
             'successUrl' => $success_url,
             'cancelUrl' => $cancel_url,
             'metadata' => [

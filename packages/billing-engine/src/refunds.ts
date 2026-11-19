@@ -15,6 +15,7 @@ export function updateSubscription(
   input: {
     amountUsdc?: number;
     interval?: BillingInterval;
+    intervalCount?: number;
     planId?: string;
     metadata?: Record<string, string>;
   },
@@ -31,6 +32,10 @@ export function updateSubscription(
     ...subscription,
     amountUsdc: input.amountUsdc ?? subscription.amountUsdc,
     interval: input.interval ?? subscription.interval,
+    intervalCount:
+      input.intervalCount !== undefined
+        ? input.intervalCount
+        : subscription.intervalCount,
     planId: input.planId ?? subscription.planId,
     metadata: input.metadata ? { ...subscription.metadata, ...input.metadata } : subscription.metadata,
     updatedAt: now,

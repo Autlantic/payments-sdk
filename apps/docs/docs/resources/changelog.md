@@ -1,5 +1,15 @@
 # Changelog
 
+## payments-recurring 0.3.22 / billing-engine 0.3.28 / core 0.2.14 - Subscription intervalCount
+
+`intervalCount` on create/subscription (week/month **1–12**; year and `five_minute` **1** only). Period math and vault `periodDurationSeconds` scale by count. WooCommerce plugin **1.1.6** maps WCS billing interval into `interval` + `intervalCount`.
+
+```bash
+pnpm --filter @autlantic/payments-recurring-core publish --access public --no-git-checks
+pnpm --filter @autlantic/billing-engine publish --access public --no-git-checks
+pnpm --filter @autlantic/payments-recurring publish --access public --no-git-checks
+```
+
 ## payments-recurring 0.3.21 / billing-engine 0.3.27 / core 0.2.13 - One-time payment refunds
 
 `refundOneTimePayment` / `refundPayment` / `POST /v1/payments/:id/refund`. Paid one-time (and payment-link) payments can be marked refunded with optional partial `amountUsdc` and `payment.refunded` webhook. Ledger only for non-custodial settlement (optional `refundTxHash` when the merchant already sent USDC back).

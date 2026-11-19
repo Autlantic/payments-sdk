@@ -30,6 +30,8 @@ export type BillingCatalogPrice = {
   productId: string;
   amountUsdc: number;
   interval: BillingCatalogPriceInterval;
+  /** Billing steps per period (default 1). week/month: 1–12. */
+  intervalCount?: number;
   trialDays: number;
   active: boolean;
 };
@@ -51,6 +53,7 @@ export type CreateCatalogProductRequest = {
   price?: {
     amountUsdc: number;
     interval: BillingCatalogPriceInterval;
+    intervalCount?: number;
     trialDays?: number;
     active?: boolean;
   };
@@ -66,6 +69,7 @@ export type UpdateCatalogProductRequest = {
 export type CreateCatalogPriceRequest = {
   amountUsdc: number;
   interval: BillingCatalogPriceInterval;
+  intervalCount?: number;
   trialDays?: number;
   active?: boolean;
 };
@@ -74,6 +78,7 @@ export type UpdateCatalogPriceRequest = {
   active?: boolean;
   amountUsdc?: number;
   interval?: BillingCatalogPriceInterval;
+  intervalCount?: number;
   trialDays?: number;
 };
 
@@ -127,7 +132,9 @@ export type CreateSubscriptionRequest = {
   customerWallet: string;
   payoutAddressEvm: string;
   amountUsdc?: number;
-  interval?: "month" | "year";
+  interval?: "month" | "year" | "week" | "five_minute";
+  /** Billing steps per period (e.g. 3 with month = quarterly). Default 1. */
+  intervalCount?: number;
   /** Portal catalog price id. Resolves amount + interval (+ trialDays) on the API. */
   priceId?: string;
   planId?: string;

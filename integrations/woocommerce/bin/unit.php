@@ -8,10 +8,15 @@ declare(strict_types=1);
  */
 
 $root = dirname(__DIR__);
+if (!defined('ABSPATH')) {
+    define('ABSPATH', $root . '/');
+}
 require_once $root . '/includes/Order_Match.php';
 require_once $root . '/includes/Webhook_Controller.php';
+require_once $root . '/includes/Subscriptions.php';
 
 use Autlantic\WooCommerce\Order_Match;
+use Autlantic\WooCommerce\Subscriptions;
 use Autlantic\WooCommerce\Webhook_Controller;
 
 $failed = 0;
@@ -94,6 +99,21 @@ expect(Webhook_Controller::should_log_reject(null) === true, 'dedupe log first t
 expect(Webhook_Controller::should_log_reject(['ok' => false, 'logged' => true]) === false, 'dedupe skip second');
 expect(Webhook_Controller::should_log_reject(['ok' => false]) === true, 'dedupe log when not marked');
 expect(Webhook_Controller::should_log_reject(['ok' => true]) === false, 'dedupe no log on ok');
+
+$every3Months = Subscriptions::map_billing_period('month', 3);
+expect(
+    ($every3Months['interval'] ?? '') === 'month' && ($every3Months['intervalCount'] ?? 0) === 3,
+    'map every 3 months',
+);
+$every2Weeks = Subscriptions::map_billing_period('week', 2);
+expect(
+    ($every2Weeks['interval'] ?? '') === 'week' && ($every2Weeks['intervalCount'] ?? 0) === 2,
+    'map every 2 weeks',
+);
+expect(Subscriptions::map_billing_period('year', 1)['interval'] === 'year', 'map every 1 year');
+expect(Subscriptions::map_billing_period('year', 2) === null, 'reject every 2 years');
+expect(Subscriptions::map_billing_period('month', 13) === null, 'reject month interval 13');
+expect(Subscriptions::map_billing_period('day', 1) === null, 'reject day period');
 
 if ($failed > 0) {
     fwrite(STDERR, "$failed assertion(s) failed\n");

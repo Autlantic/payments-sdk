@@ -180,6 +180,7 @@ export class AutlanticBilling {
         payoutAddressEvm: input.payoutAddressEvm,
         amountUsdc: input.amountUsdc,
         interval: input.interval,
+        intervalCount: input.intervalCount,
         chainId: defaultSandboxChainId(),
         planId: input.planId ?? input.priceId,
         trialDays: input.trialDays,
@@ -190,6 +191,7 @@ export class AutlanticBilling {
         subscriptionId: result.subscription.id,
         amountUsdc: input.amountUsdc,
         interval: input.interval,
+        intervalCount: input.intervalCount ?? 1,
       });
       return {
         ...result,

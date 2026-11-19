@@ -75,6 +75,7 @@ export type ChangeSubscriptionPlanInput = {
   subscriptionId: string;
   newAmountUsdc: number;
   newInterval?: BillingInterval;
+  newIntervalCount?: number;
   newPlanId?: string;
   /** When true (default), create an immediate open proration invoice if amountDue > 0. */
   createProrationInvoice?: boolean;
@@ -113,6 +114,7 @@ export function changeSubscriptionPlan(
   const updated = updateSubscription(store, subscription.id, {
     amountUsdc: input.newAmountUsdc,
     interval: input.newInterval,
+    intervalCount: input.newIntervalCount,
     planId: input.newPlanId,
     metadata: {
       ...(input.metadata ?? {}),

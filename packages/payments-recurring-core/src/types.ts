@@ -87,6 +87,11 @@ export type RecurringSubscription = {
   walletAddress: string;
   amountUsdc: number;
   interval: BillingInterval;
+  /**
+   * Billing steps per period (e.g. month × 3 = quarterly).
+   * Defaults to 1. week/month: 1–12; year / five_minute: 1 only.
+   */
+  intervalCount?: number;
   chainId: BillingChainId;
   status: SubscriptionStatus;
   mandateId?: string;
@@ -140,6 +145,11 @@ export type CreateSubscriptionInput = {
   payoutAddressEvm: string;
   amountUsdc: number;
   interval: BillingInterval;
+  /**
+   * Billing steps per period (e.g. month × 3 = quarterly).
+   * Defaults to 1. week/month: 1–12; year / five_minute: 1 only.
+   */
+  intervalCount?: number;
   chainId: BillingChainId;
   planId?: string;
   metadata?: Record<string, string>;

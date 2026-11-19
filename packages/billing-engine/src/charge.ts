@@ -4,6 +4,7 @@ import {
   hasMoreAttempts,
   isChargeNotDueFailure,
   nextAttemptAtAfterFailure,
+  normalizeIntervalCount,
   periodEndFromStart,
   shouldMarkPastDue,
   type BillingWebhookEvent,
@@ -24,11 +25,12 @@ function activatePaidPeriod(
   now: Date,
 ): RecurringSubscription {
   if (subscription.status === "trialing") {
+    const intervalCount = normalizeIntervalCount(subscription.intervalCount);
     return {
       ...subscription,
       status: "active",
       currentPeriodStart: now,
-      currentPeriodEnd: periodEndFromStart(now, subscription.interval),
+      currentPeriodEnd: periodEndFromStart(now, subscription.interval, intervalCount),
       updatedAt: now,
     };
   }

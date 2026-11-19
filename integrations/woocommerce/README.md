@@ -18,7 +18,7 @@
 
 ---
 
-Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Depends on [`autlantic/billing`](../../sdks/php). Distribution zip: [woocommerce-autlantic releases](https://github.com/Autlantic/woocommerce-autlantic/releases) (**1.1.5**).
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Depends on [`autlantic/billing`](../../sdks/php). Distribution zip: [woocommerce-autlantic releases](https://github.com/Autlantic/woocommerce-autlantic/releases) (**1.1.6**).
 
 USDC settles to your Billing account (payout wallet) in the Autlantic portal. Autlantic does not custody checkout funds.
 
@@ -32,10 +32,10 @@ Same hosted Billing API as Magento and the PHP SDK — create a payment link, re
 
 ```bash
 bash integrations/woocommerce/bin/package.sh
-# → integrations/woocommerce/dist/autlantic-billing-1.1.5.zip
+# → integrations/woocommerce/dist/autlantic-billing-1.1.6.zip
 ```
 
-Upload via Plugins → Add New. The zip vendors `autlantic/billing` (no Composer on the store). Prefer the [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) zip (**1.1.5**) for stores.
+Upload via Plugins → Add New. The zip vendors `autlantic/billing` (no Composer on the store). Prefer the [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) zip (**1.1.6**) for stores.
 
 **Monorepo / development**
 
@@ -89,6 +89,10 @@ cd integrations/woocommerce && composer install
 php bin/unit.php
 bash bin/package.sh
 ```
+
+### 1.1.6
+
+Subscription `intervalCount`: every 1–12 weeks or months (year stays every 1). Passed on `createSubscription`.
 
 ### 1.1.5
 
