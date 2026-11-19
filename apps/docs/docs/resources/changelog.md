@@ -1,5 +1,13 @@
 # Changelog
 
+## payments-recurring 0.3.24 - Fix published dependency pins
+
+Republish of the platform connected-merchant client with `workspace:*` rewritten to numeric pins (`pnpm publish`). Do not use **0.3.23** (broken workspace deps).
+
+```bash
+pnpm --filter @autlantic/payments-recurring publish --access public --no-git-checks
+```
+
 ## payments-recurring 0.3.23 / PHP 0.1.1 - Platform connected-merchant client
 
 Node `@autlantic/payments-recurring` and PHP `autlantic/billing` wrap `/v1/platform/connected-merchants` (provision, list, get, update, disable, api-keys, webhook-endpoints). Hosted only; sandbox throws `configuration_error`. OpenAPI + [Platform connected merchants](/guide/platform-connected-merchants) guide.
