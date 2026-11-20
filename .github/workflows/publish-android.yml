@@ -23,8 +23,11 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      # Do not install obsolete `tools` package (removed from sdkmanager).
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools platforms;android-35 build-tools;35.0.0
 
       - name: Publish to Maven Central
         working-directory: sdks/android
