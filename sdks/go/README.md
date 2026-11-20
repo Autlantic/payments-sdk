@@ -24,10 +24,10 @@ Same Billing API as Node — create subscriptions, one-time payments, and sharea
 ## Install
 
 ```bash
-go get github.com/Autlantic/payments-sdk/sdks/go@sdks/go/v0.1.0
+go get github.com/Autlantic/payments-sdk/sdks/go@sdks/go/v0.1.1
 ```
 
-Module path: `github.com/Autlantic/payments-sdk/sdks/go` · tag `sdks/go/v0.1.0`.
+Module path: `github.com/Autlantic/payments-sdk/sdks/go` · tag `sdks/go/v0.1.1`.
 
 ## Quick start
 

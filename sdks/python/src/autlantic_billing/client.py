@@ -131,6 +131,99 @@ class AutlanticBilling:
             path += f"?subscriptionId={urllib.parse.quote(subscription_id)}"
         return self._request("GET", path)
 
+    def get_invoice(self, invoice_id: str) -> dict[str, Any]:
+        return self._request("GET", f"/v1/invoices/{urllib.parse.quote(invoice_id)}")
+
+    def refund_invoice(
+        self, invoice_id: str, body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            f"/v1/invoices/{urllib.parse.quote(invoice_id)}/refund",
+            body=body or {},
+        )
+
+    def refund_payment(
+        self, payment_id: str, body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            f"/v1/payments/{urllib.parse.quote(payment_id)}/refund",
+            body=body or {},
+        )
+
+    def void_invoice(self, invoice_id: str) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            f"/v1/invoices/{urllib.parse.quote(invoice_id)}/void",
+            body={},
+        )
+
+    def provision_connected_merchant(self, body: dict[str, Any]) -> dict[str, Any]:
+        return self._request("POST", "/v1/platform/connected-merchants", body=body)
+
+    def list_connected_merchants(
+        self, *, limit: int | None = None, starting_after: str | None = None
+    ) -> dict[str, Any]:
+        path = "/v1/platform/connected-merchants"
+        q: dict[str, str] = {}
+        if limit is not None:
+            q["limit"] = str(limit)
+        if starting_after:
+            q["startingAfter"] = starting_after
+        if q:
+            path += "?" + urllib.parse.urlencode(q)
+        return self._request("GET", path)
+
+    def get_connected_merchant(self, connected_id: str) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            f"/v1/platform/connected-merchants/{urllib.parse.quote(connected_id)}",
+        )
+
+    def update_connected_merchant(
+        self, connected_id: str, body: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self._request(
+            "PATCH",
+            f"/v1/platform/connected-merchants/{urllib.parse.quote(connected_id)}",
+            body=body,
+            idempotent=False,
+        )
+
+    def disable_connected_merchant(
+        self, connected_id: str, body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            f"/v1/platform/connected-merchants/{urllib.parse.quote(connected_id)}/disable",
+            body=body or {},
+        )
+
+    def create_connected_api_key(
+        self, connected_id: str, body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            f"/v1/platform/connected-merchants/{urllib.parse.quote(connected_id)}/api-keys",
+            body=body or {},
+        )
+
+    def list_connected_webhook_endpoints(self, connected_id: str) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            f"/v1/platform/connected-merchants/{urllib.parse.quote(connected_id)}/webhook-endpoints",
+        )
+
+    def create_connected_webhook_endpoint(
+        self, connected_id: str, body: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            f"/v1/platform/connected-merchants/{urllib.parse.quote(connected_id)}/webhook-endpoints",
+            body=body,
+        )
+
     def _request(
         self,
         method: str,

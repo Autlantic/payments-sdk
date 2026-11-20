@@ -8,7 +8,7 @@
     <RootNamespace>Autlantic.Billing</RootNamespace>
     <AssemblyName>Autlantic.Billing</AssemblyName>
     <PackageId>Autlantic.Billing</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>Autlantic Limited</Authors>
     <Company>Autlantic Limited</Company>
     <Description>Official Autlantic Billing server SDK (hosted API + webhook verify)</Description>

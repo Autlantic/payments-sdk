@@ -241,6 +241,193 @@ public sealed class AutlanticBilling : IDisposable
     public JsonObject ListInvoices(string? subscriptionId = null)
         => ListInvoicesAsync(subscriptionId).GetAwaiter().GetResult();
 
+    public Task<JsonObject> GetInvoiceAsync(
+        string invoiceId,
+        CancellationToken cancellationToken = default)
+        => RequestAsync("GET", $"/v1/invoices/{Enc(invoiceId)}", null, cancellationToken);
+
+    public JsonObject GetInvoice(string invoiceId)
+        => GetInvoiceAsync(invoiceId).GetAwaiter().GetResult();
+
+    public Task<JsonObject> RefundInvoiceAsync(
+        string invoiceId,
+        JsonObject? body = null,
+        CancellationToken cancellationToken = default)
+        => RequestAsync(
+            "POST",
+            $"/v1/invoices/{Enc(invoiceId)}/refund",
+            body ?? new JsonObject(),
+            cancellationToken);
+
+    public JsonObject RefundInvoice(string invoiceId, JsonObject? body = null)
+        => RefundInvoiceAsync(invoiceId, body).GetAwaiter().GetResult();
+
+    public JsonObject RefundInvoice(string invoiceId, IDictionary<string, object?> body)
+        => RefundInvoice(invoiceId, ToJsonObject(body));
+
+    public Task<JsonObject> RefundPaymentAsync(
+        string paymentId,
+        JsonObject? body = null,
+        CancellationToken cancellationToken = default)
+        => RequestAsync(
+            "POST",
+            $"/v1/payments/{Enc(paymentId)}/refund",
+            body ?? new JsonObject(),
+            cancellationToken);
+
+    public JsonObject RefundPayment(string paymentId, JsonObject? body = null)
+        => RefundPaymentAsync(paymentId, body).GetAwaiter().GetResult();
+
+    public JsonObject RefundPayment(string paymentId, IDictionary<string, object?> body)
+        => RefundPayment(paymentId, ToJsonObject(body));
+
+    public Task<JsonObject> VoidInvoiceAsync(
+        string invoiceId,
+        CancellationToken cancellationToken = default)
+        => RequestAsync(
+            "POST",
+            $"/v1/invoices/{Enc(invoiceId)}/void",
+            new JsonObject(),
+            cancellationToken);
+
+    public JsonObject VoidInvoice(string invoiceId)
+        => VoidInvoiceAsync(invoiceId).GetAwaiter().GetResult();
+
+    public Task<JsonObject> ProvisionConnectedMerchantAsync(
+        JsonObject body,
+        CancellationToken cancellationToken = default)
+        => RequestAsync("POST", "/v1/platform/connected-merchants", body, cancellationToken);
+
+    public JsonObject ProvisionConnectedMerchant(JsonObject body)
+        => ProvisionConnectedMerchantAsync(body).GetAwaiter().GetResult();
+
+    public JsonObject ProvisionConnectedMerchant(IDictionary<string, object?> body)
+        => ProvisionConnectedMerchant(ToJsonObject(body));
+
+    public Task<JsonObject> ListConnectedMerchantsAsync(
+        int? limit = null,
+        string? startingAfter = null,
+        CancellationToken cancellationToken = default)
+    {
+        var path = "/v1/platform/connected-merchants";
+        var parts = new List<string>();
+        if (limit is not null)
+        {
+            parts.Add($"limit={limit}");
+        }
+
+        if (!string.IsNullOrEmpty(startingAfter))
+        {
+            parts.Add($"startingAfter={Enc(startingAfter)}");
+        }
+
+        if (parts.Count > 0)
+        {
+            path += "?" + string.Join("&", parts);
+        }
+
+        return RequestAsync("GET", path, null, cancellationToken);
+    }
+
+    public JsonObject ListConnectedMerchants(int? limit = null, string? startingAfter = null)
+        => ListConnectedMerchantsAsync(limit, startingAfter).GetAwaiter().GetResult();
+
+    public Task<JsonObject> GetConnectedMerchantAsync(
+        string connectedId,
+        CancellationToken cancellationToken = default)
+        => RequestAsync(
+            "GET",
+            $"/v1/platform/connected-merchants/{Enc(connectedId)}",
+            null,
+            cancellationToken);
+
+    public JsonObject GetConnectedMerchant(string connectedId)
+        => GetConnectedMerchantAsync(connectedId).GetAwaiter().GetResult();
+
+    public Task<JsonObject> UpdateConnectedMerchantAsync(
+        string connectedId,
+        JsonObject body,
+        CancellationToken cancellationToken = default)
+        => RequestAsync(
+            "PATCH",
+            $"/v1/platform/connected-merchants/{Enc(connectedId)}",
+            body,
+            cancellationToken);
+
+    public JsonObject UpdateConnectedMerchant(string connectedId, JsonObject body)
+        => UpdateConnectedMerchantAsync(connectedId, body).GetAwaiter().GetResult();
+
+    public JsonObject UpdateConnectedMerchant(
+        string connectedId,
+        IDictionary<string, object?> body)
+        => UpdateConnectedMerchant(connectedId, ToJsonObject(body));
+
+    public Task<JsonObject> DisableConnectedMerchantAsync(
+        string connectedId,
+        JsonObject? body = null,
+        CancellationToken cancellationToken = default)
+        => RequestAsync(
+            "POST",
+            $"/v1/platform/connected-merchants/{Enc(connectedId)}/disable",
+            body ?? new JsonObject(),
+            cancellationToken);
+
+    public JsonObject DisableConnectedMerchant(string connectedId, JsonObject? body = null)
+        => DisableConnectedMerchantAsync(connectedId, body).GetAwaiter().GetResult();
+
+    public JsonObject DisableConnectedMerchant(
+        string connectedId,
+        IDictionary<string, object?> body)
+        => DisableConnectedMerchant(connectedId, ToJsonObject(body));
+
+    public Task<JsonObject> CreateConnectedApiKeyAsync(
+        string connectedId,
+        JsonObject? body = null,
+        CancellationToken cancellationToken = default)
+        => RequestAsync(
+            "POST",
+            $"/v1/platform/connected-merchants/{Enc(connectedId)}/api-keys",
+            body ?? new JsonObject(),
+            cancellationToken);
+
+    public JsonObject CreateConnectedApiKey(string connectedId, JsonObject? body = null)
+        => CreateConnectedApiKeyAsync(connectedId, body).GetAwaiter().GetResult();
+
+    public JsonObject CreateConnectedApiKey(
+        string connectedId,
+        IDictionary<string, object?> body)
+        => CreateConnectedApiKey(connectedId, ToJsonObject(body));
+
+    public Task<JsonObject> ListConnectedWebhookEndpointsAsync(
+        string connectedId,
+        CancellationToken cancellationToken = default)
+        => RequestAsync(
+            "GET",
+            $"/v1/platform/connected-merchants/{Enc(connectedId)}/webhook-endpoints",
+            null,
+            cancellationToken);
+
+    public JsonObject ListConnectedWebhookEndpoints(string connectedId)
+        => ListConnectedWebhookEndpointsAsync(connectedId).GetAwaiter().GetResult();
+
+    public Task<JsonObject> CreateConnectedWebhookEndpointAsync(
+        string connectedId,
+        JsonObject body,
+        CancellationToken cancellationToken = default)
+        => RequestAsync(
+            "POST",
+            $"/v1/platform/connected-merchants/{Enc(connectedId)}/webhook-endpoints",
+            body,
+            cancellationToken);
+
+    public JsonObject CreateConnectedWebhookEndpoint(string connectedId, JsonObject body)
+        => CreateConnectedWebhookEndpointAsync(connectedId, body).GetAwaiter().GetResult();
+
+    public JsonObject CreateConnectedWebhookEndpoint(
+        string connectedId,
+        IDictionary<string, object?> body)
+        => CreateConnectedWebhookEndpoint(connectedId, ToJsonObject(body));
+
     private async Task<JsonObject> RequestAsync(
         string method,
         string path,

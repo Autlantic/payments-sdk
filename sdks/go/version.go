@@ -3,7 +3,7 @@ package billing
 
 const (
 	// SDKVersion is the Go package semver.
-	SDKVersion = "0.1.0"
+	SDKVersion = "0.1.1"
 	// APIVersion is the hosted Autlantic-Version pin.
 	APIVersion = "2026-01-01"
 	// UserAgent sent on hosted requests.

@@ -182,6 +182,106 @@ public final class AutlanticBilling {
     return request("GET", path, null);
   }
 
+  public Map<String, Object> getInvoice(String invoiceId) {
+    return request("GET", "/v1/invoices/" + enc(invoiceId), null);
+  }
+
+  public Map<String, Object> refundInvoice(String invoiceId) {
+    return refundInvoice(invoiceId, Map.of());
+  }
+
+  public Map<String, Object> refundInvoice(String invoiceId, Map<String, Object> body) {
+    return request(
+        "POST", "/v1/invoices/" + enc(invoiceId) + "/refund", body != null ? body : Map.of());
+  }
+
+  public Map<String, Object> refundPayment(String paymentId) {
+    return refundPayment(paymentId, Map.of());
+  }
+
+  public Map<String, Object> refundPayment(String paymentId, Map<String, Object> body) {
+    return request(
+        "POST", "/v1/payments/" + enc(paymentId) + "/refund", body != null ? body : Map.of());
+  }
+
+  public Map<String, Object> voidInvoice(String invoiceId) {
+    return request("POST", "/v1/invoices/" + enc(invoiceId) + "/void", Map.of());
+  }
+
+  public Map<String, Object> provisionConnectedMerchant(Map<String, Object> body) {
+    return request("POST", "/v1/platform/connected-merchants", body);
+  }
+
+  public Map<String, Object> listConnectedMerchants() {
+    return listConnectedMerchants(null, null);
+  }
+
+  public Map<String, Object> listConnectedMerchants(Integer limit, String startingAfter) {
+    String path = "/v1/platform/connected-merchants";
+    StringBuilder q = new StringBuilder();
+    if (limit != null) {
+      q.append("limit=").append(limit);
+    }
+    if (startingAfter != null && !startingAfter.isEmpty()) {
+      if (q.length() > 0) {
+        q.append('&');
+      }
+      q.append("startingAfter=").append(enc(startingAfter));
+    }
+    if (q.length() > 0) {
+      path += "?" + q;
+    }
+    return request("GET", path, null);
+  }
+
+  public Map<String, Object> getConnectedMerchant(String connectedId) {
+    return request("GET", "/v1/platform/connected-merchants/" + enc(connectedId), null);
+  }
+
+  public Map<String, Object> updateConnectedMerchant(
+      String connectedId, Map<String, Object> body) {
+    return request("PATCH", "/v1/platform/connected-merchants/" + enc(connectedId), body);
+  }
+
+  public Map<String, Object> disableConnectedMerchant(String connectedId) {
+    return disableConnectedMerchant(connectedId, Map.of());
+  }
+
+  public Map<String, Object> disableConnectedMerchant(
+      String connectedId, Map<String, Object> body) {
+    return request(
+        "POST",
+        "/v1/platform/connected-merchants/" + enc(connectedId) + "/disable",
+        body != null ? body : Map.of());
+  }
+
+  public Map<String, Object> createConnectedApiKey(String connectedId) {
+    return createConnectedApiKey(connectedId, Map.of());
+  }
+
+  public Map<String, Object> createConnectedApiKey(
+      String connectedId, Map<String, Object> body) {
+    return request(
+        "POST",
+        "/v1/platform/connected-merchants/" + enc(connectedId) + "/api-keys",
+        body != null ? body : Map.of());
+  }
+
+  public Map<String, Object> listConnectedWebhookEndpoints(String connectedId) {
+    return request(
+        "GET",
+        "/v1/platform/connected-merchants/" + enc(connectedId) + "/webhook-endpoints",
+        null);
+  }
+
+  public Map<String, Object> createConnectedWebhookEndpoint(
+      String connectedId, Map<String, Object> body) {
+    return request(
+        "POST",
+        "/v1/platform/connected-merchants/" + enc(connectedId) + "/webhook-endpoints",
+        body);
+  }
+
   @SuppressWarnings("unchecked")
   private Map<String, Object> request(
       String method, String path, Map<String, Object> body) {

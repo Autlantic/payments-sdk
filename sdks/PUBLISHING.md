@@ -126,15 +126,15 @@ export ORG_GRADLE_PROJECT_signingInMemoryKeyPassword=...
 
 ```bash
 # bump VERSION_NAME in sdks/java/gradle.properties (+ Version.java) if needed
-git tag -a sdks/java/v0.1.0 -m "com.autlantic:billing 0.1.0"
-git push origin sdks/java/v0.1.0
+git tag -a sdks/java/v0.1.2 -m "com.autlantic:billing 0.1.2"
+git push origin sdks/java/v0.1.2
 ```
 
-Actions runs `./gradlew publishAndReleaseToMavenCentral`. Consumers: `implementation("com.autlantic:billing:0.1.0")`.
+Actions runs `./gradlew publishAndReleaseToMavenCentral`. Consumers: `implementation("com.autlantic:billing:0.1.2")`.
 
 ## .NET (NuGet)
 
-Package: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** published (`sdks/dotnet`, `net8.0`).
+Package: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) (`sdks/dotnet`, `net8.0`). Current line: **0.1.1** (refunds + Connect parity with PHP).
 
 ```bash
 cd sdks/dotnet
@@ -144,9 +144,9 @@ dotnet nuget push ./nupkg/Autlantic.Billing.*.nupkg \
   --source https://api.nuget.org/v3/index.json
 ```
 
-Republish: bump `Version` in `Autlantic.Billing.csproj`, pack, push. Optional later: GitHub Actions + trusted publishing / `NUGET_API_KEY` secret + tag `sdks/dotnet/v*`.
+Republish: bump `Version` in `Autlantic.Billing.csproj` (+ `Version.SdkVersion`), pack, push. Optional later: GitHub Actions + trusted publishing / `NUGET_API_KEY` secret + tag `sdks/dotnet/v*`.
 
-Install: `dotnet add package Autlantic.Billing --version 0.1.0`.
+Install: `dotnet add package Autlantic.Billing --version 0.1.1`.
 
 ## Flutter (pub.dev)
 

@@ -25,10 +25,10 @@ Same Billing API as Node — create subscriptions, one-time payments, and sharea
 ## Install
 
 ```bash
-dotnet add package Autlantic.Billing --version 0.1.0
+dotnet add package Autlantic.Billing --version 0.1.1
 ```
 
-Requires **.NET 8+**. Package: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0**.
+Requires **.NET 8+**. Package: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.1**.
 
 ## Quick start
 

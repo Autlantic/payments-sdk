@@ -24,18 +24,18 @@ Same Billing API as Node — create subscriptions, one-time payments, and sharea
 ## Install
 
 ```kotlin
-implementation("com.autlantic:billing:0.1.1")
+implementation("com.autlantic:billing:0.1.2")
 ```
 
 ```xml
 <dependency>
   <groupId>com.autlantic</groupId>
   <artifactId>billing</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
 </dependency>
 ```
 
-Package: [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1**. Requires **Java 17+**.
+Package: [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.2**. Requires **Java 17+**.
 
 ## Quick start
 

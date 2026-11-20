@@ -119,6 +119,85 @@ func (c *Client) DisablePaymentLink(id string) (map[string]any, error) {
 	return c.request("POST", "/v1/payment-links/"+url.PathEscape(id)+"/disable", map[string]any{}, true)
 }
 
+func (c *Client) ListInvoices(subscriptionID string) (map[string]any, error) {
+	path := "/v1/invoices"
+	if strings.TrimSpace(subscriptionID) != "" {
+		path += "?subscriptionId=" + url.QueryEscape(subscriptionID)
+	}
+	return c.request("GET", path, nil, false)
+}
+
+func (c *Client) GetInvoice(id string) (map[string]any, error) {
+	return c.request("GET", "/v1/invoices/"+url.PathEscape(id), nil, false)
+}
+
+func (c *Client) RefundInvoice(id string, body map[string]any) (map[string]any, error) {
+	if body == nil {
+		body = map[string]any{}
+	}
+	return c.request("POST", "/v1/invoices/"+url.PathEscape(id)+"/refund", body, true)
+}
+
+func (c *Client) RefundPayment(id string, body map[string]any) (map[string]any, error) {
+	if body == nil {
+		body = map[string]any{}
+	}
+	return c.request("POST", "/v1/payments/"+url.PathEscape(id)+"/refund", body, true)
+}
+
+func (c *Client) VoidInvoice(id string) (map[string]any, error) {
+	return c.request("POST", "/v1/invoices/"+url.PathEscape(id)+"/void", map[string]any{}, true)
+}
+
+func (c *Client) ProvisionConnectedMerchant(body map[string]any) (map[string]any, error) {
+	return c.request("POST", "/v1/platform/connected-merchants", body, true)
+}
+
+func (c *Client) ListConnectedMerchants(limit int, startingAfter string) (map[string]any, error) {
+	path := "/v1/platform/connected-merchants"
+	q := url.Values{}
+	if limit > 0 {
+		q.Set("limit", fmt.Sprintf("%d", limit))
+	}
+	if strings.TrimSpace(startingAfter) != "" {
+		q.Set("startingAfter", startingAfter)
+	}
+	if encoded := q.Encode(); encoded != "" {
+		path += "?" + encoded
+	}
+	return c.request("GET", path, nil, false)
+}
+
+func (c *Client) GetConnectedMerchant(id string) (map[string]any, error) {
+	return c.request("GET", "/v1/platform/connected-merchants/"+url.PathEscape(id), nil, false)
+}
+
+func (c *Client) UpdateConnectedMerchant(id string, body map[string]any) (map[string]any, error) {
+	return c.request("PATCH", "/v1/platform/connected-merchants/"+url.PathEscape(id), body, false)
+}
+
+func (c *Client) DisableConnectedMerchant(id string, body map[string]any) (map[string]any, error) {
+	if body == nil {
+		body = map[string]any{}
+	}
+	return c.request("POST", "/v1/platform/connected-merchants/"+url.PathEscape(id)+"/disable", body, true)
+}
+
+func (c *Client) CreateConnectedApiKey(id string, body map[string]any) (map[string]any, error) {
+	if body == nil {
+		body = map[string]any{}
+	}
+	return c.request("POST", "/v1/platform/connected-merchants/"+url.PathEscape(id)+"/api-keys", body, true)
+}
+
+func (c *Client) ListConnectedWebhookEndpoints(id string) (map[string]any, error) {
+	return c.request("GET", "/v1/platform/connected-merchants/"+url.PathEscape(id)+"/webhook-endpoints", nil, false)
+}
+
+func (c *Client) CreateConnectedWebhookEndpoint(id string, body map[string]any) (map[string]any, error) {
+	return c.request("POST", "/v1/platform/connected-merchants/"+url.PathEscape(id)+"/webhook-endpoints", body, true)
+}
+
 func (c *Client) request(method, path string, body map[string]any, idempotent bool) (map[string]any, error) {
 	requestID := fmt.Sprintf("req_%d_%x", time.Now().UnixMilli(), time.Now().UnixNano()&0xffff)
 	var payloadBytes []byte

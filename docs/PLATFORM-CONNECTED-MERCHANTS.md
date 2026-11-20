@@ -29,6 +29,10 @@ Child merchant keys cannot call `/v1/platform/*` (403). Disabled connected merch
 
 - Node `@autlantic/payments-recurring` **0.3.24+**: `provisionConnectedMerchant`, `listConnectedMerchants`, `getConnectedMerchant`, `updateConnectedMerchant`, `disableConnectedMerchant`, `createConnectedApiKey`, `listConnectedWebhookEndpoints`, `createConnectedWebhookEndpoint`
 - PHP `autlantic/billing` **0.1.1+**: same method names
+- Python `autlantic-billing` **0.1.1+**: snake_case (`provision_connected_merchant`, …)
+- Go `sdks/go` **v0.1.1+**: same surface (`ProvisionConnectedMerchant`, …)
+- Java `com.autlantic:billing` **0.1.2+**: same surface
+- .NET `Autlantic.Billing` **0.1.1+**: same surface
 - Guide: https://docs.autlantic.com/guide/platform-connected-merchants
 
 ## Woo / host install
