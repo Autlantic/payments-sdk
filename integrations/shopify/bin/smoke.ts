@@ -105,6 +105,7 @@ for (const needle of [
   "payment.refunded",
   "Recent activity",
   "Readiness",
+  "ADD COLUMN IF NOT EXISTS payment_id",
 ]) {
   if (!indexSrc.includes(needle)) {
     console.error(`smoke failed: settings/refund surface missing ${needle}`);

@@ -83,16 +83,14 @@ export async function ensureSchema(): Promise<void> {
       currency TEXT NOT NULL,
       payment_link_id TEXT,
       checkout_url TEXT,
-      payment_id TEXT,
       status TEXT NOT NULL,
-      last_error TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+    ALTER TABLE payment_sessions ADD COLUMN IF NOT EXISTS payment_id TEXT;
+    ALTER TABLE payment_sessions ADD COLUMN IF NOT EXISTS last_error TEXT;
     CREATE INDEX IF NOT EXISTS payment_sessions_link_idx ON payment_sessions (payment_link_id);
     CREATE INDEX IF NOT EXISTS payment_sessions_shop_idx ON payment_sessions (shop_domain);
     CREATE INDEX IF NOT EXISTS payment_sessions_payment_idx ON payment_sessions (payment_id);
-    ALTER TABLE payment_sessions ADD COLUMN IF NOT EXISTS payment_id TEXT;
-    ALTER TABLE payment_sessions ADD COLUMN IF NOT EXISTS last_error TEXT;
 
     CREATE TABLE IF NOT EXISTS processed_events (
       event_id TEXT PRIMARY KEY,

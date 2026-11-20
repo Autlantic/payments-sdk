@@ -65,7 +65,7 @@ Full README: [integrations/magento](https://github.com/Autlantic/payments-sdk/bl
 
 Offsite payments app (Hono) plus a payments extension. **Listing Autlantic at Shopify Checkout requires an approved Shopify Payments Partner app.** Ordinary Partner status is not enough. Until approval, merchants cannot enable Autlantic as a payment method on production checkouts. Status: **blocked (external)**.
 
-Owned app code (**1.1.1**): OAuth, per-shop Autlantic credentials, HMAC + GDPR/uninstall, settings readiness / test connection / activity / session ids, and `refundPayment` when a payment id is known.
+Owned app code (**1.1.2**): OAuth, per-shop Autlantic credentials, HMAC + GDPR/uninstall, settings readiness / test connection / activity / session ids, and `refundPayment` when a payment id is known.
 
 Source and deploy notes: [integrations/shopify](https://github.com/Autlantic/payments-sdk/blob/main/integrations/shopify/README.md) · mirror [shopify-autlantic](https://github.com/Autlantic/shopify-autlantic).
 

@@ -72,8 +72,8 @@ Status: **enterprise-proven** for Magento one-time checkout + webhooks + admin o
 | Multi-merchant OAuth + per-shop Autlantic settings | Owned code |
 | HMAC + GDPR/uninstall webhooks | Owned code |
 | App config `embedded=false` | Owned code |
-| Merchant diagnostics (readiness, test connection, activity, session ids / last error) | Owned code (**1.1.1**) |
-| One-time `refundPayment` + `payment.refunded` session update | Owned code (**1.1.1**); needs Payments Partner for live refund sessions |
+| Merchant diagnostics (readiness, test connection, activity, session ids / last error) | Owned code (**1.1.2**) |
+| One-time `refundPayment` + `payment.refunded` session update | Owned code (**1.1.2**); needs Payments Partner for live refund sessions |
 | Payments extension live checkout | **blocked (external)** on Payments Partner |
 | Custom wiring (SDK + payment links + Admin API) | Documented; not a substitute for native checkout listing |
 
