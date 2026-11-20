@@ -105,7 +105,6 @@ for (const needle of [
   "payment.refunded",
   "Recent activity",
   "Readiness",
-  "ADD COLUMN IF NOT EXISTS payment_id",
 ]) {
   if (!indexSrc.includes(needle)) {
     console.error(`smoke failed: settings/refund surface missing ${needle}`);
@@ -115,6 +114,13 @@ for (const needle of [
 const paymentsSrc = readFileSync(join(root, "src/lib/shopify-payments.ts"), "utf8");
 if (!paymentsSrc.includes("refundSessionResolve")) {
   console.error("smoke failed: refundSessionResolve missing");
+  process.exit(1);
+}
+const dbSrc = readFileSync(join(root, "src/lib/db.ts"), "utf8");
+const alterIdx = dbSrc.indexOf("ADD COLUMN IF NOT EXISTS payment_id");
+const paymentIdx = dbSrc.indexOf("payment_sessions_payment_idx");
+if (alterIdx < 0 || paymentIdx < 0 || alterIdx > paymentIdx) {
+  console.error("smoke failed: payment_id ALTER must run before payment_sessions_payment_idx");
   process.exit(1);
 }
 
