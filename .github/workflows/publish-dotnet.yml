@@ -16,6 +16,8 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Must match nuget.org Trusted Publishing policy Environment
+    environment: nuget
     defaults:
       run:
         working-directory: sdks/dotnet
