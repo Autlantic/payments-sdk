@@ -45,6 +45,8 @@ cp .env.example .env
 pnpm install
 pnpm --filter @autlantic/shopify-billing smoke
 pnpm --filter @autlantic/shopify-billing typecheck
+# Runtime E2E (local Postgres + Autlantic Test keys; stubs Payments Apps GraphQL only):
+# DATABASE_URL=postgresql://localhost/shopify_autlantic_e2e DATABASE_SSL=false pnpm --filter @autlantic/shopify-billing e2e
 pnpm --filter @autlantic/shopify-billing dev
 ```
 
@@ -56,10 +58,11 @@ Open `http://localhost:3458`, install with `your-store.myshopify.com`, then past
 |------|------|
 | `GET /auth?shop=` | Start OAuth |
 | `GET /auth/callback` | Finish OAuth, redirect to settings |
-| `GET/POST /app/settings` | Per-store Autlantic merchant credentials |
+| `GET/POST /app/settings` | Per-store Autlantic merchant credentials + readiness / activity / sessions |
+| `POST /app/test-connection` | `listProducts` against this shop’s Autlantic key |
 | `POST /payment` | Shopify payment session → payment link |
-| `POST /webhooks/autlantic/:shop` | Per-store Autlantic webhook |
-| `POST /refund` | Reject (manual USDC refund) |
+| `POST /webhooks/autlantic/:shop` | Per-store Autlantic webhook (`payment.paid` / `payment.refunded`) |
+| `POST /refund` | `refundPayment` when payment id known; else reject with reason |
 | `GET /health` | Health + DB |
 
 ## License

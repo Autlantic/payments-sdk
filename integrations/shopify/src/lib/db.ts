@@ -23,7 +23,10 @@ export type PaymentSessionRecord = {
   gid: string;
   paymentLinkId?: string;
   checkoutUrl?: string;
-  status: "pending" | "resolved" | "rejected";
+  /** Autlantic one-time payment id after payment.paid */
+  paymentId?: string;
+  status: "pending" | "resolved" | "rejected" | "refunded";
+  lastError?: string;
   createdAt: number;
 };
 
@@ -80,11 +83,16 @@ export async function ensureSchema(): Promise<void> {
       currency TEXT NOT NULL,
       payment_link_id TEXT,
       checkout_url TEXT,
+      payment_id TEXT,
       status TEXT NOT NULL,
+      last_error TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
     CREATE INDEX IF NOT EXISTS payment_sessions_link_idx ON payment_sessions (payment_link_id);
     CREATE INDEX IF NOT EXISTS payment_sessions_shop_idx ON payment_sessions (shop_domain);
+    CREATE INDEX IF NOT EXISTS payment_sessions_payment_idx ON payment_sessions (payment_id);
+    ALTER TABLE payment_sessions ADD COLUMN IF NOT EXISTS payment_id TEXT;
+    ALTER TABLE payment_sessions ADD COLUMN IF NOT EXISTS last_error TEXT;
 
     CREATE TABLE IF NOT EXISTS processed_events (
       event_id TEXT PRIMARY KEY,
@@ -211,12 +219,14 @@ export async function putSession(record: PaymentSessionRecord): Promise<void> {
   await ensureSchema();
   await getPool().query(
     `INSERT INTO payment_sessions
-      (gid, shop_domain, amount, currency, payment_link_id, checkout_url, status, created_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,to_timestamp($8/1000.0))
+      (gid, shop_domain, amount, currency, payment_link_id, checkout_url, payment_id, status, last_error, created_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,to_timestamp($10/1000.0))
      ON CONFLICT (gid) DO UPDATE SET
-       payment_link_id = EXCLUDED.payment_link_id,
-       checkout_url = EXCLUDED.checkout_url,
-       status = EXCLUDED.status`,
+       payment_link_id = COALESCE(EXCLUDED.payment_link_id, payment_sessions.payment_link_id),
+       checkout_url = COALESCE(EXCLUDED.checkout_url, payment_sessions.checkout_url),
+       payment_id = COALESCE(EXCLUDED.payment_id, payment_sessions.payment_id),
+       status = EXCLUDED.status,
+       last_error = EXCLUDED.last_error`,
     [
       record.gid,
       normalizeShop(record.shopDomain),
@@ -224,7 +234,9 @@ export async function putSession(record: PaymentSessionRecord): Promise<void> {
       record.currency,
       record.paymentLinkId ?? null,
       record.checkoutUrl ?? null,
+      record.paymentId ?? null,
       record.status,
+      record.lastError ?? null,
       record.createdAt,
     ],
   );
@@ -243,7 +255,9 @@ export async function getSession(gid: string): Promise<PaymentSessionRecord | nu
     gid: String(row.gid),
     paymentLinkId: row.payment_link_id ? String(row.payment_link_id) : undefined,
     checkoutUrl: row.checkout_url ? String(row.checkout_url) : undefined,
+    paymentId: row.payment_id ? String(row.payment_id) : undefined,
     status: row.status as PaymentSessionRecord["status"],
+    lastError: row.last_error ? String(row.last_error) : undefined,
     createdAt: new Date(String(row.created_at)).getTime(),
   };
 }
@@ -264,9 +278,41 @@ export async function findSessionByPaymentLink(
 export async function markSession(
   gid: string,
   status: PaymentSessionRecord["status"],
+  extras?: { paymentId?: string; lastError?: string | null },
 ): Promise<void> {
   await ensureSchema();
-  await getPool().query(`UPDATE payment_sessions SET status = $2 WHERE gid = $1`, [gid, status]);
+  await getPool().query(
+    `UPDATE payment_sessions SET
+       status = $2,
+       payment_id = COALESCE($3, payment_id),
+       last_error = $4
+     WHERE gid = $1`,
+    [gid, status, extras?.paymentId ?? null, extras?.lastError ?? null],
+  );
+}
+
+export async function listRecentSessions(
+  shopDomain: string,
+  limit = 10,
+): Promise<PaymentSessionRecord[]> {
+  await ensureSchema();
+  const result = await getPool().query(
+    `SELECT * FROM payment_sessions WHERE shop_domain = $1 ORDER BY created_at DESC LIMIT $2`,
+    [normalizeShop(shopDomain), limit],
+  );
+  return result.rows.map((row) => ({
+    shopifyGid: String(row.gid),
+    shopDomain: String(row.shop_domain),
+    amount: String(row.amount),
+    currency: String(row.currency),
+    gid: String(row.gid),
+    paymentLinkId: row.payment_link_id ? String(row.payment_link_id) : undefined,
+    checkoutUrl: row.checkout_url ? String(row.checkout_url) : undefined,
+    paymentId: row.payment_id ? String(row.payment_id) : undefined,
+    status: row.status as PaymentSessionRecord["status"],
+    lastError: row.last_error ? String(row.last_error) : undefined,
+    createdAt: new Date(String(row.created_at)).getTime(),
+  }));
 }
 
 export async function alreadyProcessed(eventId: string): Promise<boolean> {
@@ -306,12 +352,14 @@ export async function addActivity(row: Omit<ActivityRow, "at">): Promise<void> {
   `);
 }
 
-export async function listActivity(limit = 30): Promise<ActivityRow[]> {
+export async function listActivity(limit = 30, shopDomain?: string): Promise<ActivityRow[]> {
   await ensureSchema();
-  const result = await getPool().query(
-    `SELECT * FROM activity ORDER BY id DESC LIMIT $1`,
-    [limit],
-  );
+  const result = shopDomain
+    ? await getPool().query(
+        `SELECT * FROM activity WHERE shop_domain = $1 ORDER BY id DESC LIMIT $2`,
+        [normalizeShop(shopDomain), limit],
+      )
+    : await getPool().query(`SELECT * FROM activity ORDER BY id DESC LIMIT $1`, [limit]);
   return result.rows.map((row) => ({
     at: new Date(String(row.at)).getTime(),
     ok: Boolean(row.ok),

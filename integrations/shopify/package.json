@@ -1,6 +1,6 @@
 {
   "name": "@autlantic/shopify-billing",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "Autlantic Billing offsite payments app for Shopify (USDC on Base)",
   "type": "module",
@@ -13,7 +13,8 @@
     "start": "node dist/index.js",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "smoke": "tsx bin/smoke.ts"
+    "smoke": "tsx bin/smoke.ts",
+    "e2e": "tsx bin/e2e-runtime.ts"
   },
   "dependencies": {
     "@autlantic/payments-recurring": "workspace:*",

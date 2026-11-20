@@ -4,11 +4,17 @@
 
 const API_VERSION = "2025-10";
 
+/** Local E2E only. Never set in production / Railway. */
+function e2eStubPayments(): boolean {
+  return process.env.AUTLANTIC_SHOPIFY_E2E_STUB === "1";
+}
+
 export async function paymentSessionResolve(input: {
   shopDomain: string;
   accessToken: string;
   gid: string;
 }): Promise<void> {
+  if (e2eStubPayments()) return;
   await paymentsGraphql(input.shopDomain, input.accessToken, {
     query: `mutation PaymentSessionResolve($id: ID!) {
       paymentSessionResolve(id: $id) {
@@ -26,6 +32,7 @@ export async function paymentSessionReject(input: {
   gid: string;
   reasonMessage?: string;
 }): Promise<void> {
+  if (e2eStubPayments()) return;
   await paymentsGraphql(input.shopDomain, input.accessToken, {
     query: `mutation PaymentSessionReject($id: ID!, $reason: PaymentSessionRejectionReasonInput!) {
       paymentSessionReject(id: $id, reason: $reason) {
@@ -43,12 +50,30 @@ export async function paymentSessionReject(input: {
   });
 }
 
+export async function refundSessionResolve(input: {
+  shopDomain: string;
+  accessToken: string;
+  gid: string;
+}): Promise<void> {
+  if (e2eStubPayments()) return;
+  await paymentsGraphql(input.shopDomain, input.accessToken, {
+    query: `mutation RefundSessionResolve($id: ID!) {
+      refundSessionResolve(id: $id) {
+        refundSession { id state { ... on RefundSessionStateResolved { code } } }
+        userErrors { field message }
+      }
+    }`,
+    variables: { id: input.gid },
+  });
+}
+
 export async function refundSessionReject(input: {
   shopDomain: string;
   accessToken: string;
   gid: string;
   reasonMessage?: string;
 }): Promise<void> {
+  if (e2eStubPayments()) return;
   await paymentsGraphql(input.shopDomain, input.accessToken, {
     query: `mutation RefundSessionReject($id: ID!, $reason: RefundSessionRejectionReasonInput!) {
       refundSessionReject(id: $id, reason: $reason) {
@@ -62,7 +87,7 @@ export async function refundSessionReject(input: {
         code: "PROCESSING_ERROR",
         merchantMessage:
           input.reasonMessage ??
-          "One-time Autlantic payment-link refunds are manual. Return USDC from the merchant wallet.",
+          "Autlantic refund failed. Retry from Shopify or refund from the Autlantic portal.",
       },
     },
   });

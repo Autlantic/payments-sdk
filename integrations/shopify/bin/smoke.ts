@@ -3,6 +3,9 @@ import {
   verifyBillingWebhookDetailed,
 } from "@autlantic/payments-recurring";
 import { createHmac } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { decryptSecret, encryptSecret, maskSecret } from "../src/lib/crypto.js";
 import {
   createCsrfToken,
@@ -88,6 +91,29 @@ if (!verifyShopifyQueryHmac(params)) {
 params.hmac = "deadbeef";
 if (verifyShopifyQueryHmac(params)) {
   console.error("smoke failed: bad oauth hmac accepted");
+  process.exit(1);
+}
+
+// Settings + refund surface must stay present for admin diagnostics.
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const indexSrc = readFileSync(join(root, "src/index.ts"), "utf8");
+for (const needle of [
+  "/app/test-connection",
+  "listProducts",
+  "refundPayment",
+  "refundSessionResolve",
+  "payment.refunded",
+  "Recent activity",
+  "Readiness",
+]) {
+  if (!indexSrc.includes(needle)) {
+    console.error(`smoke failed: settings/refund surface missing ${needle}`);
+    process.exit(1);
+  }
+}
+const paymentsSrc = readFileSync(join(root, "src/lib/shopify-payments.ts"), "utf8");
+if (!paymentsSrc.includes("refundSessionResolve")) {
+  console.error("smoke failed: refundSessionResolve missing");
   process.exit(1);
 }
 

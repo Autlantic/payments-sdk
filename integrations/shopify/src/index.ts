@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import {
+  billingModeFromApiKey,
   parseBillingWebhookEvent,
   verifyBillingWebhookDetailed,
 } from "@autlantic/payments-recurring";
@@ -15,6 +16,7 @@ import {
   getSession,
   getShop,
   listActivity,
+  listRecentSessions,
   markProcessed,
   markSession,
   putSession,
@@ -35,6 +37,7 @@ import {
   paymentSessionReject,
   paymentSessionResolve,
   refundSessionReject,
+  refundSessionResolve,
 } from "./lib/shopify-payments.js";
 import { registerAppWebhooks } from "./lib/shopify-webhooks.js";
 
@@ -137,28 +140,73 @@ app.get("/app/settings", async (c) => {
   const webhookUrl = webhookPathForShop(shopDomain, base);
   const configured = shopBillingConfigured(shop);
   const saved = c.req.query("saved") === "1";
+  const tested = c.req.query("tested");
+  const testMsg = c.req.query("test_msg") ?? "";
   const csrf = createCsrfToken(shopDomain);
+  const activity = await listActivity(12, shopDomain);
+  const sessions = await listRecentSessions(shopDomain, 8);
+  const lastFail = activity.find((row) => !row.ok);
+  const readiness = [
+    { ok: Boolean(shop.billingApiKey.trim()), label: "API key" },
+    { ok: Boolean(shop.billingWebhookSecret.trim()), label: "Webhook secret" },
+    { ok: Boolean(shop.payoutAddressEvm.trim()), label: "Payout wallet" },
+  ];
+  const activityHtml = activity.length
+    ? `<ul class="list">${activity
+        .map(
+          (row) =>
+            `<li class="${row.ok ? "ok" : "warn"}"><span class="muted">${new Date(row.at).toISOString()}</span> ${escapeHtml(row.type || "event")}: ${escapeHtml(row.message)}</li>`,
+        )
+        .join("")}</ul>`
+    : `<p class="muted">No webhook or checkout activity yet.</p>`;
+  const sessionsHtml = sessions.length
+    ? `<ul class="list">${sessions
+        .map(
+          (s) =>
+            `<li><code>${escapeHtml(s.gid.slice(-24))}</code> · ${escapeHtml(s.status)} · ${escapeHtml(s.amount)} ${escapeHtml(s.currency)}${s.paymentId ? ` · pay <code>${escapeHtml(s.paymentId)}</code>` : ""}${s.lastError ? ` · <span class="warn">${escapeHtml(s.lastError)}</span>` : ""}</li>`,
+        )
+        .join("")}</ul>`
+    : `<p class="muted">No payment sessions yet.</p>`;
   return c.html(`<!doctype html>
 <html><head><meta charset="utf-8"><title>Autlantic settings · ${shopDomain}</title>
 <style>
 body{font-family:ui-sans-serif,system-ui,sans-serif;margin:0;background:#0b1220;color:#e8eefc}
-main{max-width:640px;margin:40px auto;padding:0 20px}
+main{max-width:720px;margin:40px auto;padding:0 20px}
 code{background:#1a2438;padding:2px 6px;border-radius:6px;word-break:break-all}
 .card{background:#121a2b;border:1px solid #243049;border-radius:14px;padding:20px;margin-top:16px}
 label{display:block;margin:14px 0 6px;font-size:13px;color:#9db0d0}
 input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid #243049;background:#0b1220;color:#e8eefc;font:inherit}
 button{margin-top:16px;background:#5672cd;color:#fff;border:0;border-radius:8px;padding:12px 16px;font:inherit;cursor:pointer}
+button.secondary{background:#243049}
 .ok{color:#6ddea8}.warn{color:#f0c674}.muted{color:#9db0d0;font-size:13px;line-height:1.5}
+.list{margin:0;padding-left:18px;font-size:13px;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid #243049}
+.chip.ok{border-color:#2f6b4f;color:#6ddea8}.chip.bad{border-color:#6b3a2f;color:#f0a674}
 </style></head>
 <body><main>
 <h1>Autlantic Billing</h1>
 <p class="muted">${shopDomain}</p>
 ${saved ? '<p class="ok">Saved.</p>' : ""}
+${
+    tested === "1"
+      ? `<p class="ok">Test connection OK${testMsg ? `: ${escapeHtml(testMsg)}` : ""}.</p>`
+      : tested === "0"
+        ? `<p class="warn">Test connection failed${testMsg ? `: ${escapeHtml(testMsg)}` : ""}.</p>`
+        : ""
+  }
 <p class="${configured ? "ok" : "warn"}">${
     configured
       ? "Autlantic merchant connected. Ready for payment sessions."
       : "Connect this store’s Autlantic merchant below (from portal.autlantic.com)."
   }</p>
+<div class="card">
+<p><strong>Readiness</strong></p>
+<div class="chips">${readiness
+    .map((r) => `<span class="chip ${r.ok ? "ok" : "bad"}">${r.ok ? "OK" : "Missing"} · ${r.label}</span>`)
+    .join("")}</div>
+${lastFail ? `<p class="warn" style="margin-top:12px">Last error: ${escapeHtml(lastFail.type)} · ${escapeHtml(lastFail.message)}</p>` : ""}
+</div>
 <div class="card">
 <form method="post" action="/app/settings">
 <input type="hidden" name="shop" value="${shopDomain}" />
@@ -177,14 +225,35 @@ ${saved ? '<p class="ok">Saved.</p>' : ""}
 <input name="billingApiUrl" value="${shop.billingApiUrl || "https://billing.autlantic.com"}" />
 <button type="submit">Save Autlantic merchant</button>
 </form>
+<form method="post" action="/app/test-connection" style="margin-top:8px">
+<input type="hidden" name="shop" value="${shopDomain}" />
+<input type="hidden" name="csrf" value="${csrf}" />
+<button type="submit" class="secondary">Test connection (listProducts)</button>
+</form>
 </div>
 <div class="card">
 <p><strong>Webhook URL for this store</strong></p>
 <p class="muted">In the Autlantic portal, register a webhook endpoint (Test and/or Live) pointing here. Use this store’s signing secret.</p>
 <p><code>${webhookUrl}</code></p>
 </div>
+<div class="card">
+<p><strong>Recent activity</strong></p>
+${activityHtml}
+</div>
+<div class="card">
+<p><strong>Recent payment sessions</strong></p>
+${sessionsHtml}
+</div>
 </main></body></html>`);
 });
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
 
 app.post("/app/settings", async (c) => {
   const body = await c.req.parseBody();
@@ -208,6 +277,48 @@ app.post("/app/settings", async (c) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Save failed";
     return c.text(message, 400);
+  }
+});
+
+app.post("/app/test-connection", async (c) => {
+  const body = await c.req.parseBody();
+  const shopDomain = normalizeShopDomain(String(body.shop ?? ""));
+  if (!shopDomain) return c.text("Missing shop", 400);
+  if (!requireShopSession(c, shopDomain)) {
+    return c.redirect(`/auth?shop=${encodeURIComponent(shopDomain)}`, 302);
+  }
+  if (!verifyCsrfToken(String(body.csrf ?? ""), shopDomain)) {
+    return c.text("Invalid CSRF token", 403);
+  }
+  const shop = await getShop(shopDomain);
+  if (!shop || !shopBillingConfigured(shop)) {
+    return c.redirect(
+      `/app/settings?shop=${encodeURIComponent(shopDomain)}&tested=0&test_msg=${encodeURIComponent("Save API key, webhook secret, and payout first")}`,
+      302,
+    );
+  }
+  try {
+    const billing = createBillingForShop(shop);
+    const mode = billingModeFromApiKey(shop.billingApiKey);
+    const listed = await billing.listProducts();
+    const count = Array.isArray(listed.products) ? listed.products.length : 0;
+    await addActivity({
+      ok: true,
+      type: "test_connection",
+      message: `listProducts mode=${mode} products=${count}`,
+      shopDomain,
+    });
+    return c.redirect(
+      `/app/settings?shop=${encodeURIComponent(shopDomain)}&tested=1&test_msg=${encodeURIComponent(`mode=${mode} products=${count}`)}`,
+      302,
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "test failed";
+    await addActivity({ ok: false, type: "test_connection", message, shopDomain });
+    return c.redirect(
+      `/app/settings?shop=${encodeURIComponent(shopDomain)}&tested=0&test_msg=${encodeURIComponent(message.slice(0, 160))}`,
+      302,
+    );
   }
 });
 
@@ -321,6 +432,13 @@ app.post("/payment", async (c) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "payment session failed";
     await addActivity({ ok: false, type: "payment_session", message, shopDomain });
+    if (gid) {
+      try {
+        await markSession(gid, "rejected", { lastError: message.slice(0, 240) });
+      } catch {
+        /* session may not exist yet */
+      }
+    }
     return c.json({ error: message }, 500);
   }
 });
@@ -362,23 +480,87 @@ app.get("/payment/cancel", async (c) => {
 app.post("/refund", async (c) => {
   const shopDomain = normalizeShopDomain(c.req.header("Shopify-Shop-Domain") ?? "");
   const body = await c.req.json<Record<string, unknown>>();
-  const gid = String(body.id ?? body.gid ?? "");
+  const refundGid = String(body.id ?? body.gid ?? "");
+  const paymentGid = String(
+    body.payment_id ??
+      body.paymentId ??
+      (body.payment as { id?: string } | undefined)?.id ??
+      "",
+  );
+  const amountRaw =
+    (body.amount as { value?: string } | undefined)?.value ??
+    (typeof body.amount === "string" || typeof body.amount === "number" ? body.amount : undefined);
+  const amountUsdc = amountRaw != null ? Number(amountRaw) : undefined;
   const shop = shopDomain ? await getShop(shopDomain) : null;
-  if (!gid || !shopDomain || !shop?.accessToken) {
+  if (!refundGid || !shopDomain || !shop?.accessToken) {
     return c.json({ error: "missing refund session context" }, 400);
   }
+
+  const session = paymentGid ? await getSession(paymentGid) : null;
+  const paymentId = session?.paymentId?.trim() ?? "";
+
+  if (!paymentId || !shopBillingConfigured(shop)) {
+    try {
+      await refundSessionReject({
+        shopDomain,
+        accessToken: shop.accessToken,
+        gid: refundGid,
+        reasonMessage: paymentId
+          ? "Autlantic merchant credentials missing. Open Autlantic Billing settings."
+          : "No Autlantic payment id on this session. Refund from the Autlantic portal or wait for payment.paid.",
+      });
+      await addActivity({
+        ok: false,
+        type: "refund_session",
+        message: paymentId ? "rejected: billing not configured" : "rejected: missing payment id",
+        shopDomain,
+      });
+      return c.json({ ok: true, rejected: true }, 200);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "refund reject failed";
+      await addActivity({ ok: false, type: "refund_session", message, shopDomain });
+      return c.json({ error: message }, 500);
+    }
+  }
+
   try {
-    await refundSessionReject({
+    const billing = createBillingForShop(shop);
+    await billing.refundPayment(
+      paymentId,
+      Number.isFinite(amountUsdc) && (amountUsdc as number) > 0
+        ? { amountUsdc: amountUsdc as number }
+        : {},
+    );
+    await refundSessionResolve({
       shopDomain,
       accessToken: shop.accessToken,
-      gid,
-      reasonMessage:
-        "Autlantic one-time payment-link refunds are manual. Send USDC back from the merchant payout wallet.",
+      gid: refundGid,
     });
-    await addActivity({ ok: true, type: "refund_session", message: `rejected ${gid}`, shopDomain });
+    if (session) {
+      await markSession(session.gid, "refunded", { lastError: null });
+    }
+    await addActivity({
+      ok: true,
+      type: "refund_session",
+      message: `refundPayment ${paymentId} resolved ${refundGid}`,
+      shopDomain,
+    });
     return c.json({ ok: true }, 200);
   } catch (err) {
     const message = err instanceof Error ? err.message : "refund session failed";
+    try {
+      await refundSessionReject({
+        shopDomain,
+        accessToken: shop.accessToken,
+        gid: refundGid,
+        reasonMessage: message.slice(0, 200),
+      });
+    } catch {
+      /* best effort */
+    }
+    if (session) {
+      await markSession(session.gid, session.status, { lastError: message.slice(0, 240) });
+    }
     await addActivity({ ok: false, type: "refund_session", message, shopDomain });
     return c.json({ error: message }, 500);
   }
@@ -399,7 +581,7 @@ app.post("/webhooks/autlantic/:shop", async (c) => {
   if (!verified.ok) {
     await addActivity({
       ok: false,
-      type: "",
+      type: "webhook_signature",
       message: `signature ${verified.reason ?? "unknown"}`,
       shopDomain,
     });
@@ -421,6 +603,8 @@ app.post("/webhooks/autlantic/:shop", async (c) => {
   try {
     if (type === "payment.paid") {
       await handlePaymentPaid(event.data as Record<string, unknown>, shopDomain);
+    } else if (type === "payment.refunded") {
+      await handlePaymentRefunded(event.data as Record<string, unknown>, shopDomain);
     }
     if (eventId) await markProcessed(eventId);
     await addActivity({ ok: true, type, message: eventId || "accepted", shopDomain });
@@ -440,6 +624,7 @@ async function handlePaymentPaid(
   const metadata = (payment.metadata as Record<string, string> | undefined) ?? {};
   const gid = metadata.shopify_payment_gid ?? "";
   const linkId = metadata.paymentLinkId ?? "";
+  const paymentId = String(payment.id ?? "");
   const session =
     (gid ? await getSession(gid) : null) ??
     (linkId ? await findSessionByPaymentLink(linkId) : null);
@@ -456,7 +641,37 @@ async function handlePaymentPaid(
     accessToken: shop.accessToken,
     gid: session.gid,
   });
-  await markSession(session.gid, "resolved");
+  await markSession(session.gid, "resolved", {
+    paymentId: paymentId || undefined,
+    lastError: null,
+  });
+}
+
+async function handlePaymentRefunded(
+  data: Record<string, unknown>,
+  expectedShop: string,
+): Promise<void> {
+  const payment = (data.payment as Record<string, unknown> | undefined) ?? data;
+  const metadata = (payment.metadata as Record<string, string> | undefined) ?? {};
+  const gid = metadata.shopify_payment_gid ?? "";
+  const linkId = metadata.paymentLinkId ?? "";
+  const paymentId = String(payment.id ?? "");
+  const session =
+    (gid ? await getSession(gid) : null) ??
+    (linkId ? await findSessionByPaymentLink(linkId) : null) ??
+    (paymentId
+      ? (
+          await listRecentSessions(expectedShop, 50)
+        ).find((row) => row.paymentId === paymentId) ?? null
+      : null);
+  if (!session) return;
+  if (normalizeShopDomain(session.shopDomain) !== normalizeShopDomain(expectedShop)) {
+    throw new Error("Webhook shop does not match payment session shop");
+  }
+  await markSession(session.gid, "refunded", {
+    paymentId: paymentId || session.paymentId,
+    lastError: null,
+  });
 }
 
 const port = Number(process.env.PORT ?? 3458);

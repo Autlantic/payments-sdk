@@ -72,8 +72,26 @@ Status: **enterprise-proven** for Magento one-time checkout + webhooks + admin o
 | Multi-merchant OAuth + per-shop Autlantic settings | Owned code |
 | HMAC + GDPR/uninstall webhooks | Owned code |
 | App config `embedded=false` | Owned code |
+| Merchant diagnostics (readiness, test connection, activity, session ids / last error) | Owned code (**1.1.1**) |
+| One-time `refundPayment` + `payment.refunded` session update | Owned code (**1.1.1**); needs Payments Partner for live refund sessions |
 | Payments extension live checkout | **blocked (external)** on Payments Partner |
 | Custom wiring (SDK + payment links + Admin API) | Documented; not a substitute for native checkout listing |
+
+### Shopify owned-code proof (2026-11-20)
+
+Automated: `pnpm --filter @autlantic/shopify-billing smoke` + `typecheck` + `build`.
+
+Runtime (local Postgres + real Autlantic Test API; Shopify Payments Apps GraphQL stubbed via `AUTLANTIC_SHOPIFY_E2E_STUB=1` only for that harness):
+
+```bash
+set -a && source /path/to/billing-e2e.env && set +a
+DATABASE_URL=postgresql://localhost/shopify_autlantic_e2e DATABASE_SSL=false \
+  pnpm --filter @autlantic/shopify-billing e2e
+```
+
+Observed: `ENTERPRISE_PROVEN_SHOPIFY_OWNED_E2E_OK` (test-connection, Autlantic HMAC, payment.paid → payment id, refundPayment → Billing `refunded`, payment.refunded, Shopify bad HMAC).
+
+Status: **owned code enterprise-ready** for OAuth, per-shop credentials, HMAC/GDPR, admin diagnostics, and refundPayment wiring. Native Checkout listing remains **blocked (external)** until Payments Partner approval.
 
 ## Reporting
 
