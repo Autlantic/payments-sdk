@@ -35,7 +35,7 @@ bash integrations/woocommerce/bin/package.sh
 # → integrations/woocommerce/dist/autlantic-billing-1.1.6.zip
 ```
 
-Upload via Plugins → Add New. The zip vendors `autlantic/billing` (no Composer on the store). Prefer the [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) zip (**1.1.6**) for stores.
+Install from [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) (**1.1.6**), or upload the vendored zip from [GitHub releases](https://github.com/Autlantic/woocommerce-autlantic/releases). The zip vendors `autlantic/billing` (no Composer on the store).
 
 **Monorepo / development**
 
@@ -46,7 +46,7 @@ composer install
 
 Symlink into `wp-content/plugins/autlantic-billing`, then activate. Requires WordPress **6.2+**, WooCommerce **8.0+**, PHP **8.1+**. Store currency **USD** or **USDC**.
 
-Optional: [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) for week / month / year plans (interval 1).
+Optional: [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) for week / month / year. Week and month support `intervalCount` 1–12; year stays every 1.
 
 ## Quick start
 

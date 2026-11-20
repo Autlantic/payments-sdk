@@ -4,7 +4,7 @@ Official store plugins for **USDC on Base** via the hosted Autlantic Billing API
 
 | Platform | Status | Install | Source |
 |----------|--------|---------|--------|
-| **WooCommerce** | Available (**1.1.3**) | [GitHub release zip](https://github.com/Autlantic/woocommerce-autlantic/releases) | [`integrations/woocommerce`](https://github.com/Autlantic/payments-sdk/tree/main/integrations/woocommerce) · mirror [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic) |
+| **WooCommerce** | Available (**1.1.6**) | [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) · [GitHub release zip](https://github.com/Autlantic/woocommerce-autlantic/releases) | [`integrations/woocommerce`](https://github.com/Autlantic/payments-sdk/tree/main/integrations/woocommerce) · mirror [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic) |
 | **Magento 2** | Available (**1.1.0**) | Packagist [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) | [`integrations/magento`](https://github.com/Autlantic/payments-sdk/tree/main/integrations/magento) · mirror [magento-autlantic](https://github.com/Autlantic/magento-autlantic) |
 | **Shopify** | Checkout **blocked (external)** on Payments Partner; custom wiring available | See [Shopify](#shopify) below | [`integrations/shopify`](https://github.com/Autlantic/payments-sdk/tree/main/integrations/shopify) · mirror [shopify-autlantic](https://github.com/Autlantic/shopify-autlantic) |
 
@@ -17,11 +17,11 @@ Store currency must be **USD** or **USDC**. You need a merchant portal API key (
 3. Customer pays on hosted Autlantic checkout
 4. `payment.paid` webhook (header `x-autlantic-signature`) marks the order paid
 
-One-time payments support `POST /v1/payments/:id/refund` (ledger + `payment.refunded` webhook). Live settlement is non-custodial, so Autlantic does not pull USDC from the merchant wallet; optional `refundTxHash` when the merchant already sent funds back. Invoice refunds via API apply where an Autlantic invoice id exists (WooCommerce Subscriptions path).
+One-time payments support `POST /v1/payments/:id/refund` (ledger + `payment.refunded` webhook). Live settlement is non-custodial, so Autlantic does not pull USDC from the merchant wallet; optional `refundTxHash` when the merchant already sent funds back. Invoice refunds via API apply where an Autlantic invoice id exists (WooCommerce Subscriptions path). WooCommerce **1.1.5+** maps the Woo Refund button to `refundPayment` for one-time checkouts.
 
 ## WooCommerce
 
-WordPress plugin zip with the PHP SDK vendored. Download **1.1.3** from [GitHub releases](https://github.com/Autlantic/woocommerce-autlantic/releases) and upload under Plugins → Add New.
+Plugin slug: [`autlantic-billing-for-woocommerce`](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) **1.1.6**. Install from WordPress.org (Plugins → Add New → search Autlantic), or upload the vendored zip from [GitHub releases](https://github.com/Autlantic/woocommerce-autlantic/releases).
 
 1. WooCommerce → Settings → Payments → **Autlantic Billing**
 2. Paste API key and webhook signing secret
@@ -29,7 +29,7 @@ WordPress plugin zip with the PHP SDK vendored. Download **1.1.3** from [GitHub 
 
    `https://your-store.example/wp-json/autlantic/v1/webhook`
 
-Optional soft dependency: [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) (week / month / year, interval 1). Full README: [integrations/woocommerce](https://github.com/Autlantic/payments-sdk/blob/main/integrations/woocommerce/README.md).
+Optional soft dependency: [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/). Week / month plans support `intervalCount` **1–12** (every N weeks or months); year stays every **1**. Full README: [integrations/woocommerce](https://github.com/Autlantic/payments-sdk/blob/main/integrations/woocommerce/README.md).
 
 ## Magento 2
 

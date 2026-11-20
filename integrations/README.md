@@ -21,7 +21,7 @@ Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Lan
 
 | Integration | Path | Status | Install |
 |-------------|------|--------|---------|
-| WooCommerce | [`woocommerce/`](./woocommerce) | Published (zip **1.1.3**) | [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) |
+| WooCommerce | [`woocommerce/`](./woocommerce) | Published (**1.1.6**) | [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) · [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) |
 | Magento 2 | [`magento/`](./magento) | Published (Packagist **1.1.0**) | [`composer require autlantic/module-billing:^1.1`](https://packagist.org/packages/autlantic/module-billing) |
 | Shopify | [`shopify/`](./shopify) | Source published; checkout **blocked (external)** on Payments Partner; [custom wiring](https://docs.autlantic.com/guide/commerce#shopify) | [shopify-autlantic](https://github.com/Autlantic/shopify-autlantic) |
 
@@ -30,7 +30,7 @@ Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Lan
 - One-time checkout uses single-use Autlantic **payment links** and hosted checkout
 - Webhooks use `x-autlantic-signature` and the portal endpoint secret
 - Store currency must be **USD** or **USDC**
-- One-time payment-link **refunds are manual**; invoice refunds apply where an Autlantic invoice id exists (Woo subscriptions path)
+- WooCommerce **1.1.5+** one-time refunds via `refundPayment` / `payment.refunded`; Magento credit memo still invoice-backed; invoice refunds apply where an Autlantic invoice id exists (Woo subscriptions path)
 
 Publishing / mirrors: [`sdks/PUBLISHING.md`](../sdks/PUBLISHING.md) · Docs: [Commerce plugins](https://docs.autlantic.com/guide/commerce).
 

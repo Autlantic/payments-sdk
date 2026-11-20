@@ -25,7 +25,7 @@ Store currency must be USD or USDC. You need an Autlantic merchant API key and a
 
 == Installation ==
 
-1. Upload the plugin zip via Plugins → Add New → Upload, or copy `autlantic-billing-for-woocommerce` into `wp-content/plugins/`.
+1. Install from WordPress.org (Plugins → Add New → search Autlantic Billing), or upload the plugin zip / copy `autlantic-billing-for-woocommerce` into `wp-content/plugins/`.
 2. Activate **Autlantic Billing for WooCommerce**. WooCommerce must already be active (Requires Plugins: woocommerce).
 3. Go to WooCommerce → Settings → Payments → Autlantic Billing.
 4. Paste your API key (`abk_test_…` or `abk_live_…`) and webhook signing secret.

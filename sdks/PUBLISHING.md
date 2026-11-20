@@ -38,20 +38,22 @@ git push origin sdks/php/v0.1.1
 
 ## WooCommerce plugin
 
-Source of truth: `integrations/woocommerce`. Distribution mirror: **https://github.com/Autlantic/woocommerce-autlantic** (root = plugin). WordPress stores should install the vendored zip from a GitHub release, not Composer.
+Source of truth: `integrations/woocommerce`. Distribution mirror: **https://github.com/Autlantic/woocommerce-autlantic** (root = plugin). WordPress.org slug: [`autlantic-billing-for-woocommerce`](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/). Stores can install from WordPress.org or the vendored GitHub release zip (not Composer).
 
 ### One-time
 
 1. Create the empty public repo `Autlantic/woocommerce-autlantic`.
 2. Add GitHub Actions secret **`WOOCOMMERCE_MIRROR_TOKEN`** on payments-sdk (PAT with `contents:write` on that repo) so `.github/workflows/sync-woocommerce-mirror.yml` can push on `integrations/woocommerce/v*` tags.
+3. WordPress.org plugin is already approved under contributor `autlantic`.
 
 ### Re-publish
 
 ```bash
 # bump Version in integrations/woocommerce/autlantic-billing.php and readme.txt Stable tag
 bash integrations/woocommerce/bin/package.sh
-git tag -a integrations/woocommerce/v1.1.1 -m "autlantic-billing 1.1.1"
-git push origin integrations/woocommerce/v1.1.1
+git tag -a integrations/woocommerce/v1.1.6 -m "autlantic-billing 1.1.6"
+git push origin integrations/woocommerce/v1.1.6
+# then SVN: update plugins.svn.wordpress.org/.../trunk from the zip, svn cp trunk tags/1.1.6
 ```
 
 ## Magento 2 module

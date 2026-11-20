@@ -5,7 +5,7 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 
 **USDC on Base** · secrets server-only.
 
-`@autlantic/payments-recurring`
+[`@autlantic/payments-recurring`](https://www.npmjs.com/package/@autlantic/payments-recurring) **0.3.24** on npm (engine **0.3.28** / core **0.2.14** on the hosted stack). Includes `refundPayment`, `intervalCount` on create, and platform connected-merchant methods. Do not use **0.3.23** (broken workspace deps).
 
 ## Test vs Live
 
@@ -56,12 +56,13 @@ AutlanticBilling.fromEnv();
 | `createPayment(input)` | Create one-time USDC payment + `/checkout/pay/:id` (optional `couponCode` **0.3.15+**) |
 | `getPayment(id)` | Fetch one-time payment |
 | `confirmPayment(id, { txHash? })` | Confirm one-time payment |
+| `refundPayment(id, { amountUsdc?, refundTxHash? })` | Refund a paid one-time payment (`payment.refunded`; **0.3.21+**) |
 | `createPaymentLink(input)` | Create shareable payment link + `/checkout/link/:id` |
 | `listPaymentLinks()` | List payment links |
 | `getPaymentLink(id)` | Fetch a payment link |
 | `disablePaymentLink(id)` | Disable a payment link |
 | `openPaymentLink(id, { customerWallet })` | Mint a one-time payment from a link |
-| `createSubscription(input)` | Create incomplete subscription + open invoice (`priceId` or `amountUsdc` + `interval`; optional `couponCode` **0.3.15+**) |
+| `createSubscription(input)` | Create incomplete subscription + open invoice (`priceId` or `amountUsdc` + `interval` + optional `intervalCount` **0.3.22+**; optional `couponCode` **0.3.15+**) |
 | `listSubscriptions({ status? })` | List merchant subscriptions |
 | `getSubscription(id)` | Fetch subscription |
 | `updateSubscription(id, input)` | Update amount, interval, plan, metadata |
@@ -75,6 +76,8 @@ AutlanticBilling.fromEnv();
 | `chargeInvoice(id, sandboxMode?)` | Attempt invoice payment |
 | `refundInvoice(id, { amountUsdc? })` | Refund a paid invoice |
 | `voidInvoice(id)` | Void an open invoice |
+| `createConnectedMerchant` / `listConnectedMerchants` / `getConnectedMerchant` / `updateConnectedMerchant` / `disableConnectedMerchant` | Platform Connect lifecycle (**0.3.24+**; hosted only) |
+| `createConnectedApiKey` / `createConnectedWebhookEndpoint` / `listConnectedWebhookEndpoints` | Keys and webhooks for a connected store (**0.3.24+**) |
 
 ### Payment links
 
@@ -108,7 +111,7 @@ import {
 
 Header: `x-autlantic-signature`. Verify with the portal endpoint secret for Test or Live. Argument order: `(secret, rawBody, signatureHeader)`.
 
-Events include `subscription.*`, `invoice.*`, and `payment.created` / `payment.paid` (one-time and payment-link flows).
+Events include `subscription.*`, `invoice.*`, and `payment.created` / `payment.paid` / `payment.refunded` (one-time and payment-link flows).
 
 ### Errors and debugging
 

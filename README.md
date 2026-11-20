@@ -80,7 +80,7 @@ Full guides: [docs.autlantic.com](https://docs.autlantic.com)
 
 Most integrators only need `@autlantic/payments-recurring`.
 
-Official non-TypeScript and mobile Checkout SDKs live under [`sdks/`](./sdks) (Python, Go, PHP, Java, .NET, iOS, Android, Flutter, React Native). Commerce plugins: [`integrations/`](./integrations) — WooCommerce (published zip), Magento 2 (Composer module), Shopify (offsite payments app; Checkout listing needs Shopify Payments Partner approval). See [Languages and SDKs](https://docs.autlantic.com/guide/languages) and [`integrations/README.md`](./integrations/README.md).
+Official non-TypeScript and mobile Checkout SDKs live under [`sdks/`](./sdks) (Python, Go, PHP, Java, .NET, iOS, Android, Flutter, React Native). Commerce plugins: [`integrations/`](./integrations) — WooCommerce **1.1.6** ([WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) + GitHub zip), Magento 2 (Composer module **1.1.0**), Shopify (offsite payments app; Checkout listing needs Shopify Payments Partner approval). See [Languages and SDKs](https://docs.autlantic.com/guide/languages) and [`integrations/README.md`](./integrations/README.md).
 
 ## Features
 

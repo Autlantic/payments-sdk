@@ -2,11 +2,11 @@
 
 | Package | Role |
 |---------|------|
-| `@autlantic/payments-recurring` | Merchant SDK (subscriptions, one-time payments, payment links, webhooks) |
+| `@autlantic/payments-recurring` | Merchant SDK (subscriptions, one-time payments, payment links, webhooks, platform Connect) · npm **0.3.24** |
 | `@autlantic/billing-checkout-ui` | Ready-to-use React **PAY / SUBSCRIBE** start CTA (+ wallet helpers) |
-| `@autlantic/payments-recurring-core` | Types, intervals, retry policy |
+| `@autlantic/payments-recurring-core` | Types, intervals, retry policy · npm **0.2.14** |
 | `@autlantic/chain-evm` | Base + USDC + vault + preflight |
-| `@autlantic/billing-engine` | Subscriptions, invoices, payment links, refunds, webhook dispatch |
+| `@autlantic/billing-engine` | Subscriptions, invoices, payment links, refunds, webhook dispatch · npm **0.3.28** |
 
 Most integrators only install `@autlantic/payments-recurring`. Add `@autlantic/billing-checkout-ui` when you want the branded [Autlantic PAY / SUBSCRIBE](/guide/autlantic-pay-button) button on your product page.
 

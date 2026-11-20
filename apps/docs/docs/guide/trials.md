@@ -66,7 +66,7 @@ Grant **trial access** when the mandate is active and status is `trialing`. Conv
 **Hosted test matrix (proven on billing.autlantic.com):**
 
 1. Engine unit tests for create / mandate-without-charge / charge-after-due / cancel-in-trial
-2. Published npm (`billing-engine@0.3.23`+) pinned on billing-hosting `production`
+2. Published npm (`billing-engine@0.3.28`+) pinned on billing-hosting `production`
 3. Hosted API E2E: `trialDays=7` → activate mandate $0 (stay `trialing`) → test clock past `dueAt` → charge → `active`; cancel-in-trial voids invoice; `trialDays=0` still incomplete→paid
 4. Hosted checkout UI E2E (test mode): `Total due today` = `0.00 USDC`, consent `0.00 USDC today`, sandbox CTA **Start trial in test mode**, success **Trial started** / charged today `0.00 USDC`; `/status` returns `checkoutPhase: trial_active` + `trialStarted: true` with no paid invoice
 

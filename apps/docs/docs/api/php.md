@@ -9,7 +9,7 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 composer require autlantic/billing
 ```
 
-Packagist: [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.0**. Mirror: [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php). Source of truth remains `sdks/php` in payments-sdk.
+Packagist: [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.0**. Monorepo source and WooCommerce **1.1.6** vendor ship **0.1.1** (platform Connect client methods). Mirror: [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php). Source of truth remains `sdks/php` in payments-sdk.
 
 VCS fallback (if you cannot use Packagist):
 
@@ -52,17 +52,21 @@ Hosted mode only. Pins `Autlantic-Version: 2026-01-01`. Idempotent POSTs and ret
 | Method | Description |
 |--------|-------------|
 | `listProducts()` | Catalog |
-| `createSubscription($body)` | Incomplete subscription + checkout URL |
+| `createSubscription($body)` | Incomplete subscription + checkout URL (optional `intervalCount`) |
 | `getSubscription($id)` | Fetch |
 | `activateSubscription($id)` | Activate |
 | `cancelSubscription($id, $body)` | Cancel |
 | `createPayment($body)` | One-time payment |
 | `getPayment($id)` | Fetch |
+| `refundPayment($id, $body)` | One-time refund (`payment.refunded`) |
+| `refundInvoice($id, $body)` | Invoice refund |
 | `createPaymentLink($body)` | Shareable link |
 | `listPaymentLinks()` | List |
 | `getPaymentLink($id)` | Fetch |
 | `disablePaymentLink($id)` | Disable |
 | `listInvoices($subscriptionId)` | List invoices |
+| `createConnectedMerchant` / `listConnectedMerchants` / `getConnectedMerchant` / `updateConnectedMerchant` / `disableConnectedMerchant` | Platform Connect (**0.1.1** source; not yet on Packagist **0.1.0**) |
+| `createConnectedApiKey` / `createConnectedWebhookEndpoint` / `listConnectedWebhookEndpoints` | Connected store keys / webhooks (**0.1.1**) |
 
 ## Webhooks
 

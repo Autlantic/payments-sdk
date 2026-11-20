@@ -72,7 +72,7 @@ Env vars:
 | `createCoupon(input)` | Create coupon (percent or fixed USDC off; optional scopeKey/metadata) |
 | `updateCoupon(id, input)` | Update coupon fields / active |
 | `deleteCoupon(id)` | Delete coupon |
-| `createSubscription(input)` | Create incomplete subscription + open invoice (`priceId` or `amountUsdc` + `interval`; optional `couponCode` **0.3.15+**) |
+| `createSubscription(input)` | Create incomplete subscription + open invoice (`priceId` or `amountUsdc` + `interval` + optional `intervalCount` **0.3.22+**; optional `couponCode` **0.3.15+**) |
 | `listSubscriptions({ status? })` | List merchant subscriptions (key mode) |
 | `getSubscription(id)` | Fetch subscription |
 | `updateSubscription(id, input)` | Update amount, interval, plan, metadata |
@@ -87,6 +87,8 @@ Env vars:
 | `refundInvoice(id, { amountUsdc? })` | Refund a paid invoice |
 | `refundPayment(id, { amountUsdc?, refundTxHash? })` | Refund a paid one-time payment (`payment.refunded`) |
 | `voidInvoice(id)` | Void an open invoice |
+| `createConnectedMerchant` / `listConnectedMerchants` / `getConnectedMerchant` / `updateConnectedMerchant` / `disableConnectedMerchant` | Platform Connect lifecycle (**0.3.24+**; hosted only) |
+| `createConnectedApiKey` / `createConnectedWebhookEndpoint` / `listConnectedWebhookEndpoints` | Keys and webhooks for a connected store (**0.3.24+**) |
 
 ### Webhooks
 
