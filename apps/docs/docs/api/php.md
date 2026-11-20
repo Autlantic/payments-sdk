@@ -65,7 +65,7 @@ Hosted mode only. Pins `Autlantic-Version: 2026-01-01`. Idempotent POSTs and ret
 | `getPaymentLink($id)` | Fetch |
 | `disablePaymentLink($id)` | Disable |
 | `listInvoices($subscriptionId)` | List invoices |
-| `createConnectedMerchant` / `listConnectedMerchants` / `getConnectedMerchant` / `updateConnectedMerchant` / `disableConnectedMerchant` | Platform Connect (**0.1.1** source; not yet on Packagist **0.1.0**) |
+| `provisionConnectedMerchant` / `listConnectedMerchants` / `getConnectedMerchant` / `updateConnectedMerchant` / `disableConnectedMerchant` | Platform Connect (**0.1.1** source; not yet on Packagist **0.1.0**) |
 | `createConnectedApiKey` / `createConnectedWebhookEndpoint` / `listConnectedWebhookEndpoints` | Connected store keys / webhooks (**0.1.1**) |
 
 ## Webhooks

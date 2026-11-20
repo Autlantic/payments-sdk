@@ -87,7 +87,7 @@ Env vars:
 | `refundInvoice(id, { amountUsdc? })` | Refund a paid invoice |
 | `refundPayment(id, { amountUsdc?, refundTxHash? })` | Refund a paid one-time payment (`payment.refunded`) |
 | `voidInvoice(id)` | Void an open invoice |
-| `createConnectedMerchant` / `listConnectedMerchants` / `getConnectedMerchant` / `updateConnectedMerchant` / `disableConnectedMerchant` | Platform Connect lifecycle (**0.3.24+**; hosted only) |
+| `provisionConnectedMerchant` / `listConnectedMerchants` / `getConnectedMerchant` / `updateConnectedMerchant` / `disableConnectedMerchant` | Platform Connect lifecycle (**0.3.24+**; hosted only) |
 | `createConnectedApiKey` / `createConnectedWebhookEndpoint` / `listConnectedWebhookEndpoints` | Keys and webhooks for a connected store (**0.3.24+**) |
 
 ### Webhooks
