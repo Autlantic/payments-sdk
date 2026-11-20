@@ -22,7 +22,7 @@ Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Lan
 | Integration | Path | Status | Install |
 |-------------|------|--------|---------|
 | WooCommerce | [`woocommerce/`](./woocommerce) | Published (**1.1.6**) | [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) · [GitHub release](https://github.com/Autlantic/woocommerce-autlantic/releases) |
-| Magento 2 | [`magento/`](./magento) | Published (Packagist **1.1.0**) | [`composer require autlantic/module-billing:^1.1`](https://packagist.org/packages/autlantic/module-billing) |
+| Magento 2 | [`magento/`](./magento) | Published (Packagist **1.1.1**) | [`composer require autlantic/module-billing:^1.1`](https://packagist.org/packages/autlantic/module-billing) |
 | Shopify | [`shopify/`](./shopify) | Source published; checkout **blocked (external)** on Payments Partner; [custom wiring](https://docs.autlantic.com/guide/commerce#shopify) | [shopify-autlantic](https://github.com/Autlantic/shopify-autlantic) |
 
 ## Shared behavior

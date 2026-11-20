@@ -26,7 +26,10 @@ class TestConnection extends Field
 
         return '<button type="button" class="action-default scalable" id="autlantic-test-connection"'
             . ' data-mage-init="' . $mageInit . '">'
-            . $this->escapeHtml(__('Test connection')) . '</button> '
-            . '<span id="autlantic-test-result"></span>';
+            . $this->escapeHtml(__('Test readiness')) . '</button> '
+            . '<span id="autlantic-test-result"></span>'
+            . '<p class="note">' . $this->escapeHtml(__(
+                'Proves API key, webhook secret, and payout wallet (creates then disables a $1 payment link).',
+            )) . '</p>';
     }
 }

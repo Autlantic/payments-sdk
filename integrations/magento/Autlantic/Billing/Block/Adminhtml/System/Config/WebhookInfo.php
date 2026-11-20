@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Autlantic\Magento\Block\Adminhtml\System\Config;
 
 use Autlantic\Magento\Helper\ActivityLog;
+use Autlantic\Magento\Helper\CheckoutErrors;
 use Autlantic\Magento\Helper\Config;
 use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
@@ -16,6 +17,7 @@ class WebhookInfo extends Field
         Context $context,
         private readonly Config $config,
         private readonly ActivityLog $activityLog,
+        private readonly CheckoutErrors $checkoutErrors,
         array $data = [],
     ) {
         parent::__construct($context, $data);
@@ -26,6 +28,22 @@ class WebhookInfo extends Field
         $url = $this->escapeHtml($this->config->getWebhookUrl());
         $html = '<p><strong>' . __('Webhook URL') . '</strong><br/><code style="user-select:all">'
             . $url . '</code></p>';
+
+        $last = $this->checkoutErrors->last();
+        if ($last !== null) {
+            $when = $last['at'] > 0 ? date('Y-m-d H:i:s', $last['at']) : '';
+            $html .= '<div class="message message-warning" style="margin:8px 0;">'
+                . '<strong>' . __('Last checkout error') . '</strong>'
+                . ($when !== '' ? ' <span>(' . $this->escapeHtml($when) . ')</span>' : '')
+                . '<br/>' . $this->escapeHtml($last['message']);
+            if ($last['code'] !== '') {
+                $html .= ' <code>' . $this->escapeHtml($last['code']) . '</code>';
+            }
+            if ($last['request_id'] !== '') {
+                $html .= ' <code>req ' . $this->escapeHtml($last['request_id']) . '</code>';
+            }
+            $html .= '</div>';
+        }
 
         $rows = array_reverse($this->activityLog->all());
         $html .= '<p><strong>' . __('Recent webhooks') . '</strong></p>';

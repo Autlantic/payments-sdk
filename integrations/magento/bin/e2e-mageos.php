@@ -325,21 +325,27 @@ if ($orderPayment === null) {
     fail('order payment missing');
 }
 $invoiceId = OrderMeta::get($order, OrderMeta::INVOICE_ID);
-if ($invoiceId === '') {
+$storedPaymentId = OrderMeta::get($order, OrderMeta::PAYMENT_ID);
+if ($invoiceId === '' && $storedPaymentId === '') {
     try {
         $method->refund($orderPayment, 1.0);
-        fail('refund without invoice id should throw');
+        fail('refund without invoice or payment id should throw');
     } catch (\Throwable $e) {
-        pass('refund correctly blocked without Autlantic invoice id');
+        pass('refund correctly blocked without Autlantic invoice/payment id');
     }
-    // Attach a fake invoice id is wrong against live API. Instead call refundInvoice only if we have real invoice.
-    pass('refund claim limited to invoice-backed orders (correct for payment-link checkouts)');
-} else {
+} elseif ($invoiceId !== '') {
     try {
         $method->refund($orderPayment, min(1.0, (float) $order->getGrandTotal()));
         pass('refundInvoice requested for invoice ' . $invoiceId);
     } catch (\Throwable $e) {
         fail('refund failed: ' . $e->getMessage());
+    }
+} else {
+    try {
+        $method->refund($orderPayment, min(1.0, (float) $order->getGrandTotal()));
+        pass('refundPayment requested for payment ' . $storedPaymentId);
+    } catch (\Throwable $e) {
+        fail('refundPayment failed: ' . $e->getMessage());
     }
 }
 

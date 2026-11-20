@@ -13,8 +13,11 @@ $sdk = dirname(__DIR__, 3) . '/sdks/php/src';
 $required = [
     $sdk . '/Webhook.php',
     $sdk . '/AutlanticBillingException.php',
+    $sdk . '/AutlanticBilling.php',
     $root . '/Autlantic/Billing/view/frontend/web/js/view/payment/method-renderer/autlantic.js',
     $root . '/Autlantic/Billing/Helper/OrderIndex.php',
+    $root . '/Autlantic/Billing/Helper/OrderMatch.php',
+    $root . '/Autlantic/Billing/Helper/CheckoutErrors.php',
     $root . '/Autlantic/Billing/Helper/Config.php',
     $root . '/Autlantic/Billing/Model/EventHandler.php',
     $root . '/Autlantic/Billing/Model/PaymentMethod.php',
@@ -45,10 +48,34 @@ if (!str_contains($paymentMethod, 'protected $_canRefund = true')) {
     fwrite(STDERR, "PaymentMethod must enable refunds\n");
     exit(1);
 }
+if (!str_contains($paymentMethod, 'refundPayment')) {
+    fwrite(STDERR, "PaymentMethod must call refundPayment for one-time orders\n");
+    exit(1);
+}
+if (!str_contains($paymentMethod, 'getWebhookSecret')) {
+    fwrite(STDERR, "PaymentMethod must require webhook secret for availability\n");
+    exit(1);
+}
 
 $webhook = (string) file_get_contents($root . '/Autlantic/Billing/Controller/Webhook/Index.php');
 if (!str_contains($webhook, 'verifyWebhookSignature')) {
     fwrite(STDERR, "Webhook controller must verify across store secrets\n");
+    exit(1);
+}
+if (!str_contains($webhook, 'addRejectOnce')) {
+    fwrite(STDERR, "Webhook controller must dedupe reject activity\n");
+    exit(1);
+}
+
+$handler = (string) file_get_contents($root . '/Autlantic/Billing/Model/EventHandler.php');
+if (!str_contains($handler, 'payment.refunded')) {
+    fwrite(STDERR, "EventHandler must handle payment.refunded\n");
+    exit(1);
+}
+
+$billingPhp = (string) file_get_contents($sdk . '/AutlanticBilling.php');
+if (!str_contains($billingPhp, 'function refundPayment')) {
+    fwrite(STDERR, "PHP SDK must expose refundPayment\n");
     exit(1);
 }
 
@@ -74,11 +101,21 @@ if (($bad['ok'] ?? false) === true) {
     fwrite(STDERR, "smoke failed: bad signature accepted\n");
     exit(1);
 }
+$legacy = Webhook::verifyDetailed($secret, $body, hash_hmac('sha256', $body, $secret));
+if (($legacy['ok'] ?? false) === true || ($legacy['reason'] ?? '') !== 'legacy_signature_rejected') {
+    fwrite(STDERR, "smoke failed: bare HMAC must be rejected\n");
+    exit(1);
+}
 
 $composer = json_decode((string) file_get_contents($root . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
-if (($composer['version'] ?? '') !== '1.1.0') {
-    fwrite(STDERR, "composer.json version must be 1.1.0\n");
+if (($composer['version'] ?? '') !== '1.1.1') {
+    fwrite(STDERR, "composer.json version must be 1.1.1\n");
     exit(1);
+}
+
+passthru('php ' . escapeshellarg($root . '/bin/unit.php'), $unitCode);
+if ($unitCode !== 0) {
+    exit($unitCode);
 }
 
 echo "smoke ok\n";

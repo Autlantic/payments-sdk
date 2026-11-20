@@ -37,7 +37,7 @@ README layout for every package: **[README.STANDARD.md](./README.STANDARD.md)**.
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
 | **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
 | **WooCommerce** | Available (**1.1.6**) | [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) · [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic) | Server API key + webhook secret |
-| **Magento 2** | Available on Packagist (**1.1.0**) | [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) · [`integrations/magento`](../integrations/magento) | Server API key + webhook secret |
+| **Magento 2** | Available on Packagist (**1.1.1**) | [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) · [`integrations/magento`](../integrations/magento) | Server API key + webhook secret |
 | **Shopify** | Checkout blocked (external); custom wiring OK | [`integrations/shopify`](../integrations/shopify) · [commerce docs](https://docs.autlantic.com/guide/commerce#shopify) | Server API key + webhook secret (+ app credentials for payments app) |
 
 ## Who installs what

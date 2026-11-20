@@ -16,6 +16,8 @@ final class OrderMeta
     public const MERCHANT_REF = 'autlantic_merchant_ref';
     public const MODE = 'autlantic_mode';
     public const INVOICE_ID = 'autlantic_invoice_id';
+    /** Amount USDC used when the payment link was created (reuse / match). */
+    public const LINK_AMOUNT = 'autlantic_link_amount';
 
     public static function set(OrderInterface $order, string $key, string $value): void
     {

@@ -35,7 +35,7 @@
                 </field>
                 <field id="payout_address" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Payout wallet (EVM)</label>
-                    <comment>Optional override. Leave blank to use the portal payout address.</comment>
+                    <comment>Optional override. Leave blank to use the portal payout address. One wallet applies to Test and Live for this website.</comment>
                 </field>
                 <field id="api_url" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>API base URL</label>

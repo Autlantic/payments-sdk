@@ -18,7 +18,7 @@
 
 ---
 
-Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Composer package `autlantic/module-billing` **1.1.0** · Magento module `Autlantic_Magento`. Uses [`autlantic/billing`](../../sdks/php).
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Composer package `autlantic/module-billing` **1.1.1** · Magento module `Autlantic_Magento`. Uses [`autlantic/billing`](../../sdks/php).
 
 USDC settles to your merchant payout wallet. Autlantic does not custody checkout funds.
 
@@ -38,7 +38,7 @@ bin/magento setup:upgrade
 bin/magento cache:flush
 ```
 
-Package: [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.0** · depends on [`autlantic/billing`](https://packagist.org/packages/autlantic/billing).
+Package: [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.1** · depends on [`autlantic/billing`](https://packagist.org/packages/autlantic/billing).
 
 **Fallback (VCS mirror)** if Packagist is unavailable:
 
@@ -73,15 +73,15 @@ Requires Magento Open Source / Adobe Commerce **2.4.6+**, PHP **8.1+** (`ext-cur
 |---------|----------|
 | One-time checkout | `POST /v1/payment-links` (`maxUses: 1`), redirect via `autlantic/payment/redirect` |
 | Webhooks | `POST /autlantic/webhook` with HMAC verify across website secrets |
-| Refunds | Magento credit memo → Autlantic `refundInvoice` when an invoice id is on the order |
-| Admin tools | Test connection, recent webhook activity, order Autlantic panel |
+| Refunds | Credit memo → `refundPayment` (one-time) or `refundInvoice` when an invoice id is on the order; `payment.refunded` / `invoice.refunded` webhooks |
+| Admin tools | Test readiness, last checkout error, recent webhook activity, order Autlantic panel |
 | Subscriptions | Not included in this module |
 
 ## Webhooks
 
-Verify `x-autlantic-signature` with the portal endpoint secret that matches the API key mode (Test or Live). Multi-website installs try each configured website secret. Event ids are idempotent.
+Verify `x-autlantic-signature` with the portal endpoint secret that matches the API key mode (Test or Live). Multi-website installs try each configured website secret. Bare HMAC without a timestamp is rejected. Event ids are idempotent. Reject activity is deduped briefly.
 
-Handled events: `payment.paid`, `invoice.paid`, `invoice.payment_failed`, `invoice.refunded`.
+Handled events: `payment.paid`, `payment.refunded`, `invoice.paid`, `invoice.payment_failed`, `invoice.refunded`.
 
 ## Documentation
 
@@ -96,6 +96,7 @@ Handled events: `payment.paid`, `invoice.paid`, `invoice.payment_failed`, `invoi
 ## Develop
 
 ```bash
+php integrations/magento/bin/unit.php
 php integrations/magento/bin/smoke.php
 # Runtime E2E against a Mage-OS / Magento 2.4.6+ install (requires billing env):
 # MAGE_ROOT=/path/to/mageos php integrations/magento/bin/e2e-mageos.php
@@ -104,6 +105,13 @@ php integrations/magento/bin/smoke.php
 On tag `integrations/magento/v*`, [`.github/workflows/sync-magento-mirror.yml`](../../.github/workflows/sync-magento-mirror.yml) syncs [magento-autlantic](https://github.com/Autlantic/magento-autlantic).
 
 ## Changelog
+
+### 1.1.1
+- One-time `refundPayment` + `payment.refunded` credit memos (Woo D1 parity)
+- Checkout readiness (key + webhook secret + payout path), last checkout error panel
+- Hide method at checkout until webhook secret is saved
+- Payment-link reuse/disable; amount + store/increment/link match on `payment.paid`
+- Reject-log dedupe for failed webhook signatures; bare HMAC already rejected by PHP SDK
 
 ### 1.1.0
 - Fix checkout success redirect race (`redirectAfterPlaceOrder: false`)

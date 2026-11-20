@@ -49,7 +49,8 @@ class Index implements HttpPostActionInterface, CsrfAwareActionInterface
         if (($verified['ok'] ?? false) !== true) {
             $reason = (string) ($verified['reason'] ?? 'unknown');
             $this->clientFactory->log('Webhook rejected: ' . $reason);
-            $this->activityLog->add(false, '', 'signature ' . $reason);
+            $fp = $reason . '|' . substr(hash('sha256', $raw), 0, 16) . '|' . substr($signature, 0, 24);
+            $this->activityLog->addRejectOnce($fp, 'signature ' . $reason);
 
             return $result->setHttpResponseCode(401)->setData(['error' => 'Invalid webhook signature']);
         }

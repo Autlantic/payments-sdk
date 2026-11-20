@@ -13,8 +13,10 @@ final class ActivityLog
 {
     private const ACTIVITY_FLAG = 'autlantic_billing_activity';
     private const PROCESSED_FLAG = 'autlantic_billing_processed_events';
+    private const REJECT_FLAG = 'autlantic_billing_reject_fingerprint';
     private const MAX_ACTIVITY = 30;
     private const MAX_PROCESSED = 500;
+    private const REJECT_TTL_SEC = 120;
 
     public function __construct(
         private readonly FlagManager $flagManager,
@@ -34,6 +36,28 @@ final class ActivityLog
             $rows = array_slice($rows, -self::MAX_ACTIVITY);
         }
         $this->flagManager->saveFlag(self::ACTIVITY_FLAG, $rows);
+    }
+
+    /**
+     * Log a rejected webhook once per fingerprint within REJECT_TTL_SEC (Woo C2 parity).
+     *
+     * @return bool true when a new activity row was written
+     */
+    public function addRejectOnce(string $fingerprint, string $message): bool
+    {
+        $fp = substr(hash('sha256', $fingerprint), 0, 32);
+        $now = time();
+        $prev = $this->flagManager->getFlagData(self::REJECT_FLAG);
+        if (is_array($prev)
+            && (string) ($prev['fp'] ?? '') === $fp
+            && ($now - (int) ($prev['at'] ?? 0)) < self::REJECT_TTL_SEC
+        ) {
+            return false;
+        }
+        $this->flagManager->saveFlag(self::REJECT_FLAG, ['fp' => $fp, 'at' => $now]);
+        $this->add(false, '', $message);
+
+        return true;
     }
 
     /**

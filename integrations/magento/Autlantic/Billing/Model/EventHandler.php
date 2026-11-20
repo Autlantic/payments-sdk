@@ -6,6 +6,7 @@ namespace Autlantic\Magento\Model;
 
 use Autlantic\Magento\Helper\Config;
 use Autlantic\Magento\Helper\OrderIndex;
+use Autlantic\Magento\Helper\OrderMatch;
 use Autlantic\Magento\Helper\OrderMeta;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\DB\TransactionFactory;
@@ -36,6 +37,7 @@ final class EventHandler
     {
         match ($type) {
             'payment.paid' => $this->paymentPaid($data),
+            'payment.refunded' => $this->paymentRefunded($data),
             'invoice.paid' => $this->invoicePaid($data),
             'invoice.payment_failed' => $this->invoicePaymentFailed($data),
             'invoice.refunded' => $this->invoiceRefunded($data),
@@ -51,6 +53,54 @@ final class EventHandler
         $payment = is_array($data['payment'] ?? null) ? $data['payment'] : $data;
         $order = $this->findOrderFromPayment($payment);
         if ($order === null || $order->hasInvoices()) {
+            return;
+        }
+
+        $metadata = is_array($payment['metadata'] ?? null) ? $payment['metadata'] : [];
+        $eventLinkId = (string) ($metadata['paymentLinkId'] ?? $payment['paymentLinkId'] ?? '');
+        $storedLinkId = OrderMeta::get($order, OrderMeta::PAYMENT_LINK_ID);
+        $baseUrl = (string) $order->getStore()->getBaseUrl();
+        // Enforce store / increment only when the payload includes them (older links may omit).
+        if (trim((string) ($metadata['m2_store'] ?? '')) !== ''
+            && !OrderMatch::storeMatches($metadata, $baseUrl)
+        ) {
+            $order->addCommentToStatusHistory(__('Autlantic payment.paid ignored (m2_store_mismatch).'));
+            $this->orderRepository->save($order);
+
+            return;
+        }
+        if (trim((string) ($metadata['m2_increment_id'] ?? '')) !== ''
+            && !OrderMatch::incrementMatches($metadata, (string) $order->getIncrementId())
+        ) {
+            $order->addCommentToStatusHistory(__('Autlantic payment.paid ignored (m2_increment_mismatch).'));
+            $this->orderRepository->save($order);
+
+            return;
+        }
+
+        $paidAmount = isset($payment['amountUsdc'])
+            ? (float) $payment['amountUsdc']
+            : (isset($payment['amount']) ? (float) $payment['amount'] : -1.0);
+        $orderTotal = OrderMeta::amountUsdc($order);
+        $paidOk = OrderMatch::paymentPaidOk(
+            $paidAmount >= 0 ? $paidAmount : $orderTotal,
+            $orderTotal,
+            $eventLinkId !== '' ? $eventLinkId : null,
+            $storedLinkId !== '' ? $storedLinkId : null,
+        );
+        if (($paidOk['ok'] ?? false) !== true) {
+            $reason = (string) ($paidOk['reason'] ?? 'match_failed');
+            $order->setState(Order::STATE_HOLDED);
+            $holdStatus = $order->getConfig()->getStateDefaultStatus(Order::STATE_HOLDED) ?: 'holded';
+            $order->setStatus($holdStatus);
+            $order->addCommentToStatusHistory(__(
+                'Autlantic payment.paid held: %1 (paid %2, order %3).',
+                $reason,
+                (string) $paidAmount,
+                (string) $orderTotal,
+            ));
+            $this->orderRepository->save($order);
+
             return;
         }
 
@@ -70,6 +120,25 @@ final class EventHandler
             $tx !== '' ? $tx : 'n/a',
         ));
         $this->markPaid($order, $paymentId !== '' ? $paymentId : $tx);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function paymentRefunded(array $data): void
+    {
+        $payment = is_array($data['payment'] ?? null) ? $data['payment'] : $data;
+        $paymentId = (string) ($payment['id'] ?? '');
+        $order = $this->findOrderFromPayment($payment);
+        if ($order === null) {
+            return;
+        }
+
+        $refundAmount = isset($payment['refundAmountUsdc'])
+            ? (float) $payment['refundAmountUsdc']
+            : (isset($payment['amountUsdc']) ? (float) $payment['amountUsdc'] : (float) $order->getTotalPaid());
+
+        $this->applyOfflineCreditMemo($order, $refundAmount, $paymentId !== '' ? $paymentId : 'payment', 'payment.refunded');
     }
 
     /**
@@ -121,20 +190,27 @@ final class EventHandler
             ? (float) $invoice['refundAmountUsdc']
             : (float) $order->getTotalPaid();
 
+        $this->applyOfflineCreditMemo(
+            $order,
+            $refundAmount,
+            $invoiceId !== '' ? $invoiceId : 'invoice',
+            'invoice.refunded',
+        );
+    }
+
+    private function applyOfflineCreditMemo(Order $order, float $refundAmount, string $refId, string $eventLabel): void
+    {
         if ($refundAmount > 0 && $order->canCreditmemo()) {
             try {
                 $creditmemo = $this->creditmemoFactory->createByOrder($order);
-                if (abs((float) $creditmemo->getGrandTotal() - $refundAmount) > 0.009) {
-                    // Full offline credit memo when amounts differ; Magento item allocation is complex.
-                    $creditmemo = $this->creditmemoFactory->createByOrder($order);
-                }
                 $creditmemo->setPaymentRefundDisallowed(true);
                 $creditmemo->setOfflineRequested(true);
                 $this->creditmemoManagement->refund($creditmemo, true);
             } catch (\Throwable $e) {
                 $order->addCommentToStatusHistory(__(
-                    'Autlantic invoice.refunded (%1) recorded; credit memo failed: %2',
-                    $invoiceId !== '' ? $invoiceId : 'n/a',
+                    'Autlantic %1 (%2) recorded; credit memo failed: %3',
+                    $eventLabel,
+                    $refId,
                     $e->getMessage(),
                 ));
                 $this->orderRepository->save($order);
@@ -143,10 +219,7 @@ final class EventHandler
             }
         }
 
-        $order->addCommentToStatusHistory(__(
-            'Autlantic invoice.refunded (%1).',
-            $invoiceId !== '' ? $invoiceId : 'n/a',
-        ));
+        $order->addCommentToStatusHistory(__('Autlantic %1 (%2).', $eventLabel, $refId));
         $this->orderRepository->save($order);
     }
 
@@ -257,7 +330,6 @@ final class EventHandler
 
     private function findByAdditional(string $key, string $value): ?Order
     {
-        // Fallback only. Prefer OrderIndex.
         $criteria = $this->searchCriteriaBuilder
             ->addFilter('status', ['pending', 'pending_payment', 'processing'], 'in')
             ->setPageSize(100)

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Autlantic\Magento\Controller\Payment;
 
 use Autlantic\Billing\AutlanticBillingException;
+use Autlantic\Magento\Helper\CheckoutErrors;
 use Autlantic\Magento\Helper\ClientFactory;
 use Autlantic\Magento\Helper\Config;
 use Autlantic\Magento\Helper\OrderIndex;
+use Autlantic\Magento\Helper\OrderMatch;
 use Autlantic\Magento\Helper\OrderMeta;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Action\HttpGetActionInterface;
@@ -23,6 +25,7 @@ class Redirect implements HttpGetActionInterface
         private readonly ClientFactory $clientFactory,
         private readonly Config $config,
         private readonly OrderIndex $orderIndex,
+        private readonly CheckoutErrors $checkoutErrors,
         private readonly RedirectFactory $redirectFactory,
         private readonly ManagerInterface $messageManager,
     ) {
@@ -41,11 +44,6 @@ class Redirect implements HttpGetActionInterface
         $order = $this->orderRepository->get($orderId);
         $storeId = (int) $order->getStoreId();
 
-        $existingCheckout = OrderMeta::get($order, OrderMeta::CHECKOUT_URL);
-        if ($existingCheckout !== '' && !$order->hasInvoices()) {
-            return $redirect->setUrl($existingCheckout);
-        }
-
         if (!OrderMeta::currencySupported($order)) {
             $this->messageManager->addErrorMessage(__('Autlantic Billing only supports USD or USDC.'));
 
@@ -59,8 +57,43 @@ class Redirect implements HttpGetActionInterface
             return $redirect->setPath('checkout/cart');
         }
 
+        $existingLinkId = OrderMeta::get($order, OrderMeta::PAYMENT_LINK_ID);
+        $existingUrl = OrderMeta::get($order, OrderMeta::PAYMENT_LINK_URL);
+        if ($existingUrl === '') {
+            $existingUrl = OrderMeta::get($order, OrderMeta::CHECKOUT_URL);
+        }
+        $storedAmount = OrderMeta::get($order, OrderMeta::LINK_AMOUNT);
+        $amountUnchanged = $storedAmount !== ''
+            && OrderMatch::amountMatches((float) $storedAmount, $amount);
+
+        if ($existingLinkId !== ''
+            && $existingUrl !== ''
+            && $amountUnchanged
+            && !$order->hasInvoices()
+        ) {
+            $this->clientFactory->log(
+                sprintf('Reusing payment link %s for order %s', $existingLinkId, $order->getIncrementId()),
+                $storeId,
+            );
+
+            return $redirect->setUrl($existingUrl);
+        }
+
         try {
             $billing = $this->clientFactory->create($storeId);
+
+            if ($existingLinkId !== '') {
+                try {
+                    $billing->disablePaymentLink($existingLinkId);
+                    $this->clientFactory->log(
+                        sprintf('Disabled previous payment link %s', $existingLinkId),
+                        $storeId,
+                    );
+                } catch (AutlanticBillingException $e) {
+                    $this->clientFactory->log('disablePaymentLink: ' . $e->getMessage(), $storeId);
+                }
+            }
+
             $merchantRefPrefix = 'm2_' . $order->getIncrementId();
             $successUrl = $order->getStore()->getUrl('checkout/onepage/success');
             $cancelUrl = $order->getStore()->getUrl('checkout/cart');
@@ -99,6 +132,7 @@ class Redirect implements HttpGetActionInterface
             OrderMeta::set($order, OrderMeta::CHECKOUT_URL, $url);
             OrderMeta::set($order, OrderMeta::MERCHANT_REF, $merchantRefPrefix);
             OrderMeta::set($order, OrderMeta::MODE, $billing->mode);
+            OrderMeta::set($order, OrderMeta::LINK_AMOUNT, (string) $amount);
             $this->orderIndex->remember('payment_link', $linkId, (int) $order->getEntityId());
 
             $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
@@ -109,6 +143,7 @@ class Redirect implements HttpGetActionInterface
             $order->addCommentToStatusHistory(__('Awaiting USDC payment via Autlantic checkout.'));
             $this->orderRepository->save($order);
 
+            $this->checkoutErrors->clear();
             $this->clientFactory->log(
                 sprintf('Created payment link %s for order %s', $linkId, $order->getIncrementId()),
                 $storeId,
@@ -116,6 +151,7 @@ class Redirect implements HttpGetActionInterface
 
             return $redirect->setUrl($url);
         } catch (\Throwable $e) {
+            $this->checkoutErrors->recordException($e);
             $this->clientFactory->log('Redirect failed: ' . $e->getMessage(), $storeId);
             $this->messageManager->addErrorMessage(
                 __('Autlantic payment failed. Please try again or contact the store.'),

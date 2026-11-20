@@ -5,7 +5,7 @@ Official store plugins for **USDC on Base** via the hosted Autlantic Billing API
 | Platform | Status | Install | Source |
 |----------|--------|---------|--------|
 | **WooCommerce** | Available (**1.1.6**) | [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) · [GitHub release zip](https://github.com/Autlantic/woocommerce-autlantic/releases) | [`integrations/woocommerce`](https://github.com/Autlantic/payments-sdk/tree/main/integrations/woocommerce) · mirror [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic) |
-| **Magento 2** | Available (**1.1.0**) | Packagist [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) | [`integrations/magento`](https://github.com/Autlantic/payments-sdk/tree/main/integrations/magento) · mirror [magento-autlantic](https://github.com/Autlantic/magento-autlantic) |
+| **Magento 2** | Available (**1.1.1**) | Packagist [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) | [`integrations/magento`](https://github.com/Autlantic/payments-sdk/tree/main/integrations/magento) · mirror [magento-autlantic](https://github.com/Autlantic/magento-autlantic) |
 | **Shopify** | Checkout **blocked (external)** on Payments Partner; custom wiring available | See [Shopify](#shopify) below | [`integrations/shopify`](https://github.com/Autlantic/payments-sdk/tree/main/integrations/shopify) · mirror [shopify-autlantic](https://github.com/Autlantic/shopify-autlantic) |
 
 Store currency must be **USD** or **USDC**. You need a merchant portal API key (`abk_test_…` / `abk_live_…`) and a webhook endpoint secret.
@@ -33,7 +33,7 @@ Optional soft dependency: [WooCommerce Subscriptions](https://woocommerce.com/pr
 
 ## Magento 2
 
-Composer module [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.0** (Magento module name `Autlantic_Magento`). Requires Magento Open Source / Adobe Commerce 2.4.6+ (or Mage-OS) and PHP 8.1+. Depends on [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) (resolved from Packagist automatically).
+Composer module [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.1** (Magento module name `Autlantic_Magento`). Requires Magento Open Source / Adobe Commerce 2.4.6+ (or Mage-OS) and PHP 8.1+. Depends on [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) (resolved from Packagist automatically). One-time credit memos call `refundPayment`; invoice-backed orders still use `refundInvoice`.
 
 **Production (Packagist)**
 

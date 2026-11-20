@@ -7,7 +7,7 @@ define([
     return function (config, element) {
         $(element).on('click', function () {
             var $out = $('#autlantic-test-result');
-            $out.text($t('Checking…'));
+            $out.text($t('Checking readiness…'));
             $.ajax({
                 url: config.ajaxUrl,
                 type: 'GET',

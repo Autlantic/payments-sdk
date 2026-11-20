@@ -79,6 +79,10 @@ class PaymentMethod extends AbstractMethod
         if (!$this->autlanticConfig->isActive($storeId) || $this->autlanticConfig->getApiKey($storeId) === '') {
             return false;
         }
+        // Hide at checkout until webhook secret is saved (Woo A2 parity).
+        if ($this->autlanticConfig->getWebhookSecret($storeId) === '') {
+            return false;
+        }
 
         if ($quote !== null) {
             $currency = strtoupper((string) $quote->getQuoteCurrencyCode());
@@ -105,9 +109,10 @@ class PaymentMethod extends AbstractMethod
         $order = $payment->getOrder();
         $storeId = (int) $order->getStoreId();
         $invoiceId = OrderMeta::get($order, OrderMeta::INVOICE_ID);
-        if ($invoiceId === '') {
+        $paymentId = OrderMeta::get($order, OrderMeta::PAYMENT_ID);
+        if ($invoiceId === '' && $paymentId === '') {
             throw new LocalizedException(__(
-                'No Autlantic invoice on this order. One-time payment-link refunds must be completed from the Autlantic portal if supported.',
+                'No Autlantic invoice or payment id on this order. Cannot refund via API.',
             ));
         }
 
@@ -117,13 +122,23 @@ class PaymentMethod extends AbstractMethod
             if ((float) $amount > 0) {
                 $body['amountUsdc'] = (float) $amount;
             }
-            $billing->refundInvoice($invoiceId, $body !== [] ? $body : null);
-            $this->orderIndex->remember('invoice', $invoiceId, (int) $order->getEntityId());
-            $order->addCommentToStatusHistory(__(
-                'Autlantic refund requested for invoice %1 (%2 USDC).',
-                $invoiceId,
-                (string) $amount,
-            ));
+            if ($invoiceId !== '') {
+                $billing->refundInvoice($invoiceId, $body !== [] ? $body : null);
+                $this->orderIndex->remember('invoice', $invoiceId, (int) $order->getEntityId());
+                $order->addCommentToStatusHistory(__(
+                    'Autlantic refund requested for invoice %1 (%2 USDC).',
+                    $invoiceId,
+                    (string) $amount,
+                ));
+            } else {
+                $billing->refundPayment($paymentId, $body !== [] ? $body : null);
+                $this->orderIndex->remember('payment', $paymentId, (int) $order->getEntityId());
+                $order->addCommentToStatusHistory(__(
+                    'Autlantic refund requested for payment %1 (%2 USDC).',
+                    $paymentId,
+                    (string) $amount,
+                ));
+            }
         } catch (AutlanticBillingException $e) {
             $this->clientFactory->log('Refund failed: ' . $e->getMessage(), $storeId);
             throw new LocalizedException(__('Autlantic refund failed. Please try again or refund from the portal.'));
