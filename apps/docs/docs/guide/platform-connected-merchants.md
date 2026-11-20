@@ -71,6 +71,17 @@ $page = $platform->listConnectedMerchants(['limit' => 50]);
 
 Requires `autlantic/billing` **0.1.1+**.
 
+## Other server SDKs
+
+Same Connect surface (language naming differs):
+
+| SDK | Min version |
+|-----|-------------|
+| Python `autlantic-billing` | **0.1.1+** (`provision_connected_merchant`, …) |
+| Go `sdks/go` | **v0.1.1+** (`ProvisionConnectedMerchant`, …) |
+| Java `com.autlantic:billing` | **0.1.2+** |
+| .NET `Autlantic.Billing` | **0.1.1+** |
+
 ## Woo / host install
 
 1. Platform provisions with `externalStoreRef` = host site id.

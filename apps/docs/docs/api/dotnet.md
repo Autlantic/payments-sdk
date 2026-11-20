@@ -5,12 +5,12 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 
 **USDC on Base** · secrets server-only.
 
-Source: [`sdks/dotnet`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/dotnet). Package: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** on NuGet.
+Source: [`sdks/dotnet`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/dotnet). Package: [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.1** on NuGet.
 
 ## Install
 
 ```bash
-dotnet add package Autlantic.Billing --version 0.1.0
+dotnet add package Autlantic.Billing --version 0.1.1
 ```
 
 Requires **.NET 8+**.
@@ -59,8 +59,20 @@ Hosted mode only. Pins `Autlantic-Version: 2026-01-01`. Idempotent POSTs and ret
 | `GetPaymentLink(id)` | Fetch |
 | `DisablePaymentLink(id)` | Disable |
 | `ListInvoices(subscriptionId)` | List invoices |
+| `GetInvoice(id)` | Fetch invoice |
+| `RefundInvoice(id, body)` | Invoice refund |
+| `RefundPayment(id, body)` | One-time refund (`payment.refunded`) |
+| `VoidInvoice(id)` | Void invoice |
+| `ProvisionConnectedMerchant(body)` | Platform Connect provision |
+| `ListConnectedMerchants(limit, startingAfter)` | List connected merchants |
+| `GetConnectedMerchant(id)` | Fetch connected merchant |
+| `UpdateConnectedMerchant(id, body)` | Update connected merchant |
+| `DisableConnectedMerchant(id, body)` | Disable connected merchant |
+| `CreateConnectedApiKey(id, body)` | Issue connected API key |
+| `ListConnectedWebhookEndpoints(id)` | List connected webhook endpoints |
+| `CreateConnectedWebhookEndpoint(id, body)` | Create connected webhook endpoint |
 
-Async variants (`*Async`) are available for all methods.
+Async variants (`*Async`) are available for all methods. Refund + Connect methods require **0.1.1+**.
 
 ## Webhooks
 

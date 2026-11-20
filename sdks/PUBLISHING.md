@@ -248,4 +248,4 @@ Do not point Railway at `main`.
 
 After secrets: tag Android + Java; confirm Central sync; update docs to “Available on Maven Central” / Packagist.
 
-Already published: NuGet (`Autlantic.Billing`), pub.dev (`autlantic_checkout`), npm (`@autlantic/checkout`) **0.1.0**.
+Already published: NuGet (`Autlantic.Billing` **0.1.1** via Trusted Publishing / `publish-dotnet.yml`), pub.dev (`autlantic_checkout` **0.1.0**), npm (`@autlantic/checkout` **0.1.0**).

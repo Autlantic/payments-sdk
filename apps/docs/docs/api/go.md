@@ -6,10 +6,10 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 **USDC on Base** · secrets server-only.
 
 ```bash
-go get github.com/Autlantic/payments-sdk/sdks/go@sdks/go/v0.1.0
+go get github.com/Autlantic/payments-sdk/sdks/go@v0.1.1
 ```
 
-Source: [`sdks/go`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/go) · tag `sdks/go/v0.1.0`
+Source: [`sdks/go`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/go) · tag `sdks/go/v0.1.1` (consume as `@v0.1.1`)
 
 ## Quick start
 
@@ -54,6 +54,21 @@ Hosted mode only. Pins `Autlantic-Version: 2026-01-01`. Idempotent POSTs and ret
 | `ListPaymentLinks()` | List |
 | `GetPaymentLink(id)` | Fetch |
 | `DisablePaymentLink(id)` | Disable |
+| `ListInvoices(subscriptionID)` | List invoices |
+| `GetInvoice(id)` | Fetch invoice |
+| `RefundInvoice(id, body)` | Invoice refund |
+| `RefundPayment(id, body)` | One-time refund (`payment.refunded`) |
+| `VoidInvoice(id)` | Void invoice |
+| `ProvisionConnectedMerchant(body)` | Platform Connect provision |
+| `ListConnectedMerchants(limit, startingAfter)` | List connected merchants |
+| `GetConnectedMerchant(id)` | Fetch connected merchant |
+| `UpdateConnectedMerchant(id, body)` | Update connected merchant |
+| `DisableConnectedMerchant(id, body)` | Disable connected merchant |
+| `CreateConnectedApiKey(id, body)` | Issue connected API key |
+| `ListConnectedWebhookEndpoints(id)` | List connected webhook endpoints |
+| `CreateConnectedWebhookEndpoint(id, body)` | Create connected webhook endpoint |
+
+Refund + Connect methods require **v0.1.1+**.
 
 ## Webhooks
 

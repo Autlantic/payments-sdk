@@ -33,6 +33,7 @@ Child merchant keys cannot call `/v1/platform/*` (403). Disabled connected merch
 - Go `sdks/go` **v0.1.1+**: same surface (`ProvisionConnectedMerchant`, …)
 - Java `com.autlantic:billing` **0.1.2+**: same surface
 - .NET `Autlantic.Billing` **0.1.1+**: same surface
+- Mobile Checkout SDKs: no Connect surface (secrets stay on the server)
 - Guide: https://docs.autlantic.com/guide/platform-connected-merchants
 
 ## Woo / host install

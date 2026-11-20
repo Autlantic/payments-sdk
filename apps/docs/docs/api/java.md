@@ -5,13 +5,13 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 
 **USDC on Base** · secrets server-only.
 
-Source: [`sdks/java`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/java). Package: [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1** on Maven Central.
+Source: [`sdks/java`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/java). Package: [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.2** on Maven Central.
 
 ## Install
 
 ```kotlin
 dependencies {
-  implementation("com.autlantic:billing:0.1.1")
+  implementation("com.autlantic:billing:0.1.2")
 }
 ```
 
@@ -19,7 +19,7 @@ dependencies {
 <dependency>
   <groupId>com.autlantic</groupId>
   <artifactId>billing</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
 </dependency>
 ```
 
@@ -67,6 +67,20 @@ Hosted mode only. Pins `Autlantic-Version: 2026-01-01`. Idempotent POSTs and ret
 | `getPaymentLink(id)` | Fetch |
 | `disablePaymentLink(id)` | Disable |
 | `listInvoices(subscriptionId)` | List invoices |
+| `getInvoice(id)` | Fetch invoice |
+| `refundInvoice(id, body)` | Invoice refund |
+| `refundPayment(id, body)` | One-time refund (`payment.refunded`) |
+| `voidInvoice(id)` | Void invoice |
+| `provisionConnectedMerchant(body)` | Platform Connect provision |
+| `listConnectedMerchants(limit, startingAfter)` | List connected merchants |
+| `getConnectedMerchant(id)` | Fetch connected merchant |
+| `updateConnectedMerchant(id, body)` | Update connected merchant |
+| `disableConnectedMerchant(id, body)` | Disable connected merchant |
+| `createConnectedApiKey(id, body)` | Issue connected API key |
+| `listConnectedWebhookEndpoints(id)` | List connected webhook endpoints |
+| `createConnectedWebhookEndpoint(id, body)` | Create connected webhook endpoint |
+
+Refund + Connect methods require **0.1.2+**.
 
 ## Webhooks
 

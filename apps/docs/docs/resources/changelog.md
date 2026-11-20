@@ -1,5 +1,20 @@
 # Changelog
 
+## Server SDKs - Refund + Connect parity (Python / Go / Java / .NET)
+
+Align non-Node server clients to the PHP **0.1.1** surface: `getInvoice` / `refundInvoice` / `refundPayment` / `voidInvoice`, plus platform Connect methods.
+
+| Package | Version |
+|---------|---------|
+| Python `autlantic-billing` | **0.1.1** (PyPI) |
+| Go `sdks/go` | **v0.1.1** (`go get …@v0.1.1`) |
+| Java `com.autlantic:billing` | **0.1.2** (Maven Central) |
+| .NET `Autlantic.Billing` | **0.1.1** (NuGet; Trusted Publishing via `publish-dotnet.yml`) |
+| PHP `autlantic/billing` | **0.1.1** (already) |
+| Node `@autlantic/payments-recurring` | **0.3.24** (already) |
+
+Languages matrix + API pages updated. See [Languages](/guide/languages) and [Platform connected merchants](/guide/platform-connected-merchants).
+
 ## Magento module-billing 1.1.2 - Require billing PHP 0.1.1
 
 - Composer require `autlantic/billing` **^0.1.1** so Packagist installs include `refundPayment`
@@ -24,7 +39,7 @@ git push origin integrations/magento/v1.1.1
 ## Docs - Woo 1.1.6 on WordPress.org + SDK matrix refresh
 
 - WooCommerce **1.1.6** live on [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) and GitHub releases; commerce / languages / integrations READMEs updated
-- Languages matrix: Node `@autlantic/payments-recurring` **0.3.24**; PHP Packagist **0.1.0** (source / Woo vendor **0.1.1** for Connect)
+- Languages matrix: Node `@autlantic/payments-recurring` **0.3.24**; PHP Packagist **0.1.1** (refunds + Connect)
 - Node API page: `refundPayment`, `intervalCount`, platform Connect methods; packages + trials engine pin **0.3.28**
 
 ## payments-recurring 0.3.24 - Fix published dependency pins

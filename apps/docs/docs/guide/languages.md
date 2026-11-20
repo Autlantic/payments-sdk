@@ -8,11 +8,11 @@ Autlantic Billing is **one hosted API**. Official SDKs are thin clients around t
 |---------|--------|--------------------|---------|
 | **Hosted HTTP API** | Available | [OpenAPI](/api/openapi) · `https://billing.autlantic.com` | Server API key |
 | **Node.js / TypeScript** | Available | [`@autlantic/payments-recurring`](https://www.npmjs.com/package/@autlantic/payments-recurring) **0.3.24** | Server only |
-| **Python** | Available | [`autlantic-billing`](https://pypi.org/project/autlantic-billing/) **0.1.0** on PyPI | Server only |
-| **Go** | Available | [`github.com/Autlantic/payments-sdk/sdks/go`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/go) tag `sdks/go/v0.1.0` | Server only |
+| **Python** | Available | [`autlantic-billing`](https://pypi.org/project/autlantic-billing/) **0.1.1** on PyPI | Server only |
+| **Go** | Available | [`github.com/Autlantic/payments-sdk/sdks/go`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/go) tag `sdks/go/v0.1.1` | Server only |
 | **PHP** | Available on Packagist | [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.1** | Server only |
-| **Java** | Available on Maven Central | [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1** | Server only |
-| **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** | Server only |
+| **Java** | Available on Maven Central | [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.2** | Server only |
+| **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.1** | Server only |
 | **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/ios) tag `sdks/ios/v0.1.0` | **None** |
 | **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** | **None** |
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |

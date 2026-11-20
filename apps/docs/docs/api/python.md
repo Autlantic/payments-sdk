@@ -9,7 +9,7 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 pip install autlantic-billing
 ```
 
-PyPI: [autlantic-billing](https://pypi.org/project/autlantic-billing/) · source: `sdks/python` in [payments-sdk](https://github.com/Autlantic/payments-sdk)
+PyPI: [autlantic-billing](https://pypi.org/project/autlantic-billing/) **0.1.1** · source: `sdks/python` in [payments-sdk](https://github.com/Autlantic/payments-sdk)
 
 ## Quick start
 
@@ -54,8 +54,20 @@ Hosted mode only (no in-process sandbox). Pins `Autlantic-Version: 2026-01-01`. 
 | `get_payment_link(id)` | Fetch link |
 | `disable_payment_link(id)` | Disable link |
 | `list_invoices(subscription_id?)` | List invoices |
+| `get_invoice(id)` | Fetch invoice |
+| `refund_invoice(id, body?)` | Invoice refund |
+| `refund_payment(id, body?)` | One-time refund (`payment.refunded`) |
+| `void_invoice(id)` | Void invoice |
+| `provision_connected_merchant(body)` | Platform Connect provision |
+| `list_connected_merchants(limit?, starting_after?)` | List connected merchants |
+| `get_connected_merchant(id)` | Fetch connected merchant |
+| `update_connected_merchant(id, body)` | Update connected merchant |
+| `disable_connected_merchant(id, body?)` | Disable connected merchant |
+| `create_connected_api_key(id, body?)` | Issue connected API key |
+| `list_connected_webhook_endpoints(id)` | List connected webhook endpoints |
+| `create_connected_webhook_endpoint(id, body)` | Create connected webhook endpoint |
 
-`successUrl` / `cancelUrl` are supported on create subscription, payment, and payment link (app deep links).
+`successUrl` / `cancelUrl` are supported on create subscription, payment, and payment link (app deep links). Refund + Connect methods require **0.1.1+**.
 
 ## Webhooks
 
