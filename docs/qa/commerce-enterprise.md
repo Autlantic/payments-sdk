@@ -34,38 +34,36 @@ Current reference bar: enqueue-safe admin JS, `Requires Plugins`, clean activati
 | Invoice refunds | When Autlantic invoice id present (payment-link checkouts correctly block) |
 | **Runtime E2E on Magento 2.4.6+ / Mage-OS** | Required for enterprise-proven |
 
-### Magento runtime proof (2026-09-29)
+### Magento runtime proof (2026-09-29, baseline 1.1.0)
 
 Environment: local Mage-OS **3.3.0** (Magento **2.4.9**), MariaDB `mageos`, OpenSearch, `http://127.0.0.1:8089`.
 
-Install proofs:
+Packagist install of `autlantic/module-billing` **1.1.0** + `autlantic/billing` **0.1.0** → `ENTERPRISE_PROVEN_MAGENTO_E2E_OK` (order `#000000006`). Covered checkout link, HMAC, invoice-on-paid, duplicate safety, refund-blocked-without-ids.
 
-1. Path/symlink module **1.1.0** E2E (earlier same day)
-2. Packagist install: removed path repos, `composer update` → `autlantic/module-billing` **1.1.0** + `autlantic/billing` **0.1.0** zipballs from GitHub/Packagist, `setup:upgrade`, then E2E again → `ENTERPRISE_PROVEN_MAGENTO_E2E_OK` (order `#000000006`)
+### Magento runtime proof (2026-11-20, refundPayment 1.1.1/1.1.2 + PHP 0.1.1)
+
+Same Mage-OS stack. Gap found in verification: Magento **1.1.1** calls `refundPayment`, but Packagist still only had `autlantic/billing` **0.1.0** (method missing). Published PHP **0.1.1**, then Packagist-only reinstall (no path symlink) and re-ran E2E. **1.1.2** pins `autlantic/billing` **^0.1.1**.
+
+| Check | Result |
+|---|---|
+| Packagist `autlantic/billing` **0.1.1** (not path) | Pass |
+| Packagist `autlantic/module-billing` **1.1.1** (module code; **1.1.2** adds require pin) | Pass |
+| PHPUnit `sdks/php` (incl. refundPayment path) | Pass |
+| Magento `bin/unit.php` + `bin/smoke.php` | Pass |
+| Sandbox `createPayment` → checkout confirm → paid | Pass |
+| HMAC bad/good + `payment.paid` invoice | Pass |
+| Magento `refundPayment` → Billing status `refunded` | Pass |
+| HTTP `payment.refunded` | Pass |
+| Marker | `ENTERPRISE_PROVEN_MAGENTO_E2E_OK` order `#000000010` |
 
 Command:
 
 ```bash
-set -a && source /path/to/billing-e2e.env && set +a   # abk_* + whsec_* + API URL
+set -a && source /path/to/billing-e2e.env && set +a   # abk_test_* + whsec_* + API URL
 MAGE_ROOT=/path/to/mageos php integrations/magento/bin/e2e-mageos.php
 ```
 
-Observed: `ENTERPRISE_PROVEN_MAGENTO_E2E_OK`
-
-| Check | Result |
-|---|---|
-| Test connection `listProducts` | Pass (live mode, catalog returned) |
-| Place Autlantic order | Pass |
-| Create payment link | Pass (`plink_*` on billing.autlantic.com) |
-| Bad HMAC HTTP | Pass (`401`) |
-| Good HMAC `payment.paid` HTTP | Pass (`200 {"received":true}`) |
-| Order invoiced | Pass |
-| Duplicate event safe | Pass (1 invoice) |
-| Refund without invoice id | Pass (blocked correctly for payment-link) |
-| OrderIndex + ActivityLog + JS race flag | Pass |
-| Packagist vendor tree (not path symlink) | Pass |
-
-Status: **enterprise-proven** for Magento one-time checkout + webhooks + admin operability + payment-link refund policy (including Packagist install path).
+Status: **enterprise-proven** for Magento one-time checkout + webhooks + admin operability + **one-time `refundPayment`** (requires `autlantic/billing` **>=0.1.1**).
 
 ## Shopify
 

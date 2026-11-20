@@ -108,8 +108,8 @@ if (($legacy['ok'] ?? false) === true || ($legacy['reason'] ?? '') !== 'legacy_s
 }
 
 $composer = json_decode((string) file_get_contents($root . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
-if (($composer['version'] ?? '') !== '1.1.1') {
-    fwrite(STDERR, "composer.json version must be 1.1.1\n");
+if (($composer['version'] ?? '') !== '1.1.2') {
+    fwrite(STDERR, "composer.json version must be 1.1.2\n");
     exit(1);
 }
 

@@ -3,7 +3,7 @@
   "description": "Autlantic Billing payment method for Magento 2 (USDC on Base)",
   "type": "magento2-module",
   "license": "MIT",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "authors": [
     {
       "name": "Autlantic Limited",
@@ -13,7 +13,7 @@
   ],
   "require": {
     "php": ">=8.1",
-    "autlantic/billing": "^0.1",
+    "autlantic/billing": "^0.1.1",
     "magento/framework": "*",
     "magento/module-payment": "*",
     "magento/module-checkout": "*",

@@ -9,7 +9,7 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 composer require autlantic/billing
 ```
 
-Packagist: [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.0**. Monorepo source and WooCommerce **1.1.6** vendor ship **0.1.1** (platform Connect client methods). Mirror: [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php). Source of truth remains `sdks/php` in payments-sdk.
+Packagist: [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.1** (refundPayment, Connect client methods). Mirror: [`Autlantic/billing-php`](https://github.com/Autlantic/billing-php). Source of truth remains `sdks/php` in payments-sdk.
 
 VCS fallback (if you cannot use Packagist):
 

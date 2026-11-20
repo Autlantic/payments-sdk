@@ -18,7 +18,7 @@
 
 ---
 
-Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Composer package `autlantic/module-billing` **1.1.1** · Magento module `Autlantic_Magento`. Uses [`autlantic/billing`](../../sdks/php).
+Part of [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk). Composer package `autlantic/module-billing` **1.1.2** · Magento module `Autlantic_Magento`. Uses [`autlantic/billing`](../../sdks/php).
 
 USDC settles to your merchant payout wallet. Autlantic does not custody checkout funds.
 
@@ -38,7 +38,7 @@ bin/magento setup:upgrade
 bin/magento cache:flush
 ```
 
-Package: [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.1** · depends on [`autlantic/billing`](https://packagist.org/packages/autlantic/billing).
+Package: [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.2** · depends on [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **^0.1.1**.
 
 **Fallback (VCS mirror)** if Packagist is unavailable:
 
@@ -105,6 +105,10 @@ php integrations/magento/bin/smoke.php
 On tag `integrations/magento/v*`, [`.github/workflows/sync-magento-mirror.yml`](../../.github/workflows/sync-magento-mirror.yml) syncs [magento-autlantic](https://github.com/Autlantic/magento-autlantic).
 
 ## Changelog
+
+### 1.1.2
+- Require `autlantic/billing` **^0.1.1** (Packagist `refundPayment`)
+- Mage-OS E2E proves sandbox pay → Magento refund → Billing `refunded` + `payment.refunded`
 
 ### 1.1.1
 - One-time `refundPayment` + `payment.refunded` credit memos (Woo D1 parity)

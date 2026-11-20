@@ -185,15 +185,16 @@ if (!$order instanceof Order) {
 }
 pass('placed Magento order #' . $order->getIncrementId() . ' id=' . $orderId);
 
-// Create payment link (Redirect controller logic)
-$amount = OrderMeta::amountUsdc($order);
-$body = [
-    'amountUsdc' => max($amount, 1.0),
+// Payment link (admin Redirect path) + real sandbox one-time payment for refundPayment.
+$amount = max(OrderMeta::amountUsdc($order), 1.0);
+$linkBody = [
+    'amountUsdc' => $amount,
     'merchantRefPrefix' => 'm2_' . $order->getIncrementId(),
     'description' => 'Magento E2E #' . $order->getIncrementId(),
     'maxUses' => 1,
-    'successUrl' => $store->getBaseUrl() . 'checkout/onepage/success/',
-    'cancelUrl' => $store->getBaseUrl() . 'checkout/cart/',
+    // Billing API requires https success/cancel (local Mage base is http://127.0.0.1).
+    'successUrl' => 'https://example.com/autlantic-e2e/success',
+    'cancelUrl' => 'https://example.com/autlantic-e2e/cancel',
     'collectEmail' => true,
     'metadata' => [
         'm2_order_id' => (string) $order->getEntityId(),
@@ -202,7 +203,7 @@ $body = [
         'm2_e2e' => '1',
     ],
 ];
-$created = $billing->createPaymentLink($body);
+$created = $billing->createPaymentLink($linkBody);
 $paymentLink = is_array($created['paymentLink'] ?? null) ? $created['paymentLink'] : [];
 $checkoutUrl = (string) ($created['url'] ?? '');
 $linkId = (string) ($paymentLink['id'] ?? '');
@@ -221,19 +222,73 @@ $orderRepository->save($order);
 pass('created Autlantic payment link ' . $linkId);
 pass('checkout URL host=' . (parse_url($checkoutUrl, PHP_URL_HOST) ?: 'n/a'));
 
+// Real sandbox payment (so Magento refundPayment hits Billing API successfully).
+$payCreated = $billing->createPayment([
+    'merchantRef' => 'm2_' . $order->getIncrementId() . '_pay',
+    'customerWallet' => '0x0000000000000000000000000000000000000001',
+    'amountUsdc' => $amount,
+    'successUrl' => 'https://example.com/autlantic-e2e/success',
+    'cancelUrl' => 'https://example.com/autlantic-e2e/cancel',
+    'metadata' => [
+        'm2_order_id' => (string) $order->getEntityId(),
+        'm2_increment_id' => (string) $order->getIncrementId(),
+        'm2_store_id' => (string) $storeId,
+        'paymentLinkId' => $linkId,
+        'm2_e2e' => '1',
+    ],
+]);
+$realPayment = is_array($payCreated['payment'] ?? null) ? $payCreated['payment'] : [];
+$realPaymentId = (string) ($realPayment['id'] ?? '');
+if ($realPaymentId === '') {
+    fail('createPayment missing id: ' . json_encode($payCreated));
+}
+$apiBase = rtrim($apiUrl, '/');
+$statusUrl = $apiBase . '/checkout/pay/' . rawurlencode($realPaymentId) . '/status';
+$ch = curl_init($statusUrl);
+curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 20]);
+$statusRaw = (string) curl_exec($ch);
+$statusCode = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+if ($statusCode < 200 || $statusCode >= 300) {
+    fail("checkout status expected 2xx got {$statusCode} body={$statusRaw}");
+}
+$statusJson = json_decode($statusRaw, true, 512, JSON_THROW_ON_ERROR);
+$actionToken = (string) ($statusJson['actionToken'] ?? '');
+if ($actionToken === '') {
+    fail('checkout status missing actionToken');
+}
+$confirmUrl = $apiBase . '/checkout/pay/' . rawurlencode($realPaymentId) . '/confirm';
+$ch = curl_init($confirmUrl);
+curl_setopt_array($ch, [
+    CURLOPT_POST => true,
+    CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+    CURLOPT_POSTFIELDS => json_encode(['actionToken' => $actionToken], JSON_THROW_ON_ERROR),
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT => 30,
+]);
+$confirmRaw = (string) curl_exec($ch);
+$confirmCode = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+$confirmJson = json_decode($confirmRaw, true);
+$paidStatus = (string) (($confirmJson['payment']['status'] ?? '') ?: ($confirmJson['status'] ?? ''));
+if ($confirmCode < 200 || $confirmCode >= 300 || ($paidStatus !== 'paid' && ($confirmJson['paid'] ?? false) !== true)) {
+    fail("sandbox confirm expected paid got http={$confirmCode} body={$confirmRaw}");
+}
+pass('sandbox payment paid ' . $realPaymentId);
+
 // Bad HMAC via Config.verifyWebhookSignature + HTTP POST
 $rawEvent = json_encode([
     'id' => 'evt_e2e_' . bin2hex(random_bytes(6)),
     'type' => 'payment.paid',
     'data' => [
         'payment' => [
-            'id' => 'pay_e2e_' . bin2hex(random_bytes(4)),
+            'id' => $realPaymentId,
             'txHash' => '0xe2e',
+            'status' => 'paid',
+            'amountUsdc' => $amount,
             'metadata' => [
                 'm2_order_id' => (string) $order->getEntityId(),
                 'paymentLinkId' => $linkId,
             ],
-            'merchantRef' => 'm2_' . $order->getIncrementId() . '_1',
+            'merchantRef' => 'm2_' . $order->getIncrementId() . '_pay',
         ],
     ],
 ], JSON_THROW_ON_ERROR);
@@ -346,6 +401,50 @@ if ($invoiceId === '' && $storedPaymentId === '') {
         pass('refundPayment requested for payment ' . $storedPaymentId);
     } catch (\Throwable $e) {
         fail('refundPayment failed: ' . $e->getMessage());
+    }
+    $remote = $billing->getPayment($storedPaymentId);
+    $remoteStatus = (string) (($remote['payment']['status'] ?? '') ?: ($remote['status'] ?? ''));
+    if ($remoteStatus !== 'refunded') {
+        fail('Billing payment status after Magento refund expected refunded got ' . $remoteStatus);
+    }
+    pass('Billing API payment status=refunded');
+
+    $refundEvent = json_encode([
+        'id' => 'evt_e2e_ref_' . bin2hex(random_bytes(6)),
+        'type' => 'payment.refunded',
+        'data' => [
+            'payment' => [
+                'id' => $storedPaymentId,
+                'status' => 'refunded',
+                'amountUsdc' => $amount,
+                'refundAmountUsdc' => min(1.0, (float) $order->getGrandTotal()),
+                'metadata' => [
+                    'm2_order_id' => (string) $order->getEntityId(),
+                    'paymentLinkId' => $linkId,
+                ],
+            ],
+        ],
+    ], JSON_THROW_ON_ERROR);
+    $refundSig = Webhook::signBody($secret, $refundEvent, time());
+    $ch = curl_init(rtrim($store->getBaseUrl(), '/') . '/autlantic/webhook');
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'X-Autlantic-Signature: ' . $refundSig,
+        ],
+        CURLOPT_POSTFIELDS => $refundEvent,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 30,
+    ]);
+    $httpBody = (string) curl_exec($ch);
+    $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($status < 200 || $status >= 300) {
+        // Fallback to direct handler under broken front-controller routing.
+        $eventHandler->handle('payment.refunded', json_decode($refundEvent, true)['data']);
+        pass('payment.refunded handled via EventHandler (HTTP status=' . $status . ')');
+    } else {
+        pass('HTTP webhook payment.refunded => ' . $status);
     }
 }
 

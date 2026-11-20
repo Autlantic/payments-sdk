@@ -10,7 +10,7 @@ Autlantic Billing is **one hosted API**. Official SDKs are thin clients around t
 | **Node.js / TypeScript** | Available | [`@autlantic/payments-recurring`](https://www.npmjs.com/package/@autlantic/payments-recurring) **0.3.24** | Server only |
 | **Python** | Available | [`autlantic-billing`](https://pypi.org/project/autlantic-billing/) **0.1.0** on PyPI | Server only |
 | **Go** | Available | [`github.com/Autlantic/payments-sdk/sdks/go`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/go) tag `sdks/go/v0.1.0` | Server only |
-| **PHP** | Available on Packagist | [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.0** (monorepo / Woo **1.1.6** vendor ships **0.1.1** Connect APIs) | Server only |
+| **PHP** | Available on Packagist | [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.1** | Server only |
 | **Java** | Available on Maven Central | [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.1** | Server only |
 | **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.0** | Server only |
 | **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/ios) tag `sdks/ios/v0.1.0` | **None** |
@@ -18,7 +18,7 @@ Autlantic Billing is **one hosted API**. Official SDKs are thin clients around t
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
 | **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
 | **WooCommerce** | Available (**1.1.6**) | [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) · [GitHub releases](https://github.com/Autlantic/woocommerce-autlantic/releases) | Server API key + webhook secret |
-| **Magento 2** | Available on Packagist | [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.1** | Server API key + webhook secret |
+| **Magento 2** | Available on Packagist | [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.2** | Server API key + webhook secret |
 | **Shopify** | Checkout blocked (external) on Payments Partner; custom wiring OK | [`shopify-autlantic`](https://github.com/Autlantic/shopify-autlantic) · [custom wiring](/guide/commerce#shopify) | Server API key + webhook secret (+ app credentials only for payments app) |
 
 ## Who installs what

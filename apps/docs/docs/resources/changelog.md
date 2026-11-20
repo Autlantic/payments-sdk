@@ -1,5 +1,15 @@
 # Changelog
 
+## Magento module-billing 1.1.2 - Require billing PHP 0.1.1
+
+- Composer require `autlantic/billing` **^0.1.1** so Packagist installs include `refundPayment`
+- Mage-OS E2E strengthened for sandbox pay → Magento refund → Billing `refunded` + `payment.refunded`
+
+```bash
+git tag -a integrations/magento/v1.1.2 -m "autlantic/module-billing 1.1.2"
+git push origin integrations/magento/v1.1.2
+```
+
 ## Magento module-billing 1.1.1 - Woo parity (refunds + readiness)
 
 - One-time `refundPayment` + `payment.refunded` credit memos
