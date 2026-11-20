@@ -30,6 +30,7 @@ android {
 dependencies {
   implementation("androidx.browser:browser:1.8.0")
   implementation("androidx.activity:activity-ktx:1.9.3")
+  testImplementation("junit:junit:4.13.2")
 }
 
 mavenPublishing {

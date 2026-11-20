@@ -13,6 +13,9 @@ android {
     targetSdk = 35
     versionCode = 1
     versionName = "0.1.0"
+    val backend =
+      (System.getenv("AUTLANTIC_SAMPLE_BACKEND") ?: "http://10.0.2.2:3055").replace("\"", "")
+    buildConfigField("String", "AUTLANTIC_SAMPLE_BACKEND", "\"$backend\"")
   }
 
   compileOptions {
@@ -24,6 +27,7 @@ android {
   }
   buildFeatures {
     viewBinding = false
+    buildConfig = true
   }
 }
 

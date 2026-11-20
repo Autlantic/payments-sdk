@@ -11,10 +11,10 @@ Connect the customer wallet (mandate) up front. Grant access during a free trial
 | Hosted API passes `price.trialDays` into create | enterprise-proven (billing-hosting pin + production) |
 | Hosted API matrix (create / activate mandate / charge-after-due / cancel-in-trial / trialDays=0) | enterprise-proven |
 | Hosted **checkout UI** ($0 due today, mandate-only path, trial success) | enterprise-proven (test mode) |
+| Multi-merchant isolation under trials | enterprise-proven (test mode) |
 | Live-mode on-chain first charge after trial | **not proven** |
-| Multi-merchant isolation under trials | **not proven** |
 
-Hosted test-mode checkout UI is proven ($0 due today, mandate-only activate, Trial started). Live-mode first charge after trial and multi-merchant isolation remain **not proven**.
+Hosted test-mode checkout UI and multi-merchant isolation are proven. Live-mode first charge after trial remains **not proven**.
 
 ## Product rules
 
@@ -69,8 +69,9 @@ Grant **trial access** when the mandate is active and status is `trialing`. Conv
 2. Published npm (`billing-engine@0.3.28`+) pinned on billing-hosting `production`
 3. Hosted API E2E: `trialDays=7` → activate mandate $0 (stay `trialing`) → test clock past `dueAt` → charge → `active`; cancel-in-trial voids invoice; `trialDays=0` still incomplete→paid
 4. Hosted checkout UI E2E (test mode): `Total due today` = `0.00 USDC`, consent `0.00 USDC today`, sandbox CTA **Start trial in test mode**, success **Trial started** / charged today `0.00 USDC`; `/status` returns `checkoutPhase: trial_active` + `trialStarted: true` with no paid invoice
+5. Multi-merchant isolation E2E: `sdks/bin/e2e-trials-multi-merchant.py` → `ENTERPRISE_PROVEN_TRIALS_MULTI_MERCHANT_OK` (cross-tenant 404, independent test clocks, A activate/cancel leaves B untouched). See `docs/qa/trials-enterprise.md`.
 
-**Still not proven:** live-mode on-chain trial conversion; multi-merchant isolation.
+**Still not proven:** live-mode on-chain trial conversion.
 
 ## Related
 

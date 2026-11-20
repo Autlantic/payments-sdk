@@ -61,6 +61,10 @@ await AutlanticCheckout.present(checkoutUrl, { returnUrlScheme: 'myapp' });
 
 Prefer system browser surfaces (`ASWebAuthenticationSession` on iOS; Chrome Custom Tabs on Android — including Flutter/RN plugins) so WalletConnect can hand off to wallet apps. Avoid locked WebViews.
 
+Hosted `successUrl` / `cancelUrl` accept **https** and **app deep links** (for example `myapp://billing/success`). Plain `http` and `javascript:` / `data:` are rejected.
+
+**Enterprise status:** Checkout presenter surface is **enterprise-proven** (automated gates + Android hosted open / sandbox pay / deep-link return). See `docs/qa/mobile-checkout.md`.
+
 ## Device smoke (Test keys)
 
 Step-by-step phone/simulator check with `abk_test_*`: [Device smoke test](/guide/device-smoke).

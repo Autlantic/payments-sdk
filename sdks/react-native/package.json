@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "typescript": "tsc --noEmit",
+    "test": "tsx --test src/index.test.ts",
     "prepublishOnly": "npm run typescript"
   },
   "keywords": [

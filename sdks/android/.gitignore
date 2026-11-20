@@ -1,0 +1,32 @@
+
+git add \
+  apps/docs/docs/guide/mobile.md \
+  apps/docs/docs/guide/trials.md \
+  apps/docs/docs/resources/status.md \
+  docs/qa/sdk-hosted-e2e.md \
+  docs/qa/mobile-checkout.md \
+  docs/qa/trials-enterprise.md \
+  examples/mobile-checkout/android-sample/app/build.gradle.kts \
+  examples/mobile-checkout/android-sample/app/src/main/java/com/autlantic/checkout/sample/MainActivity.kt \
+  sdks/android/autlantic-checkout/build.gradle.kts \
+  sdks/android/autlantic-checkout/src/main/java/com/autlantic/checkout/AutlanticCheckout.kt \
+  sdks/android/autlantic-checkout/src/test \
+  sdks/android/gradle.properties \
+  sdks/android/.gitignore \
+  sdks/ios/Sources/AutlanticCheckout/AutlanticCheckout.swift \
+  sdks/react-native/package.json \
+  sdks/react-native/src/index.test.ts \
+  sdks/bin/e2e-trials-multi-merchant.py \
+  sdks/bin/mobile-surface-check.sh \
+  sdks/flutter/test \
+  .gitignore
+
+git status -sb
+git log -3 --oneline
+git commit -m "$(cat <<'EOF'
+Prove mobile Checkout and trial multi-merchant isolation.
+
+Add hosted multi-merchant trials E2E, mobile surface gates, Android URL validation, and QA docs. Hosted deep-link return URLs are required for device Checkout and land with billing-hosting.
+EOF
+)"
+git status -sb

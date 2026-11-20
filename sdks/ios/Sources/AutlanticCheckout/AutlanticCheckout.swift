@@ -21,9 +21,20 @@ public enum AutlanticCheckout {
     from presenter: UIViewController,
     completion: @escaping (AutlanticCheckoutResult) -> Void
   ) {
+    let scheme = returnURLScheme.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !scheme.isEmpty else {
+      completion(.failed(AutlanticCheckoutError.invalidReturnURLScheme))
+      return
+    }
+    guard let urlScheme = url.scheme?.lowercased(),
+          urlScheme == "https" || urlScheme == "http" || urlScheme == "sandbox"
+    else {
+      completion(.failed(AutlanticCheckoutError.invalidCheckoutURL))
+      return
+    }
     let session = ASWebAuthenticationSession(
       url: url,
-      callbackURLScheme: returnURLScheme
+      callbackURLScheme: scheme
     ) { callbackURL, error in
       if let error = error as? ASWebAuthenticationSessionError,
          error.code == .canceledLogin
@@ -47,6 +58,8 @@ public enum AutlanticCheckout {
 
 public enum AutlanticCheckoutError: Error, Sendable {
   case couldNotStart
+  case invalidCheckoutURL
+  case invalidReturnURLScheme
 }
 
 private final class PresentationAnchor: NSObject, ASWebAuthenticationPresentationContextProviding {

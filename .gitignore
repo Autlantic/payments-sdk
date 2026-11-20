@@ -25,3 +25,4 @@ sdks/ios/.build/
 !.cursor/rules/enterprise-proven.mdc
 **/__pycache__/
 *.pyc
+sdks/android/local.properties

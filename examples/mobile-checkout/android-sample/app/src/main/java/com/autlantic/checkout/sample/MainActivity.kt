@@ -19,8 +19,7 @@ import kotlin.concurrent.thread
  * Device → http://YOUR_LAN_IP:3055 with `pnpm example:mobile` running
  */
 class MainActivity : AppCompatActivity() {
-  private val backendBase =
-    System.getenv("AUTLANTIC_SAMPLE_BACKEND") ?: "http://10.0.2.2:3055"
+  private val backendBase = BuildConfig.AUTLANTIC_SAMPLE_BACKEND
   private var merchantRef: String? = null
   private lateinit var status: TextView
 
@@ -66,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             setRequestProperty("Content-Type", "application/json")
             doOutput = true
             outputStream.use {
-              it.write("""{"kind":"payment_link","amountUsdc":20}""".toByteArray())
+              it.write("""{"kind":"payment","amountUsdc":1}""".toByteArray())
             }
           }
         val body = conn.inputStream.bufferedReader().readText()
