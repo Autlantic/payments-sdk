@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'autlantic_checkout'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'Autlantic Billing Checkout presenter for Flutter.'
   s.description      = <<-DESC
 Opens hosted Autlantic checkoutUrl via ASWebAuthenticationSession. No API keys.

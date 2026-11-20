@@ -40,10 +40,35 @@ type PresentFn = (
 describe("@autlantic/checkout validation", () => {
   it("rejects empty checkoutUrl", async () => {
     // Dynamic import after shim
-    const mod = (await import("./index.ts")) as { default: { present: PresentFn } };
+    const mod = (await import("./index.ts")) as {
+      default: { present: PresentFn };
+      validateCheckoutUrl: (u: string) => string | null;
+    };
     const r = await mod.default.present("", { returnUrlScheme: "myapp" });
     assert.equal(r.status, "failed");
     assert.match(String(r.error), /checkoutUrl/);
+  });
+
+  it("rejects non-http checkoutUrl", async () => {
+    const mod = (await import("./index.ts")) as { default: { present: PresentFn } };
+    const r = await mod.default.present("javascript:alert(1)", {
+      returnUrlScheme: "myapp",
+    });
+    assert.equal(r.status, "failed");
+    assert.match(String(r.error), /http\(s\) or sandbox/);
+  });
+
+  it("validateCheckoutUrl accepts https and sandbox", async () => {
+    const mod = (await import("./index.ts")) as {
+      validateCheckoutUrl: (u: string) => string | null;
+    };
+    assert.equal(
+      mod.validateCheckoutUrl(
+        "https://billing.autlantic.com/checkout/pay/pay_x",
+      ),
+      null,
+    );
+    assert.equal(mod.validateCheckoutUrl("sandbox://local/checkout"), null);
   });
 
   it("rejects empty returnUrlScheme", async () => {

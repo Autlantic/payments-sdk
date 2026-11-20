@@ -5,7 +5,7 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 
 **USDC on Base** · never put API keys or webhook secrets in the app.
 
-Source: [`sdks/flutter`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/flutter). Package: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** on pub.dev.
+Source: [`sdks/flutter`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/flutter). Package: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.1** on pub.dev.
 
 - **iOS:** `ASWebAuthenticationSession`
 - **Android:** Chrome Custom Tabs (`androidx.browser:browser:1.8.0`)
@@ -14,7 +14,7 @@ Source: [`sdks/flutter`](https://github.com/Autlantic/payments-sdk/tree/main/sdk
 
 ```yaml
 dependencies:
-  autlantic_checkout: ^0.1.0
+  autlantic_checkout: ^0.1.1
 ```
 
 ```bash

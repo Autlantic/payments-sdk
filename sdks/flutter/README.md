@@ -26,14 +26,14 @@ Checkout presenter only (`autlantic_checkout`). Your backend creates the session
 
 ```yaml
 dependencies:
-  autlantic_checkout: ^0.1.0
+  autlantic_checkout: ^0.1.1
 ```
 
 ```bash
 flutter pub get
 ```
 
-Package: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0**.
+Package: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.1**.
 
 ## Quick start
 

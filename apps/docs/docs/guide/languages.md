@@ -15,8 +15,8 @@ Autlantic Billing is **one hosted API**. Official SDKs are thin clients around t
 | **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.1** | Server only |
 | **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/ios) tag `sdks/ios/v0.1.1` | **None** |
 | **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.1** | **None** |
-| **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
-| **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
+| **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.1** | **None** |
+| **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.1** | **None** |
 | **WooCommerce** | Available (**1.1.6**) | [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) · [GitHub releases](https://github.com/Autlantic/woocommerce-autlantic/releases) | Server API key + webhook secret |
 | **Magento 2** | Available on Packagist | [`autlantic/module-billing`](https://packagist.org/packages/autlantic/module-billing) **1.1.2** | Server API key + webhook secret |
 | **Shopify** | Checkout blocked (external) on Payments Partner; custom wiring OK | [`shopify-autlantic`](https://github.com/Autlantic/shopify-autlantic) · [custom wiring](/guide/commerce#shopify) | Server API key + webhook secret (+ app credentials only for payments app) |

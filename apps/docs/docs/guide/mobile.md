@@ -36,8 +36,8 @@ Hosted checkout uses these for “Return to merchant” / cancel. After return, 
 |----------|---------|----------------|
 | **iOS** | Swift Package Manager (`sdks/ios`, tag `sdks/ios/v0.1.1`) | [iOS Checkout](/api/ios) |
 | **Android** | Maven Central (`com.autlantic:checkout` **0.1.1**) | [Android Checkout](/api/android) |
-| **Flutter** | pub.dev (`autlantic_checkout` **0.1.0**) | [Flutter Checkout](/api/flutter) |
-| **React Native** | npm (`@autlantic/checkout` **0.1.0**) | [React Native Checkout](/api/react-native) |
+| **Flutter** | pub.dev (`autlantic_checkout` **0.1.1**) | [Flutter Checkout](/api/flutter) |
+| **React Native** | npm (`@autlantic/checkout` **0.1.1**) | [React Native Checkout](/api/react-native) |
 
 ```swift
 // iOS

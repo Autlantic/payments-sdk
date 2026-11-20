@@ -150,7 +150,7 @@ Install: `dotnet add package Autlantic.Billing --version 0.1.1`.
 
 ## Flutter (pub.dev)
 
-Package: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** published (`sdks/flutter`).
+Package: [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.1** published (`sdks/flutter`).
 
 ```bash
 cd sdks/flutter
@@ -160,11 +160,11 @@ flutter pub publish   # bump version in pubspec.yaml first for republish
 
 Optional: transfer package to verified publisher `autlantic.com` on pub.dev Admin.
 
-Install: `autlantic_checkout: ^0.1.0`.
+Install: `autlantic_checkout: ^0.1.1`.
 
 ## React Native (npm)
 
-Package: [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** published (`sdks/react-native`, tag `sdks/react-native/v0.1.0`).
+Package: [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.1** published (`sdks/react-native`, tag `sdks/react-native/v0.1.1`).
 
 ```bash
 cd sdks/react-native
@@ -172,7 +172,7 @@ npm run typescript
 npm publish --access public   # requires npm org @autlantic; bump version first for republish
 ```
 
-Install: `npm install @autlantic/checkout`. From source: `npm install github:Autlantic/payments-sdk#sdks/react-native/v0.1.0` or path install. Metro may need `watchFolders` / `nodeModulesPaths` for monorepo path installs.
+Install: `npm install @autlantic/checkout`. From source: `npm install github:Autlantic/payments-sdk#sdks/react-native/v0.1.1` or path install. Metro may need `watchFolders` / `nodeModulesPaths` for monorepo path installs.
 
 ## Android (Maven Central)
 
@@ -248,4 +248,4 @@ Do not point Railway at `main`.
 
 After secrets: tag Android + Java; confirm Central sync; update docs to “Available on Maven Central” / Packagist.
 
-Already published: NuGet (`Autlantic.Billing` **0.1.1** via Trusted Publishing / `publish-dotnet.yml`), pub.dev (`autlantic_checkout` **0.1.0**), npm (`@autlantic/checkout` **0.1.0**).
+Already published: NuGet (`Autlantic.Billing` **0.1.1** via Trusted Publishing / `publish-dotnet.yml`), pub.dev (`autlantic_checkout` **0.1.1**), npm (`@autlantic/checkout` **0.1.1**).

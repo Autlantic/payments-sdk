@@ -28,7 +28,7 @@ npm install @autlantic/checkout
 cd ios && pod install
 ```
 
-Autolinking picks up Android + the CocoaPods podspec. Requires a custom native build (not Expo Go). From source (monorepo / git): `npm install /path/to/payments-sdk/sdks/react-native` or `npm install github:Autlantic/payments-sdk#sdks/react-native/v0.1.0`.
+Autolinking picks up Android + the CocoaPods podspec. Requires a custom native build (not Expo Go). From source (monorepo / git): `npm install /path/to/payments-sdk/sdks/react-native` or `npm install github:Autlantic/payments-sdk#sdks/react-native/v0.1.1`.
 
 ## Quick start
 

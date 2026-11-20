@@ -13,6 +13,28 @@ void main() {
     expect(result.message, contains('checkoutUrl'));
   });
 
+  test('present rejects non-http checkoutUrl without calling native', () async {
+    final result = await AutlanticCheckout.present(
+      'javascript:alert(1)',
+      returnUrlScheme: 'myapp',
+    );
+    expect(result.status, AutlanticCheckoutStatus.failed);
+    expect(result.message, contains('http(s) or sandbox'));
+  });
+
+  test('validateCheckoutUrl accepts https and sandbox', () {
+    expect(
+      AutlanticCheckout.validateCheckoutUrl(
+        'https://billing.autlantic.com/checkout/pay/pay_x',
+      ),
+      isNull,
+    );
+    expect(
+      AutlanticCheckout.validateCheckoutUrl('sandbox://local/checkout'),
+      isNull,
+    );
+  });
+
   test('present rejects empty returnUrlScheme without calling native', () async {
     final result = await AutlanticCheckout.present(
       'https://billing.autlantic.com/checkout/pay/pay_x',

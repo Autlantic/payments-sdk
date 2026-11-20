@@ -4,12 +4,18 @@
 
 - iOS SPM tag `sdks/ios/v0.1.1`: reject empty return schemes and non-http(s)/sandbox checkout URLs
 - Android `com.autlantic:checkout` **0.1.1**: `requireValidCheckoutUrl` + unit tests; Maven Central via `sdks/android/v0.1.1`
+- Flutter `autlantic_checkout` **0.1.1** (pub.dev): same URL scheme guards
+- React Native `@autlantic/checkout` **0.1.1** (npm): same URL scheme guards
 
 ```bash
 git tag -a sdks/ios/v0.1.1 -m "AutlanticCheckout 0.1.1"
 git push origin sdks/ios/v0.1.1
 git tag -a sdks/android/v0.1.1 -m "com.autlantic:checkout 0.1.1"
 git push origin sdks/android/v0.1.1
+git tag -a sdks/flutter/v0.1.1 -m "autlantic_checkout 0.1.1"
+git push origin sdks/flutter/v0.1.1
+git tag -a sdks/react-native/v0.1.1 -m "@autlantic/checkout 0.1.1"
+git push origin sdks/react-native/v0.1.1
 ```
 
 ## Server SDKs - Refund + Connect parity (Python / Go / Java / .NET)

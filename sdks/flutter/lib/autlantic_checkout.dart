@@ -19,14 +19,32 @@ class AutlanticCheckout {
   /// [returnUrlScheme] is used on iOS with `ASWebAuthenticationSession`.
   /// On Android this opens Chrome Custom Tabs; deep-link returns are handled
   /// by the host app (the future completes after Custom Tabs launches).
+  static const _allowedSchemes = <String>{'https', 'http', 'sandbox'};
+
+  /// Validates hosted checkout URL shape (http(s) or sandbox). Unit-testable.
+  static String? validateCheckoutUrl(String checkoutUrl) {
+    final trimmed = checkoutUrl.trim();
+    if (trimmed.isEmpty) {
+      return 'checkoutUrl must not be empty';
+    }
+    final schemeEnd = trimmed.indexOf('://');
+    if (schemeEnd <= 0) {
+      return 'checkoutUrl must be an http(s) or sandbox URL';
+    }
+    final scheme = trimmed.substring(0, schemeEnd).toLowerCase();
+    if (!_allowedSchemes.contains(scheme)) {
+      return 'checkoutUrl must be an http(s) or sandbox URL';
+    }
+    return null;
+  }
+
   static Future<AutlanticCheckoutResult> present(
     String checkoutUrl, {
     required String returnUrlScheme,
   }) async {
-    if (checkoutUrl.trim().isEmpty) {
-      return const AutlanticCheckoutResult.failed(
-        message: 'checkoutUrl must not be empty',
-      );
+    final urlError = validateCheckoutUrl(checkoutUrl);
+    if (urlError != null) {
+      return AutlanticCheckoutResult.failed(message: urlError);
     }
     if (returnUrlScheme.trim().isEmpty) {
       return const AutlanticCheckoutResult.failed(
@@ -38,7 +56,7 @@ class AutlanticCheckout {
       final dynamic raw = await _channel.invokeMethod<dynamic>(
         'present',
         <String, String>{
-          'checkoutUrl': checkoutUrl,
+          'checkoutUrl': checkoutUrl.trim(),
           'returnUrlScheme': returnUrlScheme,
         },
       );

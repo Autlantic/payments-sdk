@@ -1,6 +1,6 @@
 {
   "name": "@autlantic/checkout",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Autlantic Billing mobile Checkout presenter for React Native. Opens hosted checkoutUrl via ASWebAuthenticationSession (iOS) and Chrome Custom Tabs (Android). No API keys.",
   "license": "MIT",
   "main": "src/index.ts",
