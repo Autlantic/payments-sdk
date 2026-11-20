@@ -32,7 +32,9 @@ Status: **enterprise-proven** for multi-merchant isolation under trials (hosted 
 
 | Check | Status |
 |-------|--------|
-| Live mandate-only activate stays `trialing` (no charge) | not proven (pending Phase A) |
-| Live first USDC charge after `dueAt` → `active` + real `txHash` | not proven (pending Phase B; no test clock in live) |
+| Live mandate-only activate stays `trialing` (no charge) | **not proven** (needs `abk_live_*` + funded wallet) |
+| Live first USDC charge after `dueAt` → `active` + real `txHash` | **not proven** (Phase B after trial end; no test clock in live) |
 
 Do not count `AUTLANTIC_BILLING_ALLOW_LIVE_SANDBOX` as live proof.
+
+Blocked on credentials: no `abk_live_*` in the 2026-11-20 session env. Provide a Live platform/merchant key + funded customer wallet to run Phase A/B.
