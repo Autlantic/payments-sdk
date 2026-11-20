@@ -32,8 +32,8 @@ README layout for every package: **[README.STANDARD.md](./README.STANDARD.md)**.
 | **PHP** | Available on Packagist | [`autlantic/billing`](./php) · [Packagist](https://packagist.org/packages/autlantic/billing) **0.1.1** · [billing-php](https://github.com/Autlantic/billing-php) | Server only |
 | **Java** | Available on Maven Central | [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.2** | Server only |
 | **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.1** | Server only |
-| **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](./ios) tag `sdks/ios/v0.1.0` | **None** |
-| **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** | **None** |
+| **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](./ios) tag `sdks/ios/v0.1.1` | **None** |
+| **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.1** | **None** |
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
 | **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
 | **WooCommerce** | Available (**1.1.6**) | [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) · [woocommerce-autlantic](https://github.com/Autlantic/woocommerce-autlantic) | Server API key + webhook secret |

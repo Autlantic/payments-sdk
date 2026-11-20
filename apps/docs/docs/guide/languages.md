@@ -13,8 +13,8 @@ Autlantic Billing is **one hosted API**. Official SDKs are thin clients around t
 | **PHP** | Available on Packagist | [`autlantic/billing`](https://packagist.org/packages/autlantic/billing) **0.1.1** | Server only |
 | **Java** | Available on Maven Central | [`com.autlantic:billing`](https://central.sonatype.com/artifact/com.autlantic/billing) **0.1.2** | Server only |
 | **.NET** | Available on NuGet | [`Autlantic.Billing`](https://www.nuget.org/packages/Autlantic.Billing) **0.1.1** | Server only |
-| **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/ios) tag `sdks/ios/v0.1.0` | **None** |
-| **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** | **None** |
+| **iOS (Swift)** | Available (SPM) | [`AutlanticCheckout`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/ios) tag `sdks/ios/v0.1.1` | **None** |
+| **Android (Kotlin)** | Available on Maven Central | [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.1** | **None** |
 | **Flutter** | Available on pub.dev | [`autlantic_checkout`](https://pub.dev/packages/autlantic_checkout) **0.1.0** | **None** |
 | **React Native** | Available on npm | [`@autlantic/checkout`](https://www.npmjs.com/package/@autlantic/checkout) **0.1.0** | **None** |
 | **WooCommerce** | Available (**1.1.6**) | [WordPress.org](https://wordpress.org/plugins/autlantic-billing-for-woocommerce/) · [GitHub releases](https://github.com/Autlantic/woocommerce-autlantic/releases) | Server API key + webhook secret |

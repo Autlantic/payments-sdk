@@ -4,7 +4,7 @@ Node/npm and Python/PyPI are live. iOS uses SPM from Git. Android publishes to M
 
 ## iOS (SPM)
 
-Already tagged: `sdks/ios/v0.1.0`. Xcode → Add Package → `https://github.com/Autlantic/payments-sdk.git` → product **AutlanticCheckout**.
+Already tagged: `sdks/ios/v0.1.1`. Xcode → Add Package → `https://github.com/Autlantic/payments-sdk.git` → product **AutlanticCheckout**.
 
 ## Python (PyPI)
 
@@ -208,8 +208,8 @@ gpg --export-secret-keys -a KEYID > secret.asc
 ```bash
 cd ~/payments-sdk
 # bump VERSION_NAME in sdks/android/gradle.properties if needed
-git tag -a sdks/android/v0.1.0 -m "com.autlantic:checkout 0.1.0"
-git push origin sdks/android/v0.1.0
+git tag -a sdks/android/v0.1.1 -m "com.autlantic:checkout 0.1.1"
+git push origin sdks/android/v0.1.1
 ```
 
 Actions runs `./gradlew :autlantic-checkout:publishAndReleaseToMavenCentral`.
@@ -217,7 +217,7 @@ Actions runs `./gradlew :autlantic-checkout:publishAndReleaseToMavenCentral`.
 Consumers:
 
 ```kotlin
-implementation("com.autlantic:checkout:0.1.0")
+implementation("com.autlantic:checkout:0.1.1")
 ```
 
 ## Consumer apps (after publish)

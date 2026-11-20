@@ -24,10 +24,10 @@ Checkout presenter only. Your backend creates the session; this package opens th
 ## Install
 
 ```kotlin
-implementation("com.autlantic:checkout:0.1.0")
+implementation("com.autlantic:checkout:0.1.1")
 ```
 
-Package: [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0**.
+Package: [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.1**.
 
 ## Quick start
 

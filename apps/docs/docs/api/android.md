@@ -5,12 +5,12 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 
 **USDC on Base** · never put API keys or webhook secrets in the app.
 
-Source: [`sdks/android`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/android). Package: [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.0** on Maven Central.
+Source: [`sdks/android`](https://github.com/Autlantic/payments-sdk/tree/main/sdks/android). Package: [`com.autlantic:checkout`](https://central.sonatype.com/artifact/com.autlantic/checkout) **0.1.1** on Maven Central.
 
 ## Install
 
 ```kotlin
-implementation("com.autlantic:checkout:0.1.0")
+implementation("com.autlantic:checkout:0.1.1")
 ```
 
 ## API

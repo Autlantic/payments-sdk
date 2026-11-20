@@ -1,5 +1,17 @@
 # Changelog
 
+## Mobile Checkout 0.1.1 - URL validation
+
+- iOS SPM tag `sdks/ios/v0.1.1`: reject empty return schemes and non-http(s)/sandbox checkout URLs
+- Android `com.autlantic:checkout` **0.1.1**: `requireValidCheckoutUrl` + unit tests; Maven Central via `sdks/android/v0.1.1`
+
+```bash
+git tag -a sdks/ios/v0.1.1 -m "AutlanticCheckout 0.1.1"
+git push origin sdks/ios/v0.1.1
+git tag -a sdks/android/v0.1.1 -m "com.autlantic:checkout 0.1.1"
+git push origin sdks/android/v0.1.1
+```
+
 ## Server SDKs - Refund + Connect parity (Python / Go / Java / .NET)
 
 Align non-Node server clients to the PHP **0.1.1** surface: `getInvoice` / `refundInvoice` / `refundPayment` / `voidInvoice`, plus platform Connect methods.

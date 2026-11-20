@@ -8,8 +8,8 @@ Presenter surface only (no API keys): open hosted `checkoutUrl`, deep-link retur
 
 | Platform | Package | Version under test |
 |----------|---------|--------------------|
-| iOS | SPM `AutlanticCheckout` | `sdks/ios` (URL validation + return scheme guards) |
-| Android | `com.autlantic:checkout` | source `sdks/android` (+ URL validation unit tests) |
+| iOS | SPM `AutlanticCheckout` | tag `sdks/ios/v0.1.1` (URL validation + return scheme guards) |
+| Android | `com.autlantic:checkout` | **0.1.1** (+ URL validation unit tests) |
 | Flutter | `autlantic_checkout` | `0.1.0` validation unit tests |
 | React Native | `@autlantic/checkout` | `0.1.0` validation unit tests |
 
@@ -56,6 +56,6 @@ Device: Samsung SM-S911B (`RFCW30RWJ0A`). Sample: `examples/mobile-checkout/andr
 
 **enterprise-proven** for Checkout presenter surface (automated gates + Android hosted open/confirm/deep-link + hosted deep-link API).
 
-Publish Android/iOS **0.1.1** when shipping the validation patches to registries (source proven in this pass).
+Published Android/iOS **0.1.1** (Maven Central + SPM tags).
 
 Marker: `ENTERPRISE_PROVEN_MOBILE_CHECKOUT_OK`

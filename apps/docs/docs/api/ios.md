@@ -5,13 +5,13 @@ Part of the [Autlantic Payments SDK](https://github.com/Autlantic/payments-sdk) 
 
 **USDC on Base** · never put API keys or webhook secrets in the app.
 
-Uses **Swift Package Manager** (not CocoaPods). Tag: `sdks/ios/v0.1.0`.
+Uses **Swift Package Manager** (not CocoaPods). Tag: `sdks/ios/v0.1.1`.
 
 ## Install (SPM)
 
 1. Xcode → **File → Add Package Dependencies…**
 2. URL: `https://github.com/Autlantic/payments-sdk.git`
-3. Dependency rule: tag `sdks/ios/v0.1.0` (or branch `main`)
+3. Dependency rule: tag `sdks/ios/v0.1.1` (or branch `main`)
 4. Add product **AutlanticCheckout**
 
 The package lives at `sdks/ios` in the repo. If Xcode asks for a package path during local development, select that folder.

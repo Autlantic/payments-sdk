@@ -23,11 +23,11 @@ Checkout presenter only. Your backend creates the session; this package opens th
 
 ## Install
 
-Swift Package Manager (not CocoaPods). Tag: `sdks/ios/v0.1.0`.
+Swift Package Manager (not CocoaPods). Tag: `sdks/ios/v0.1.1`.
 
 1. Xcode → **File → Add Package Dependencies…**
 2. URL: `https://github.com/Autlantic/payments-sdk.git`
-3. Dependency rule: tag `sdks/ios/v0.1.0` (or branch `main`)
+3. Dependency rule: tag `sdks/ios/v0.1.1` (or branch `main`)
 4. Add product **AutlanticCheckout**
 
 For local development, select the `sdks/ios` folder if Xcode asks for a package path.
